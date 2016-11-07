@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 import dispy
 
@@ -5,7 +7,7 @@ def cross_validation_score(estimator, X, y, cv=3, score=None):
     cv_iter = list(split(X, cv))
 
     dependencies = [_score]
-    cluster = dispy.JobCluster(_fit_and_score, depends=dependencies)
+    cluster = dispy.JobCluster(_fit_and_score, depends=dependencies, loglevel=logging.ERROR)
     jobs = []
     for train, test in cv_iter:
         job = cluster.submit(estimator=estimator, X=X, y=y, train=train, test=test, score=score)
@@ -15,8 +17,7 @@ def cross_validation_score(estimator, X, y, cv=3, score=None):
     scores = []
     for job in jobs:
         job()
-        scores.append([job.result])
-    cluster.print_status()
+        scores.append(job.result)
 
     return np.array(scores)
 
@@ -62,6 +63,6 @@ def _score(y_true, y_pred, score):
     if score == "accuracy":
         from sklearn.metrics import accuracy_score
         return accuracy_score(y_true, y_pred)
-    if score == "roc":
-        from sklearn.metrics import roc_curve
-        return roc_curve(y_true, y_pred)
+    if score == "confusion_matrix":
+        from sklearn.metrics import confusion_matrix
+        return confusion_matrix(y_true, y_pred)
