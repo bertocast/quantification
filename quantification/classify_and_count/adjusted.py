@@ -1,5 +1,7 @@
-from base import BaseClassifyAndCountModel, ClassifyAndCount
+from quantification.classify_and_count.base import BaseClassifyAndCountModel, ClassifyAndCount
 from quantification.utils.validation import cross_validation_score
+
+import numpy as np
 
 
 class AdjustedCount(BaseClassifyAndCountModel):
@@ -11,27 +13,43 @@ class AdjustedCount(BaseClassifyAndCountModel):
 
     def fit(self, X, y):
 
-        cc = ClassifyAndCount(estimator_class=self.estimator_class, copy_X=self.copy_X,
+        self.cc_ = ClassifyAndCount(estimator_class=self.estimator_class, copy_X=self.copy_X,
                               estimator_params=self.estimator_params)
-        cc = cc.fit(X, y)
+        self.cc_ = self.cc_.fit(X, y)
 
-        tpr, fpr, _ = self._performance(cc, y)
+        self.tpr_, self.fpr_ = self._performance(self.cc_.estimator, X, y)
 
         return self
 
 
     def predict(self, X):
-        pass
+        prevalence, prob = self.cc_.predict(X)
+        return prevalence, self._adjust(prob)
 
-    def _performance(self, estimator, y, cv=3):
-        return cross_validation_score(estimator, y, cv, score="roc")
+    def _performance(self, estimator, X, y, cv=3):
+        confusion_matrix = cross_validation_score(estimator, X, y, cv, score="confusion_matrix")
+        tpr = []
+        fpr = []
+        for cm in confusion_matrix:
+            tpr.append(cm[0, 0] / float(cm[0, 0] + cm[1, 0]))
+            fpr.append(cm[0, 1] / float(cm[0, 1] + cm[1, 1]))
+        return np.mean(tpr), np.mean(fpr)
+
+    def _adjust(self, prob):
+        return (prob - self.fpr_) / float(self.tpr_ - self.fpr_)
 
 
 if __name__ == '__main__':
 
+
+    from sklearn.datasets import load_breast_cancer
+
+    X, y = load_breast_cancer(return_X_y=True)
+
+    cc = ClassifyAndCount()
+    cc.fit(X, y)
+    print cc.predict(X)
+
     ac = AdjustedCount()
-    from sklearn.datasets import load_iris
-
-    X, y = load_iris(return_X_y=True)
-
     ac.fit(X, y)
+    print ac.predict(X)
