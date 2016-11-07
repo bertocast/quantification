@@ -6,7 +6,6 @@ import time
 from sklearn.linear_model import LogisticRegression
 
 from quantification.base import BasicModel
-git remote add origin remote repository URL
 
 
 class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
