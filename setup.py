@@ -26,9 +26,9 @@ setup(name='quantification',
       ],
       include_package_data=True,
       install_requires=[
-          'numpy',
+          'numpy>=1.8',
           'sklearn',
-          'pandas',
+          'pandas>=0.19',
           'dispy'
       ],
       tests_require=[
