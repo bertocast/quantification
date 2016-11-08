@@ -1,5 +1,4 @@
 import logging
-
 import numpy as np
 import dispy
 
@@ -7,7 +6,8 @@ def cross_validation_score(estimator, X, y, cv=3, score=None):
     cv_iter = list(split(X, cv))
 
     dependencies = [_score]
-    cluster = dispy.JobCluster(_fit_and_score, depends=dependencies, loglevel=logging.ERROR)
+    cluster = dispy.JobCluster(_fit_and_score, depends=dependencies, loglevel=logging.ERROR, pulse_interval=10,
+                               reentrant=True)
     jobs = []
     for train, test in cv_iter:
         job = cluster.submit(estimator=estimator, X=X, y=y, train=train, test=test, score=score)
@@ -18,7 +18,7 @@ def cross_validation_score(estimator, X, y, cv=3, score=None):
     for job in jobs:
         job()
         scores.append(job.result)
-
+    cluster.close()
     return np.array(scores)
 
 

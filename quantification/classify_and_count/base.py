@@ -27,13 +27,10 @@ class ClassifyAndCount(BaseClassifyAndCountModel):
     Parameters
     ----------
 
-    copy_X : boolean, optional, default True
-        If True, X will be copied; else, it may be overwritten.
     """
 
-    def __init__(self, estimator_class=None, copy_X=True, estimator_params=tuple()):
+    def __init__(self, estimator_class=None, estimator_params=tuple()):
         self.estimator_class = estimator_class
-        self.copy_X = copy_X
         self.estimator_params = estimator_params
 
     def _validate_estimator(self, default):
@@ -56,14 +53,14 @@ class ClassifyAndCount(BaseClassifyAndCountModel):
 
         self._make_estimator()
         self.estimator.fit(X, y)
-        self._labels = np.unique(y)
+        self.labels_ = np.unique(y)
         return self
 
     def predict(self, X):
         predictions = self.estimator.predict(X)
-        counts = np.bincount(predictions)
-        prevalence_count, prevalence_idx = np.max(counts), np.argmax(counts)
-        return self._labels[prevalence_idx], prevalence_count/float(np.sum(counts))
+        freq = np.bincount(predictions)
+        relative_freq = freq / float(np.sum(freq))
+        return relative_freq
 
 if __name__ == '__main__':
 

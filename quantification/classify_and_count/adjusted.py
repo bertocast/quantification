@@ -13,38 +13,60 @@ class AdjustedCount(BaseClassifyAndCountModel):
 
     def fit(self, X, y):
 
-        self.cc_ = ClassifyAndCount(estimator_class=self.estimator_class, copy_X=self.copy_X,
+        self.cc_ = ClassifyAndCount(estimator_class=self.estimator_class,
                               estimator_params=self.estimator_params)
         self.cc_ = self.cc_.fit(X, y)
-
-        self.tpr_, self.fpr_ = self._performance(self.cc_.estimator, X, y)
-
+        self.confusion_matrix = np.mean(
+            cross_validation_score(self.cc_.estimator, X, y, 3, score="confusion_matrix"),
+            0)
+        if len(self.cc_.labels_) == 2:
+            self.tpr_, self.fpr_ = self._performance()
+        elif len(self.cc_.labels_) >= 2:
+            self.conditional_prob = np.empty((len(self.cc_.labels_), len(self.cc_.labels_)))
+            for i in range(len(self.cc_.labels_)):
+                self.conditional_prob[i] = self.confusion_matrix[i] / np.sum(self.confusion_matrix[i])
+        else:
+            raise ValueError("Number of class cannot be less than 2")
         return self
 
-
     def predict(self, X):
-        prevalence, prob = self.cc_.predict(X)
-        return prevalence, self._adjust(prob)
+        if len(self.cc_.labels_) == 2:
+            return self.predict_binary(X)
+        elif len(self.cc_.labels_) >= 2:
+            return self.predict_multiclass(X)
+        else:
+            raise ValueError("Number of class cannot be less than 2")
 
-    def _performance(self, estimator, X, y, cv=3):
-        confusion_matrix = cross_validation_score(estimator, X, y, cv, score="confusion_matrix")
-        tpr = []
-        fpr = []
-        for cm in confusion_matrix:
-            tpr.append(cm[0, 0] / float(cm[0, 0] + cm[1, 0]))
-            fpr.append(cm[0, 1] / float(cm[0, 1] + cm[1, 1]))
-        return np.mean(tpr), np.mean(fpr)
+    def _performance(self):
+        tpr = self.confusion_matrix[0, 0] / float(self.confusion_matrix[0, 0] + self.confusion_matrix[1, 0])
+        fpr = self.confusion_matrix[0, 1] / float(self.confusion_matrix[0, 1] + self.confusion_matrix[1, 1])
+        return tpr, fpr
 
     def _adjust(self, prob):
         return (prob - self.fpr_) / float(self.tpr_ - self.fpr_)
+
+    def predict_binary(self, X):
+        probabilities = self.cc_.predict(X)
+        prevalences = self._adjust(probabilities)
+        return prevalences
+
+    def predict_multiclass(self, X):
+        probabilities = self.cc_.predict(X)
+        prevalences = np.linalg.lstsq(np.matrix.transpose(self.conditional_prob), probabilities)[0]
+        return prevalences
+
+
 
 
 if __name__ == '__main__':
 
 
-    from sklearn.datasets import load_breast_cancer
+    from sklearn.datasets import load_iris
 
-    X, y = load_breast_cancer(return_X_y=True)
+    data = load_iris()
+    p = np.random.permutation(len(X))
+    X = X[p]
+    y = y[p]
 
     cc = ClassifyAndCount()
     cc.fit(X, y)
