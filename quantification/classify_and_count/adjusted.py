@@ -5,16 +5,15 @@ import numpy as np
 
 
 class AdjustedCount(BaseClassifyAndCountModel):
-
     def __init__(self, estimator_class=None, copy_X=True, estimator_params=tuple()):
         self.estimator_class = estimator_class
         self.copy_X = copy_X
         self.estimator_params = estimator_params
 
-    def fit(self, X, y):
+    def _fit(self, X, y):
 
         self.cc_ = ClassifyAndCount(estimator_class=self.estimator_class,
-                              estimator_params=self.estimator_params)
+                                    estimator_params=self.estimator_params)
         self.cc_ = self.cc_.fit(X, y)
         self.confusion_matrix = np.mean(
             cross_validation_score(self.cc_.estimator, X, y, 3, score="confusion_matrix"),
@@ -29,7 +28,7 @@ class AdjustedCount(BaseClassifyAndCountModel):
             raise ValueError("Number of class cannot be less than 2")
         return self
 
-    def predict(self, X):
+    def _predict(self, X):
         if len(self.cc_.labels_) == 2:
             return self.predict_binary(X)
         elif len(self.cc_.labels_) >= 2:
@@ -56,22 +55,22 @@ class AdjustedCount(BaseClassifyAndCountModel):
         return prevalences
 
 
-
-
 if __name__ == '__main__':
 
+    from quantification.datasets.base import load_folder
 
-    from sklearn.datasets import load_iris
-
-    data = load_iris()
-    p = np.random.permutation(len(X))
-    X = X[p]
-    y = y[p]
+    data = load_folder("../datasets/data")
+    for i in range(len(data.target)):
+        p = np.random.permutation(len(data.target[i]))
+        data.data[i] = data.data[i][p]
+        data.target[i] = data.target[i][p]
 
     cc = ClassifyAndCount()
+    X = data.data[0]
+    y = data.target[0]
     cc.fit(X, y)
-    print cc.predict(X)
+    print cc.predict(data.data)
 
     ac = AdjustedCount()
     ac.fit(X, y)
-    print ac.predict(X)
+    print ac.predict(data.data)

@@ -2,12 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3a838331-9b37-4c92-811e-9ad5f39586aa" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/quantification/dataset/__init__.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/quantification/dataset/base.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/quantification/datasets/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/quantification/datasets/base.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/classify_and_count/adjusted.py" afterPath="$PROJECT_DIR$/quantification/classify_and_count/adjusted.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/classify_and_count/base.py" afterPath="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/utils/validation.py" afterPath="$PROJECT_DIR$/quantification/utils/validation.py" />
     </list>
     <ignored path="quantification.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -27,35 +26,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="base.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="476">
-              <caret line="62" column="28" selection-start-line="62" selection-start-column="28" selection-end-line="62" selection-end-column="28" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="validation.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/quantification/utils/validation.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="122">
-              <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#14#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="adjusted.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="adjusted.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/adjusted.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="362">
-              <caret line="65" column="14" selection-start-line="65" selection-start-column="14" selection-end-line="65" selection-end-column="14" />
+            <state relative-caret-position="671">
+              <caret line="75" column="30" selection-start-line="75" selection-start-column="30" selection-end-line="75" selection-end-column="30" />
               <folding>
                 <element signature="e#0#94#0" expanded="true" />
               </folding>
@@ -64,21 +39,35 @@
         </entry>
       </file>
       <file leaf-file-name="base.py" pinned="false" current-in-tab="false">
-        <entry file="file:///Library/Python/2.7/site-packages/sklearn/datasets/base.py">
+        <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2385">
-              <caret line="7" column="23" selection-start-line="7" selection-start-column="23" selection-end-line="7" selection-end-column="23" />
+            <state relative-caret-position="205">
+              <caret line="46" column="0" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="__init__.py" pinned="false" current-in-tab="false">
+        <entry file="file:///Library/Python/2.7/site-packages/dispy/__init__.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="693">
+              <caret line="2115" column="75" selection-start-line="2115" selection-start-column="75" selection-end-line="2115" selection-end-column="75" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="base.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/quantification/dataset/base.py">
+      <file leaf-file-name="validation.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/quantification/utils/validation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
-              <folding />
+            <state relative-caret-position="300">
+              <caret line="20" column="19" selection-start-line="17" selection-start-column="4" selection-end-line="20" selection-end-column="19" />
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -107,15 +96,18 @@
         <option value="$PROJECT_DIR$/quantification/testbench.py" />
         <option value="$PROJECT_DIR$/quantification/conf.py" />
         <option value="$PROJECT_DIR$/quantification/utils/validation.py" />
-        <option value="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
-        <option value="$PROJECT_DIR$/quantification/classify_and_count/adjusted.py" />
+        <option value="$PROJECT_DIR$/quantification/dataset/data/iris2.csv" />
+        <option value="$PROJECT_DIR$/quantification/dataset/data/iris3.csv" />
         <option value="$PROJECT_DIR$/quantification/dataset/base.py" />
+        <option value="$PROJECT_DIR$/quantification/datasets/base.py" />
+        <option value="$PROJECT_DIR$/quantification/classify_and_count/adjusted.py" />
+        <option value="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="456" />
-    <option name="y" value="120" />
+    <option name="x" value="233" />
+    <option name="y" value="125" />
     <option name="width" value="2199" />
     <option name="height" value="1165" />
   </component>
@@ -211,7 +203,25 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="dataset" />
+              <option name="myItemId" value="utils" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="quantification" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="quantification" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="quantification" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="datasets" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -243,6 +253,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/quantification/dataset/data" />
       <recent name="$PROJECT_DIR$/quantification" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/quantification/testbench" />
@@ -313,6 +324,23 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="quantification" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/quantification/testbench.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="base (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/quantification/dataset" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="quantification" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/quantification/dataset/base.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -451,18 +479,20 @@
       <option name="USE_KEYWORD" value="false" />
       <method />
     </configuration>
-    <list size="4">
+    <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.cv_parallelism" />
       <item index="1" class="java.lang.String" itemvalue="Python.base" />
       <item index="2" class="java.lang.String" itemvalue="Python.adjusted" />
       <item index="3" class="java.lang.String" itemvalue="Python.testbench" />
+      <item index="4" class="java.lang.String" itemvalue="Python.base (1)" />
     </list>
     <recent_temporary>
-      <list size="4">
+      <list size="5">
         <item index="0" class="java.lang.String" itemvalue="Python.adjusted" />
-        <item index="1" class="java.lang.String" itemvalue="Python.testbench" />
-        <item index="2" class="java.lang.String" itemvalue="Python.cv_parallelism" />
-        <item index="3" class="java.lang.String" itemvalue="Python.base" />
+        <item index="1" class="java.lang.String" itemvalue="Python.base" />
+        <item index="2" class="java.lang.String" itemvalue="Python.base (1)" />
+        <item index="3" class="java.lang.String" itemvalue="Python.testbench" />
+        <item index="4" class="java.lang.String" itemvalue="Python.cv_parallelism" />
       </list>
     </recent_temporary>
   </component>
@@ -512,11 +542,18 @@
       <option name="project" value="LOCAL" />
       <updated>1478523035804</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Implement multiclass adjusted count.">
+      <created>1478607468013</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1478607468013</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="456" y="120" width="2199" height="1165" extended-state="0" />
+    <frame x="233" y="125" width="2199" height="1165" extended-state="0" />
     <editor active="false" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16069789" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -555,26 +592,29 @@
     <MESSAGE value="Implement AC method" />
     <MESSAGE value="Reduce dispy verbosity" />
     <MESSAGE value="Delete some useless files" />
-    <option name="LAST_COMMIT_MESSAGE" value="Delete some useless files" />
+    <MESSAGE value="Implement multiclass adjusted count." />
+    <option name="LAST_COMMIT_MESSAGE" value="Implement multiclass adjusted count." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/quantification/classify_and_count/adjusted.py</url>
-          <line>55</line>
-          <option name="timeStamp" value="28" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/quantification/classify_and_count/adjusted.py</url>
-          <line>66</line>
-          <option name="timeStamp" value="29" />
+          <url>file://$PROJECT_DIR$/quantification/classify_and_count/base.py</url>
+          <line>46</line>
+          <option name="timeStamp" value="45" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="30" />
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+      <option name="time" value="46" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -644,7 +684,7 @@
         <state relative-caret-position="105">
           <caret line="7" column="42" selection-start-line="7" selection-start-column="42" selection-end-line="7" selection-end-column="42" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#0#14#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -776,20 +816,88 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
+    <entry file="file://$USER_HOME$/Library/Caches/PyCharm2016.2/python_stubs/348993582/__builtin__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="476">
-          <caret line="62" column="28" selection-start-line="62" selection-start-column="28" selection-end-line="62" selection-end-column="28" />
+        <state relative-caret-position="220">
+          <caret line="2591" column="25" selection-start-line="2591" selection-start-column="25" selection-end-line="2591" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Library/Python/2.7/site-packages/sklearn/datasets/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="296" column="30" selection-start-line="296" selection-start-column="30" selection-end-line="296" selection-end-column="30" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#252#261#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/datasets/data/iris.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="17" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/datasets/data/iris2.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="3" selection-start-line="0" selection-start-column="3" selection-end-line="0" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/datasets/data/iris3.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="3" selection-start-line="0" selection-start-column="3" selection-end-line="0" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/datasets/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="525">
+          <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/abc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="14" column="4" selection-start-line="14" selection-start-column="4" selection-end-line="14" selection-end-column="4" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/quantification/utils/validation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="122">
-          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+        <state relative-caret-position="300">
+          <caret line="20" column="19" selection-start-line="17" selection-start-column="4" selection-end-line="20" selection-end-column="19" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Library/Python/2.7/site-packages/dispy/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="693">
+          <caret line="2115" column="75" selection-start-line="2115" selection-start-column="75" selection-end-line="2115" selection-end-column="75" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="205">
+          <caret line="46" column="0" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
           </folding>
@@ -798,27 +906,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/adjusted.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="362">
-          <caret line="65" column="14" selection-start-line="65" selection-start-column="14" selection-end-line="65" selection-end-column="14" />
+        <state relative-caret-position="671">
+          <caret line="75" column="30" selection-start-line="75" selection-start-column="30" selection-end-line="75" selection-end-column="30" />
           <folding>
             <element signature="e#0#94#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Library/Python/2.7/site-packages/sklearn/datasets/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2385">
-          <caret line="7" column="23" selection-start-line="7" selection-start-column="23" selection-end-line="7" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/dataset/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>

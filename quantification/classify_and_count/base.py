@@ -1,8 +1,10 @@
+import logging
+
+import dispy
 import numpy as np
 import six
 from abc import ABCMeta, abstractmethod
 
-import time
 from sklearn.linear_model import LogisticRegression
 
 from quantification.base import BasicModel
@@ -12,12 +14,39 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
     """Base class for C&C Models"""
 
     @abstractmethod
-    def fit(self, X, y):
+    def _fit(self, X, y):
         """Fit model."""
 
     @abstractmethod
-    def predict(self, X):
+    def _predict(self, X):
         """Predict using the classifier model"""
+
+    def fit(self, X, y):
+        if not isinstance(X, list):
+            return self._fit(X, y)
+        raise NotImplementedError
+
+
+    def predict(self, X):
+        if not isinstance(X, list):
+            return self._predict(X)
+
+        def predict_wrapper(estimator, X):
+            return estimator.predict(X)
+
+        cluster = dispy.JobCluster(predict_wrapper, loglevel=logging.ERROR, pulse_interval=10,
+                                   reentrant=True)
+        jobs = []
+        for X_ in X:
+            job = cluster.submit(estimator=self, X=X_)
+            jobs.append(job)
+        cluster.wait()
+        predictions = []
+        for job in jobs:
+            job()
+            predictions.append(job.result)
+        cluster.close()
+        return predictions
 
 
 class ClassifyAndCount(BaseClassifyAndCountModel):
@@ -49,28 +78,23 @@ class ClassifyAndCount(BaseClassifyAndCountModel):
         self.estimator.set_params(**dict((p, getattr(self, p))
                                          for p in self.estimator_params))
 
-    def fit(self, X, y):
+    def _fit(self, X, y):
 
         self._make_estimator()
         self.estimator.fit(X, y)
         self.labels_ = np.unique(y)
         return self
 
-    def predict(self, X):
+    def _predict(self, X):
         predictions = self.estimator.predict(X)
         freq = np.bincount(predictions)
         relative_freq = freq / float(np.sum(freq))
         return relative_freq
 
+
 if __name__ == '__main__':
-
     cc = ClassifyAndCount()
-    from sklearn.datasets import load_iris
-    X = []
-    y = []
-    X, y = load_iris(return_X_y=True)
+    def func(X):
+        pass
 
-    cc.fit(X, y)
-    print cc.predict(X)
-
-
+    print type(cc.predict)
