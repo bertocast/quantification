@@ -1,25 +1,14 @@
-import logging
 import numpy as np
-import dispy
+
+from quantification.utils.parallelism import ClusterParallel
+
 
 def cross_validation_score(estimator, X, y, cv=3, score=None):
-    cv_iter = list(split(X, cv))
-
-    dependencies = [_score]
-    cluster = dispy.JobCluster(_fit_and_score, depends=dependencies, loglevel=logging.ERROR, pulse_interval=10,
-                               reentrant=True)
-    jobs = []
-    for train, test in cv_iter:
-        job = cluster.submit(estimator=estimator, X=X, y=y, train=train, test=test, score=score)
-        jobs.append(job)
-    cluster.wait()
-
-    scores = []
-    for job in jobs:
-        job()
-        scores.append(job.result)
-    cluster.close()
-    return np.array(scores)
+    cv_iter = split(X, cv)
+    # TODO: Split data before give it to the cluster. Computational issues.
+    parallel = ClusterParallel(_fit_and_score, cv_iter,
+                               {'X':X, 'y':y, 'estimator':estimator,'score':score}, dependencies=[_score])
+    return parallel.retrieve()
 
 
 def split(X, n_splits):
@@ -50,7 +39,7 @@ def _iter_test_indices(X, n_splits):
         current = stop
 
 
-def _fit_and_score(estimator, X, y, train, test, score):
+def _fit_and_score(train, test, X, y, estimator, score):
     X_train = X[train,]
     y_train = y[train]
     X_test = X[test,]

@@ -51,26 +51,6 @@ class AdjustedCount(BaseClassifyAndCountModel):
 
     def predict_multiclass(self, X):
         probabilities = self.cc_.predict(X)
-        prevalences = np.linalg.lstsq(np.matrix.transpose(self.conditional_prob), probabilities)[0]
+        prevalences = np.linalg.solve(np.matrix.transpose(self.conditional_prob), probabilities)
         return prevalences
 
-
-if __name__ == '__main__':
-
-    from quantification.datasets.base import load_folder
-
-    data = load_folder("../datasets/data")
-    for i in range(len(data.target)):
-        p = np.random.permutation(len(data.target[i]))
-        data.data[i] = data.data[i][p]
-        data.target[i] = data.target[i][p]
-
-    cc = ClassifyAndCount()
-    X = data.data[0]
-    y = data.target[0]
-    cc.fit(X, y)
-    print cc.predict(data.data)
-
-    ac = AdjustedCount()
-    ac.fit(X, y)
-    print ac.predict(data.data)
