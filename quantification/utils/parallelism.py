@@ -52,12 +52,12 @@ class ClusterParallel:
         return np.array(results)
 
 
-def predict_wrapper_per_sample(X, clf):
-    return clf.predict(X)
+def predict_wrapper_per_sample(X, quantifier):
+    return quantifier.predict(X)
 
 def predict_wrapper_per_clf(clf, X):
-    return clf.predict(X)
+    return clf.predict_proba(X)
 
-def fit_wrapper(X, y, clf):
-    return clf._fit(X, y)
+def fit_wrapper(X, y, quantifier):
+    return quantifier._fit(X, y)
 

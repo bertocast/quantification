@@ -27,7 +27,7 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
         if not isinstance(X, list):
             return self._predict(X)
 
-        parallel = ClusterParallel(predict_wrapper_per_sample, X, {'clf': self}, local=local)
+        parallel = ClusterParallel(predict_wrapper_per_sample, X, {'quantifier': self}, local=local)
         return parallel.retrieve().tolist()
 
 
@@ -74,7 +74,8 @@ class ClassifyAndCount(BaseClassifyAndCountModel):
     def _predict(self, X):
         parallel = ClusterParallel(predict_wrapper_per_clf, self.estimators_, {'X': X})
         predictions = parallel.retrieve()
-        freq = np.bincount(predictions)
+        maj = np.argmax(np.average(predictions, axis=0, weights=None), axis=1)
+        freq = np.bincount(maj)
         relative_freq = freq / float(np.sum(freq))
         return relative_freq
 
@@ -82,7 +83,7 @@ class ClassifyAndCount(BaseClassifyAndCountModel):
         if not isinstance(X, list):
             clf = self._fit(X, y)
             self.estimators_.append(clf)
-        parallel = ClusterParallel(fit_wrapper, zip(X, y), {'clf': self}, local=local)
+        parallel = ClusterParallel(fit_wrapper, zip(X, y), {'quantifier': self}, local=local)
         clfs = parallel.retrieve()
         self.estimators_.extend(clfs)
         return self
