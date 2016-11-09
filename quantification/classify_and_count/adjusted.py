@@ -1,56 +1,58 @@
-from quantification.classify_and_count.base import BaseClassifyAndCountModel, ClassifyAndCount
-from quantification.utils.validation import cross_validation_score
-
 import numpy as np
+from sklearn.utils import indexable
+
+from quantification.classify_and_count import BaseClassifyAndCountModel
+from quantification.utils.parallelism import ClusterParallel
+from quantification.utils.validation import split, cross_validation_score
 
 
-class AdjustedCount(BaseClassifyAndCountModel):
-    def __init__(self, estimator_class=None, copy_X=True, estimator_params=tuple()):
-        self.estimator_class = estimator_class
-        self.copy_X = copy_X
-        self.estimator_params = estimator_params
+class BinaryAdjustedCount(BaseClassifyAndCountModel):
 
-    def _fit(self, X, y):
+    def __init__(self):
 
-        self.cc_ = ClassifyAndCount(estimator_class=self.estimator_class,
-                                    estimator_params=self.estimator_params)
-        self.cc_ = self.cc_.fit(X, y)
-        self.confusion_matrix = np.mean(
-            cross_validation_score(self.cc_.estimator, X, y, 3, score="confusion_matrix"),
-            0)
-        if len(self.cc_.labels_) == 2:
-            self.tpr_, self.fpr_ = self._performance()
-        elif len(self.cc_.labels_) >= 2:
-            self.conditional_prob = np.empty((len(self.cc_.labels_), len(self.cc_.labels_)))
-            for i in range(len(self.cc_.labels_)):
-                self.conditional_prob[i] = self.confusion_matrix[i] / np.sum(self.confusion_matrix[i])
-        else:
-            raise ValueError("Number of class cannot be less than 2")
-        return self
+        super(BinaryAdjustedCount, self).__init__()
+        self.fpr_, self.tpr_ = [], []
 
     def _predict(self, X):
-        if len(self.cc_.labels_) == 2:
-            return self.predict_binary(X)
-        elif len(self.cc_.labels_) >= 2:
-            return self.predict_multiclass(X)
-        else:
-            raise ValueError("Number of class cannot be less than 2")
+        pass
 
-    def _performance(self):
-        tpr = self.confusion_matrix[0, 0] / float(self.confusion_matrix[0, 0] + self.confusion_matrix[1, 0])
-        fpr = self.confusion_matrix[0, 1] / float(self.confusion_matrix[0, 1] + self.confusion_matrix[1, 1])
-        return tpr, fpr
+    def fit(self, X, y, local=False):
+        X, y = np.array(X), np.array(y)
+        for sample in y:
+            if len(np.unique(sample)) != 2:
+                raise ValueError('Number of classes must be 2 for a binary quantification problem')
+        split_iter = split(X, len(X))
+        parallel = ClusterParallel(fit_and_performance_wrapper, split_iter, {'X': X, 'y': y, 'quantifier': self},
+                                   local=local)
+        clfs, tpr, fpr = zip(*parallel.retrieve())
+        self.estimators_.extend(clfs)
+        self.tpr_ = np.mean(tpr)
+        self.fpr_ = np.mean(fpr)
+        return self
 
-    def _adjust(self, prob):
-        return (prob - self.fpr_) / float(self.tpr_ - self.fpr_)
 
-    def predict_binary(self, X):
-        probabilities = self.cc_.predict(X)
-        prevalences = self._adjust(probabilities)
-        return prevalences
 
-    def predict_multiclass(self, X):
-        probabilities = self.cc_.predict(X)
-        prevalences = np.linalg.solve(np.matrix.transpose(self.conditional_prob), probabilities)
-        return prevalences
+    def fit_and_performance(self, perf, train, X, y):
+        clf = self._fit(X[train[0]], y[train[0]])
+        confusion_matrix = np.mean(
+            cross_validation_score(clf, np.concatenate(X[perf]), np.concatenate(y[perf]), 3, score="confusion_matrix"),
+            0)
+        tpr = confusion_matrix[0, 0] / float(confusion_matrix[0, 0] + confusion_matrix[1, 0])
+        fpr = confusion_matrix[0, 1] / float(confusion_matrix[0, 1] + confusion_matrix[1, 1])
+        return clf, tpr, fpr
 
+
+def fit_and_performance_wrapper(train, perf, X, y, quantifier):
+    return quantifier.fit_and_performance(train, perf, X, y)
+
+if __name__ == '__main__':
+    from quantification.datasets.base import load_folder
+    data = load_folder("../datasets/data/cancer")
+    for i in range(len(data.target)):
+        p = np.random.permutation(len(data.target[i]))
+        data.data[i] = data.data[i][p]
+        data.target[i] = data.target[i][p]
+    X = data.data
+    y = data.target
+    ac = BinaryAdjustedCount()
+    ac.fit(X, y, local=True)

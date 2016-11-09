@@ -5,15 +5,16 @@ import six
 from sklearn.linear_model import LogisticRegression
 
 from quantification.base import BasicModel
-from quantification.utils.parallelism import ClusterParallel, predict_wrapper_per_sample, fit_wrapper, predict_wrapper_per_clf
+from quantification.utils.parallelism import ClusterParallel
 
 
 class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
     """Base class for C&C Models"""
 
-    @abstractmethod
-    def _fit(self, X, y):
-        """Fit a single model"""
+    def __init__(self, estimator_class=None, estimator_params=tuple()):
+        self.estimator_class = estimator_class
+        self.estimator_params = estimator_params
+        self.estimators_ = []
 
     @abstractmethod
     def _predict(self, X):
@@ -24,27 +25,11 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
         """Fit a set of models and combine them"""
 
     def predict(self, X, local=False):
-        if not isinstance(X, list):
+        if isinstance(X, list):
             return self._predict(X)
 
         parallel = ClusterParallel(predict_wrapper_per_sample, X, {'quantifier': self}, local=local)
         return parallel.retrieve().tolist()
-
-
-class ClassifyAndCount(BaseClassifyAndCountModel):
-    """
-    Ordinary classify and count method.
-
-    Parameters
-    ----------
-
-    """
-
-    def __init__(self, estimator_class=None, estimator_params=tuple()):
-        self.estimator_class = estimator_class
-        self.estimator_params = estimator_params
-        self.estimators_ = []
-        self._make_estimator()
 
     def _validate_estimator(self, default):
         """Check the estimator."""
@@ -55,7 +40,6 @@ class ClassifyAndCount(BaseClassifyAndCountModel):
 
         if estimator is None:
             raise ValueError('estimator cannot be None')
-
         return estimator
 
     def _make_estimator(self):
@@ -71,6 +55,16 @@ class ClassifyAndCount(BaseClassifyAndCountModel):
         clf.fit(X, y)
         return clf
 
+
+class ClassifyAndCount(BaseClassifyAndCountModel):
+    """
+    Ordinary classify and count method.
+
+    Parameters
+    ----------
+
+    """
+
     def _predict(self, X):
         parallel = ClusterParallel(predict_wrapper_per_clf, self.estimators_, {'X': X}, local=True)
         predictions = parallel.retrieve()
@@ -83,7 +77,20 @@ class ClassifyAndCount(BaseClassifyAndCountModel):
         if not isinstance(X, list):
             clf = self._fit(X, y)
             self.estimators_.append(clf)
+            return self
         parallel = ClusterParallel(fit_wrapper, zip(X, y), {'quantifier': self}, local=local)
         clfs = parallel.retrieve()
         self.estimators_.extend(clfs)
         return self
+
+
+def predict_wrapper_per_sample(X, quantifier):
+    return quantifier.predict(X)
+
+
+def predict_wrapper_per_clf(clf, X):
+    return clf.predict_proba(X)
+
+
+def fit_wrapper(X, y, quantifier):
+    return quantifier._fit(X, y)
