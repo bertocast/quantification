@@ -85,7 +85,7 @@ class ClassifyAndCount(BaseClassifyAndCountModel):
 
 
 def predict_wrapper_per_sample(X, quantifier, local):
-    return quantifier.predict(X, local=local)
+    return quantifier.predict(X, local=False) #TODO: Fix this, please
 
 
 def predict_wrapper_per_clf(clf, X):
