@@ -28,7 +28,7 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
         if not isinstance(X, list):
             return self._predict(X)
 
-        parallel = ClusterParallel(predict_wrapper_per_sample, X, {'quantifier': self}, local=local)
+        parallel = ClusterParallel(predict_wrapper_per_sample, X, {'quantifier': self, 'local': local}, local=local)
         return parallel.retrieve().tolist()
 
     def _validate_estimator(self, default):
@@ -66,7 +66,7 @@ class ClassifyAndCount(BaseClassifyAndCountModel):
     """
 
     def _predict(self, X):
-        parallel = ClusterParallel(predict_wrapper_per_clf, self.estimators_, {'X': X}, local=True) # TODO: Fix this
+        parallel = ClusterParallel(predict_wrapper_per_clf, self.estimators_, {'X': X})
         predictions = parallel.retrieve()
         maj = np.argmax(np.average(predictions, axis=0, weights=None), axis=1)
         freq = np.bincount(maj)
@@ -84,8 +84,8 @@ class ClassifyAndCount(BaseClassifyAndCountModel):
         return self
 
 
-def predict_wrapper_per_sample(X, quantifier):
-    return quantifier.predict(X)
+def predict_wrapper_per_sample(X, quantifier, local):
+    return quantifier.predict(X, local=local)
 
 
 def predict_wrapper_per_clf(clf, X):
