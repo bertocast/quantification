@@ -72,7 +72,7 @@ class ClassifyAndCount(BaseClassifyAndCountModel):
         return clf
 
     def _predict(self, X):
-        parallel = ClusterParallel(predict_wrapper_per_clf, self.estimators_, {'X': X})
+        parallel = ClusterParallel(predict_wrapper_per_clf, self.estimators_, {'X': X}, local=True)
         predictions = parallel.retrieve()
         maj = np.argmax(np.average(predictions, axis=0, weights=None), axis=1)
         freq = np.bincount(maj)
