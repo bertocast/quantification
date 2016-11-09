@@ -27,17 +27,20 @@ class ClusterParallel:
                     results.append(self.compute(*sample, **self.constant_params))
                 else:
                     results.append(self.compute(sample, **self.constant_params))
-            return results
+            return np.array(results)
 
-        cluster = dispy.JobCluster(self.compute, depends=self.dependencies, loglevel=logging.ERROR,
-                                   pulse_interval=10, reentrant=True)
+        cluster = dispy.SharedJobCluster(self.compute, depends=self.dependencies, loglevel=logging.ERROR,
+                                         scheduler_node='dhcp015.aic.uniovi.es')
 
         jobs = []
+        id = 0
         for sample in self.iter_params:
             if isinstance(sample, tuple):
                 job = cluster.submit(*sample, **self.constant_params)
             else:
                 job = cluster.submit(sample, **self.constant_params)
+                job.id = id
+                id += 1
             jobs.append(job)
         cluster.wait()
 

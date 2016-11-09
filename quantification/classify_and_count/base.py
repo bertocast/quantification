@@ -25,7 +25,7 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
         """Fit a set of models and combine them"""
 
     def predict(self, X, local=False):
-        if isinstance(X, list):
+        if not isinstance(X, list):
             return self._predict(X)
 
         parallel = ClusterParallel(predict_wrapper_per_sample, X, {'quantifier': self}, local=local)
@@ -66,7 +66,7 @@ class ClassifyAndCount(BaseClassifyAndCountModel):
     """
 
     def _predict(self, X):
-        parallel = ClusterParallel(predict_wrapper_per_clf, self.estimators_, {'X': X}, local=True)
+        parallel = ClusterParallel(predict_wrapper_per_clf, self.estimators_, {'X': X}, local=True) # TODO: Fix this
         predictions = parallel.retrieve()
         maj = np.argmax(np.average(predictions, axis=0, weights=None), axis=1)
         freq = np.bincount(maj)
