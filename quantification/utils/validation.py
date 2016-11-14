@@ -3,11 +3,11 @@ import numpy as np
 from quantification.utils.parallelism import ClusterParallel
 
 
-def cross_validation_score(estimator, X, y, cv=3, score=None):
+def cross_validation_score(estimator, X, y, cv=3, score=None, local=False):
     cv_iter = split(X, cv)
     # TODO: Split data before give it to the cluster. Computational issues.
     parallel = ClusterParallel(_fit_and_score, cv_iter,
-                               {'X':X, 'y':y, 'estimator':estimator,'score':score}, dependencies=[_score])
+                               {'X':X, 'y':y, 'estimator':estimator,'score':score}, dependencies=[_score], local=local)
     return parallel.retrieve()
 
 

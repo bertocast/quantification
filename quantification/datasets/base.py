@@ -30,6 +30,4 @@ def load_folder(path):
                  target_names=target_names)
 
 
-if __name__ == '__main__':
-    a = load_folder('data')
-    print a.target
+

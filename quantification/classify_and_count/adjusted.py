@@ -5,6 +5,8 @@ from quantification.utils.parallelism import ClusterParallel
 from quantification.utils.validation import split, cross_validation_score
 
 
+# TODO: Make a common class and extend it
+
 class BinaryAdjustedCount(BaseClassifyAndCountModel):
     def __init__(self):
         super(BinaryAdjustedCount, self).__init__()
@@ -13,33 +15,45 @@ class BinaryAdjustedCount(BaseClassifyAndCountModel):
     def _predict(self, X):
         parallel = ClusterParallel(predict_wrapper_per_clf, self.estimators_, {'X': X}, local=True)  # TODO: Fix this
         predictions = parallel.retrieve()
-        maj = np.argmax(np.average(predictions, axis=0, weights=None), axis=1)
-        freq = np.bincount(maj)
+        maj = np.apply_along_axis(lambda x: np.argmax(np.bincount(x)),
+                                      axis=0,
+                                      arr=predictions.astype('int'))
+        freq = np.bincount(maj, minlength=len(self.classes_))
         relative_freq = freq / float(np.sum(freq))
         adjusted = self._adjust(relative_freq)
         return adjusted
 
     def fit(self, X, y, local=False):
-        X, y = np.array(X), np.array(y)
-        for sample in y:
-            if len(np.unique(sample)) != 2:
-                raise ValueError('Number of classes must be 2 for a binary quantification problem')
-        split_iter = split(X, len(X))
-        parallel = ClusterParallel(fit_and_performance_wrapper, split_iter, {'X': X, 'y': y, 'quantifier': self},
-                                   local=True)  # TODO: Fix this
-        clfs, tpr, fpr = zip(*parallel.retrieve())
-        self.estimators_.extend(clfs)
-        self.tpr_ = np.mean(tpr)
-        self.fpr_ = np.mean(fpr)
+        if not isinstance(X, list):
+            clf = self._fit(X, y)
+            self.tpr_, self.fpr_ = self._performance(X, y, clf, local)
+            self.estimators_.append(clf)
+        else:
+            X, y = np.array(X), np.array(y)
+            for sample in y:
+                if len(np.unique(sample)) != 2:
+                    raise ValueError('Number of classes must be 2 for a binary quantification problem')
+            split_iter = split(X, len(X))
+            parallel = ClusterParallel(fit_and_performance_wrapper, split_iter, {'X': X, 'y': y,
+                                                                                 'quantifier': self, 'local': local},
+                                       local=True)  # TODO: Fix this
+            clfs, tpr, fpr = zip(*parallel.retrieve())
+            self.estimators_.extend(clfs)
+            self.tpr_ = np.mean(tpr)
+            self.fpr_ = np.mean(fpr)
+        self.classes_ = set(label for clf in self.estimators_ for label in clf.classes_)
         return self
 
-    def fit_and_performance(self, perf, train, X, y):
-        clf = self._fit(X[train[0]], y[train[0]])
+    def _performance(self, X, y, clf, local, cv=3):
         confusion_matrix = np.mean(
-            cross_validation_score(clf, np.concatenate(X[perf]), np.concatenate(y[perf]), 3, score="confusion_matrix"),
-            0)
+            cross_validation_score(clf, X, y, cv, score="confusion_matrix", local=local), 0)
         tpr = confusion_matrix[0, 0] / float(confusion_matrix[0, 0] + confusion_matrix[1, 0])
         fpr = confusion_matrix[0, 1] / float(confusion_matrix[0, 1] + confusion_matrix[1, 1])
+        return tpr, fpr
+
+    def fit_and_performance(self, perf, train, X, y, local):
+        clf = self._fit(X[train[0]], y[train[0]])
+        tpr, fpr = self._performance(np.concatenate(X[perf]), np.concatenate(y[perf]), clf, local)
         return clf, tpr, fpr
 
     def _adjust(self, prob):
@@ -49,48 +63,51 @@ class BinaryAdjustedCount(BaseClassifyAndCountModel):
 class MulticlassAdjustedCount(BaseClassifyAndCountModel):
     def __init__(self):
         super(MulticlassAdjustedCount, self).__init__()
-        self.fpr_, self.tpr_ = None, None
-        self.n_clases_ = []
+        self.conditional_prob_ = None
 
     def _predict(self, X):
         parallel = ClusterParallel(predict_wrapper_per_clf, self.estimators_, {'X': X}, local=True)  # TODO: Fix this
         predictions = parallel.retrieve()
-        maj = np.argmax(np.average(predictions, axis=0, weights=None), axis=1)
-        freq = np.bincount(maj)
+        maj = np.apply_along_axis(lambda x: np.argmax(np.bincount(x)),
+                                      axis=0,
+                                      arr=predictions.astype('int'))
+        freq = np.bincount(maj, minlength=len(self.classes_))
         relative_freq = freq / float(np.sum(freq))
-        adjusted = self._adjust(relative_freq)
+        adjusted = np.linalg.solve(np.matrix.transpose(self.conditional_prob_), relative_freq)
         return adjusted
 
     def fit(self, X, y, local=False):
-        X, y = np.array(X), np.array(y)
-        for sample in y:
-            self.n_clases_.append(len(np.unique(sample)))
-        if np.all(self.n_clases_ == self.n_clases_[0]):
-            pass
-        split_iter = split(X, len(X))
-        parallel = ClusterParallel(fit_and_performance_wrapper, split_iter, {'X': X, 'y': y, 'quantifier': self},
-                                   local=True)  # TODO: Fix this
-        clfs, tpr, fpr = zip(*parallel.retrieve())
-        self.estimators_.extend(clfs)
-        self.tpr_ = np.mean(tpr)
-        self.fpr_ = np.mean(fpr)
+        if not isinstance(X, list):
+            clf = self._fit(X, y)
+            self.conditional_prob_ = self._performance(X, y, clf, local)
+            self.estimators_.append(clf)
+        else:
+            X, y = np.array(X), np.array(y)
+            split_iter = split(X, len(X))
+            parallel = ClusterParallel(fit_and_performance_wrapper, split_iter, {'X': X, 'y': y, 'quantifier': self,
+                                                                                 'local': local},
+                                       local=True)  # TODO: Fix this
+            clfs, conditional_prob = zip(*parallel.retrieve())
+            self.estimators_.extend(clfs)
+            self.conditional_prob_ = np.mean(conditional_prob, axis=0)
+        self.classes_ = set(label for clf in self.estimators_ for label in clf.classes_)
         return self
 
-    def fit_and_performance(self, perf, train, X, y):
-        clf = self._fit(X[train[0]], y[train[0]])
+    def _performance(self, X, y, clf, local, cv=3):
+        n_classes = len(np.unique(y))
         confusion_matrix = np.mean(
-            cross_validation_score(clf, np.concatenate(X[perf]), np.concatenate(y[perf]), 3, score="confusion_matrix"),
+            cross_validation_score(clf, X, y, cv, score="confusion_matrix", local=local),
             0)
-        self.conditional_prob_ = np.empty((len(self.cc_.labels_), len(self.cc_.labels_)))
-        for i in range(len(self.cc_.labels_)):
-            self.conditional_prob_[i] = confusion_matrix[i] / np.sum(confusion_matrix[i])
-        tpr = confusion_matrix[0, 0] / float(confusion_matrix[0, 0] + confusion_matrix[1, 0])
-        fpr = confusion_matrix[0, 1] / float(confusion_matrix[0, 1] + confusion_matrix[1, 1])
-        return clf, tpr, fpr
+        conditional_prob = np.empty((n_classes, n_classes))
+        for i in range(n_classes):
+            conditional_prob[i] = confusion_matrix[i] / np.sum(confusion_matrix[i])
+        return conditional_prob
 
-    def _adjust(self, prob):
-        return (prob - self.fpr_) / float(self.tpr_ - self.fpr_)
+    def fit_and_performance(self, perf, train, X, y, local ):
+        clf = self._fit(X[train[0]], y[train[0]])
+        conditional_prob = self._performance(np.concatenate(X[perf]), np.concatenate(y[perf]), clf, local)
+        return clf, conditional_prob
 
 
-def fit_and_performance_wrapper(train, perf, X, y, quantifier):
-    return quantifier.fit_and_performance(train, perf, X, y)
+def fit_and_performance_wrapper(train, perf, X, y, quantifier, local):
+    return quantifier.fit_and_performance(train, perf, X, y, local)
