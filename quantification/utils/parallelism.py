@@ -47,7 +47,7 @@ class ClusterParallel:
         for job in jobs:
             job()
             if job.exception is not None:
-                raise ClusterException(job.exception)
+                raise ClusterException(job.exception + job.ip_addr)
             results.append(job.result)
         if self.verbose:
             cluster.print_status()

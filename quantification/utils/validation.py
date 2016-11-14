@@ -3,11 +3,12 @@ import numpy as np
 from quantification.utils.parallelism import ClusterParallel
 
 
-def cross_validation_score(estimator, X, y, cv=3, score=None, local=False):
+def cross_validation_score(estimator, X, y, cv=3, score=None, local=False, **kwargs):
     cv_iter = split(X, cv)
     # TODO: Split data before give it to the cluster. Computational issues.
-    parallel = ClusterParallel(_fit_and_score, cv_iter,
-                               {'X':X, 'y':y, 'estimator':estimator,'score':score}, dependencies=[_score], local=local)
+    kw_args = {'X':X, 'y':y, 'estimator':estimator,'score':score}
+    kw_args.update(**kwargs)
+    parallel = ClusterParallel(_fit_and_score, cv_iter, kw_args, dependencies=[_score], local=local)
     return parallel.retrieve()
 
 
@@ -39,19 +40,19 @@ def _iter_test_indices(X, n_splits):
         current = stop
 
 
-def _fit_and_score(train, test, X, y, estimator, score):
+def _fit_and_score(train, test, X, y, estimator, score, **kwargs):
     X_train = X[train,]
     y_train = y[train]
     X_test = X[test,]
     y_test = y[test]
     estimator.fit(X_train, y_train)
-    return _score(y_test, estimator.predict(X_test), score)
+    return _score(y_test, estimator.predict(X_test), score, **kwargs)
 
 
-def _score(y_true, y_pred, score):
+def _score(y_true, y_pred, score, **kwargs):
     if score == "accuracy":
         from sklearn.metrics import accuracy_score
         return accuracy_score(y_true, y_pred)
     if score == "confusion_matrix":
         from sklearn.metrics import confusion_matrix
-        return confusion_matrix(y_true, y_pred)
+        return confusion_matrix(y_true, y_pred, **kwargs)

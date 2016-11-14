@@ -22,9 +22,10 @@ def load_plankton_file(path, sample_col="Sample", target_col="class"):
 if __name__ == '__main__':
     plankton,le = load_plankton_file('/Users/albertocastano/Dropbox/PlataformaCuantificación/plancton.csv')
     cc = MulticlassAdjustedCount()
-    X = plankton.data
-    y = plankton.target
+    X = plankton.data[0]
+    y = plankton.target[0]
     cc.fit(X, y, local=True)
+    print "Fitted"
     predictions = cc.predict(X, local=True)
     for pr in predictions:
         print ["{0:0.2f}".format(i) for i in pr]

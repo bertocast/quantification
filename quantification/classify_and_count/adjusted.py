@@ -85,8 +85,8 @@ class MulticlassAdjustedCount(BaseClassifyAndCountModel):
             X, y = np.array(X), np.array(y)
             split_iter = split(X, len(X))
             parallel = ClusterParallel(fit_and_performance_wrapper, split_iter, {'X': X, 'y': y, 'quantifier': self,
-                                                                                 'local': local},
-                                       local=True)  # TODO: Fix this
+                                                                                 'local': True},
+                                       local=local)  # TODO: Fix this
             clfs, conditional_prob = zip(*parallel.retrieve())
             self.estimators_.extend(clfs)
             self.conditional_prob_ = np.mean(conditional_prob, axis=0)
@@ -96,14 +96,14 @@ class MulticlassAdjustedCount(BaseClassifyAndCountModel):
     def _performance(self, X, y, clf, local, cv=3):
         n_classes = len(np.unique(y))
         confusion_matrix = np.mean(
-            cross_validation_score(clf, X, y, cv, score="confusion_matrix", local=local),
+            cross_validation_score(clf, X, y, cv, score="confusion_matrix", local=local, labels),
             0)
         conditional_prob = np.empty((n_classes, n_classes))
         for i in range(n_classes):
             conditional_prob[i] = confusion_matrix[i] / np.sum(confusion_matrix[i])
         return conditional_prob
 
-    def fit_and_performance(self, perf, train, X, y, local ):
+    def fit_and_performance(self, perf, train, X, y, local):
         clf = self._fit(X[train[0]], y[train[0]])
         conditional_prob = self._performance(np.concatenate(X[perf]), np.concatenate(y[perf]), clf, local)
         return clf, conditional_prob
