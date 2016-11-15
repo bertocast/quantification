@@ -1,7 +1,6 @@
 import numpy as np
 
 from quantification.classify_and_count import BaseClassifyAndCountModel
-from quantification.classify_and_count.adjusted import fit_and_performance_wrapper
 from quantification.classify_and_count.base import fit_wrapper
 from quantification.utils.parallelism import ClusterParallel
 from quantification.utils.validation import split, cross_validation_score
@@ -43,7 +42,7 @@ class ProbabilisticBinaryAdjustedCount(BaseClassifyAndCountModel):
         return adjusted
 
     def fit(self, X, y, local=False):
-        if not isinstance(X, list):
+        """if not isinstance(X, list):
             clf = self._fit(X, y)
             self.tp_pa_, self.fp_pa_, self.tn_pa_, self.fn_pa_ = self._performance(X, y, clf, local)
             self.estimators_.append(clf)
@@ -63,7 +62,7 @@ class ProbabilisticBinaryAdjustedCount(BaseClassifyAndCountModel):
         self.fp_pa_ = np.mean(fp_pa)
         self.tn_pa_ = np.mean(tn_pa)
         self.fn_pa_ = np.mean(fn_pa)
-        return self
+        return self"""
 
     def _performance(self, X, y, clf, local, cv=3):
         predictions = clf.predict_proba(X)

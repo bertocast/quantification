@@ -55,4 +55,6 @@ def _score(y_true, y_pred, score, **kwargs):
         return accuracy_score(y_true, y_pred)
     if score == "confusion_matrix":
         from sklearn.metrics import confusion_matrix
-        return confusion_matrix(y_true, y_pred, **kwargs)
+        if not kwargs['labels']:
+            raise ValueError('labels parameter needed to compute the confusion matrix')
+        return confusion_matrix(y_true, y_pred, kwargs['labels'])
