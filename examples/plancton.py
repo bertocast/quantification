@@ -6,6 +6,7 @@ from sklearn.preprocessing import LabelEncoder
 import numpy as np
 
 from quantification.classify_and_count import ClassifyAndCount
+from quantification.classify_and_count import MulticlassAdjustedCount
 
 
 def load_plankton_file(path, sample_col="Sample", target_col="class"):
@@ -22,15 +23,15 @@ def load_plankton_file(path, sample_col="Sample", target_col="class"):
 
 if __name__ == '__main__':
     plankton,le = load_plankton_file('/Users/albertocastano/Dropbox/PlataformaCuantificación/plancton.csv')
-    cc = ClassifyAndCount()
+    ac = MulticlassAdjustedCount()
     X = plankton.data
     y = plankton.target
-    cc.fit(X, y, local=True)
+    ac.fit(X, y, local=False)
     print "Fitted"
-    predictions = cc.predict(X, local=True)
+    predictions = ac.predict(X, local=True)
     true = []
     for y_s in plankton.target:
-        freq = np.bincount(y_s, minlength=len(cc.classes_))
+        freq = np.bincount(y_s, minlength=len(ac.classes_))
         true.append(freq / float(np.sum(freq)))
 
     for (pr, tr) in zip(predictions, true):

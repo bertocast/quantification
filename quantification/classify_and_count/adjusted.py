@@ -1,11 +1,12 @@
 from copy import deepcopy
+import collections
 
 import numpy as np
 
-from quantification.classify_and_count.base import BaseClassifyAndCountModel, predict_wrapper_per_clf
+from quantification.classify_and_count.base import BaseClassifyAndCountModel, predict_wrapper_per_clf, fit_wrapper
 from quantification.utils.base import merge, mean_of_non_zero
 from quantification.utils.parallelism import ClusterParallel
-from quantification.utils.validation import split, cross_validation_score
+from quantification.utils.validation import split, cross_validation_score, create_partitions
 
 
 # TODO: Make a common class and extend it
@@ -94,12 +95,49 @@ class MulticlassAdjustedCount(BaseClassifyAndCountModel):
         return np.linalg.solve(np.matrix.transpose(matrix), coefs)
 
     def fit(self, X, y, local=False):
-        if not isinstance(X, list):
+
+        if not isinstance(X, list):  # Standard AC
+            """self.classes_ = np.unique(y).tolist()
             clf = self._fit(X, y)
             self.estimators_.append(clf)
-            self.classes_ = list(set(label for clf in self.estimators_ for label in clf.classes_))
             self.conditional_prob_ = self._performance(X, y, clf, local)
-        else:
+            return self"""
+        else:  # Ensemble AC
+            self.classes_ = np.unique(np.concatenate(y)).tolist()
+            self.estimators_ =  dict.fromkeys(self.classes_)
+            cls_smp = {k: [] for k in self.classes_}
+
+            for n, sample in enumerate(y):
+                for label in np.unique(sample):
+                    cls_smp[label].append(n)
+
+            for pos_class in self.classes_:
+                X_samples, y_samples = np.array([X[s] for s in cls_smp[pos_class]]), \
+                                       np.array([y[s] for s in cls_smp[pos_class]])
+                #split_iter = list(split(X_samples, len(X_samples)))
+                train_val_partition = create_partitions(X_samples, y_samples, len(X_samples))
+                parallel = ClusterParallel(fit_ova_wrapper, train_val_partition,
+                                           {'quantifier': self, 'pos_class': pos_class,
+                                            'local': True},
+                                           local=local)
+                clfs = parallel.retrieve()
+                self.estimators_[pos_class] = clfs
+
+
+
+
+
+            # Version 2
+            self.classes_ = np.unique(np.concatenate(y)).tolist()
+            self.estimators_ =  {k: [] for k in self.classes_}
+            parallel = ClusterParallel(fit_ova_wrapper, zip(X, y), {'quantifier': self}, local=local)
+            clfs = parallel.retrieve()
+            self._update_estimators(clfs)
+
+
+
+
+            # Version 1
             X, y = np.array(X), np.array(y)
             split_iter = list(split(X, len(X)))
 
@@ -113,7 +151,26 @@ class MulticlassAdjustedCount(BaseClassifyAndCountModel):
                                         'local': True},
                                        local=local)  # TODO: Fix this
             self.conditional_prob_ = parallel.retrieve()
-        return self
+            return self
+
+    def _fit_performance(self, X_train, y_train, X_val, y_val, pos_class, local):
+        mask = (y_train == pos_class)
+        y_bin = np.ones(y_train.shape, dtype=np.float64)
+        y_bin[~mask] = -1.
+        clf = self._fit(X_train, y_bin)
+
+        mask_val = (y_val == pos_class)
+        y_bin_val = np.ones(y_val.shape, dtype=np.float64)
+        y_bin_val[~mask_val] = -1.
+        tpr, fpr = self._ensemble_performance(X_val, y_bin_val, clf, local)
+        return clf, tpr, fpr
+
+
+    def _update_estimators(self, clfs):
+        for sample in clfs:
+            for k, v in sample.items():
+                self.estimators_[k].append(v)
+
 
     def _performance(self, X, y, clf, local, cv=3):
         n_classes = len(self.classes_)
@@ -127,6 +184,13 @@ class MulticlassAdjustedCount(BaseClassifyAndCountModel):
             conditional_prob[i] = confusion_matrix[i] / np.sum(confusion_matrix[i])
         return conditional_prob
 
+    def _ensemble_performance(self, X, y, clf, local, cv=3):
+        confusion_matrix = np.mean(
+            cross_validation_score(clf, X, y, cv, score="confusion_matrix", local=local), axis=0)
+        tpr = confusion_matrix[0, 0] / float(confusion_matrix[0, 0] + confusion_matrix[1, 0])
+        fpr = confusion_matrix[0, 1] / float(confusion_matrix[0, 1] + confusion_matrix[1, 1])
+        return tpr, fpr
+
     def fit_and_performance(self, perf, train, X, y, local):
         clf = self._fit(X[train[0]], y[train[0]])
         conditional_prob = self._performance(np.concatenate(X[perf]), np.concatenate(y[perf]), clf, local)
@@ -139,3 +203,7 @@ def performance_wrapper(train, perf, clf, X, y, quantifier, local):
 
 def fit_train_wrapper(train, perf, X, y, quantifier):
     return quantifier._fit(X[train[0]], y[train[0]])
+
+
+def fit_ova_wrapper(X_train, y_train, X_val, y_val, pos_class, quantifier, local):
+    return quantifier._fit_performance(X_train, y_train, X_val, y_val, pos_class, local)

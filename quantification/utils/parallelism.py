@@ -7,10 +7,12 @@ from quantification.utils.errors import ClusterException
 
 
 class ClusterParallel:
-    def __init__(self, compute, iter_params, constant_named_params, dependencies=None, local=False, verbose=False):
+    def __init__(self, compute, iter_params, constant_named_params=None, dependencies=None, local=False, verbose=False):
         self.compute = compute
         self.iter_params = iter_params
         self.constant_params = constant_named_params
+        if self.constant_params is None:
+            self.constant_params = {}
         self.dependencies = dependencies
         if self.dependencies is None:
             self.dependencies = []
@@ -37,6 +39,8 @@ class ClusterParallel:
         for sample in self.iter_params:
             if isinstance(sample, tuple):
                 job = cluster.submit(*sample, **self.constant_params)
+                job.id = id
+                id += 1
             else:
                 job = cluster.submit(sample, **self.constant_params)
                 job.id = id

@@ -18,8 +18,8 @@ class TestClassifiyAndCount(ModelTestCase):
         cc = ClassifyAndCount()
         X = self.binary_data.data
         y = self.binary_data.target
-        cc.fit(X, y, local=False)
-        predictions = cc.predict(X, local=False)
+        cc.fit(X, y, local=True)
+        predictions = cc.predict(X, local=True)
         assert_almost_equal(np.sum(predictions), len(y))
 
     def test_fit_single_sample_of_multiclass_data(self):

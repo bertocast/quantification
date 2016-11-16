@@ -12,6 +12,12 @@ def cross_validation_score(estimator, X, y, cv=3, score=None, local=False, **kwa
     return parallel.retrieve()
 
 
+def create_partitions(X, y, n_splits):
+    cv_iter = split(X, n_splits)
+    for val, train in cv_iter:
+        yield X[train[0]], y[train[0]], np.concatenate(X[val]), np.concatenate(y[val])
+
+
 def split(X, n_splits):
     indices = np.arange(X.shape[0])
     for test_index in _iter_test_masks(X, n_splits):
@@ -40,6 +46,7 @@ def _iter_test_indices(X, n_splits):
         current = stop
 
 
+# TODO: Refactor this in order to not to pass the whole X and y
 def _fit_and_score(train, test, X, y, estimator, score, **kwargs):
     X_train = X[train,]
     y_train = y[train]
@@ -55,6 +62,4 @@ def _score(y_true, y_pred, score, **kwargs):
         return accuracy_score(y_true, y_pred)
     if score == "confusion_matrix":
         from sklearn.metrics import confusion_matrix
-        if not kwargs['labels']:
-            raise ValueError('labels parameter needed to compute the confusion matrix')
-        return confusion_matrix(y_true, y_pred, kwargs['labels'])
+        return confusion_matrix(y_true, y_pred)
