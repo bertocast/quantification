@@ -28,7 +28,7 @@ if __name__ == '__main__':
     y = plankton.target
     ac.fit(X, y, local=False)
     print "Fitted"
-    predictions = ac.predict(X, local=True)
+    predictions = ac.predict(X, local=False)
     true = []
     for y_s in plankton.target:
         freq = np.bincount(y_s, minlength=len(ac.classes_))

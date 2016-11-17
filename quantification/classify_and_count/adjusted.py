@@ -1,6 +1,7 @@
 from copy import deepcopy
-import collections
-
+import pickle
+from tempfile import NamedTemporaryFile
+from os.path import basename
 import numpy as np
 
 from quantification.classify_and_count.base import BaseClassifyAndCountModel, predict_wrapper_per_clf, fit_wrapper
@@ -65,6 +66,8 @@ class BinaryAdjustedCount(BaseClassifyAndCountModel):
 
 
 class MulticlassAdjustedCount(BaseClassifyAndCountModel):
+
+
     def __init__(self):
         super(MulticlassAdjustedCount, self).__init__()
         self.conditional_prob_ = None
@@ -114,15 +117,20 @@ class MulticlassAdjustedCount(BaseClassifyAndCountModel):
             for pos_class in self.classes_:
                 X_samples, y_samples = np.array([X[s] for s in cls_smp[pos_class]]), \
                                        np.array([y[s] for s in cls_smp[pos_class]])
-                #split_iter = list(split(X_samples, len(X_samples)))
-                train_val_partition = create_partitions(X_samples, y_samples, len(X_samples))
-                parallel = ClusterParallel(fit_ova_wrapper, train_val_partition,
-                                           {'quantifier': self, 'pos_class': pos_class,
-                                            'local': True},
-                                           local=local)
+                split_iter = split(X_samples, len(X_samples))
+                f_x, f_y = NamedTemporaryFile(delete=False), NamedTemporaryFile(delete=False)
+                pickle.dump(X_samples, f_x)
+                pickle.dump(y_samples, f_y)
+                parallel = ClusterParallel(fit_ova_wrapper, split_iter,
+                                           {'X_path': basename(f_x.name), 'y_path': basename(f_y.name),
+                                            'quantifier': self, 'pos_class': pos_class, 'local': True},
+                                           local=local, verbose=True, dependencies=[f_x.name, f_y.name])
+                f_x.close()
+                f_y.close()
                 clfs = parallel.retrieve()
-                self.estimators_[pos_class] = clfs
 
+                self.estimators_[pos_class] = clfs
+            return self
 
 
 
@@ -205,5 +213,12 @@ def fit_train_wrapper(train, perf, X, y, quantifier):
     return quantifier._fit(X[train[0]], y[train[0]])
 
 
-def fit_ova_wrapper(X_train, y_train, X_val, y_val, pos_class, quantifier, local):
-    return quantifier._fit_performance(X_train, y_train, X_val, y_val, pos_class, local)
+def fit_ova_wrapper(val, train, X_path, y_path, quantifier, pos_class, local):
+    import pickle, numpy as np
+    with open(X_path, 'rb') as f_x:
+        X = pickle.load(f_x)
+    with open(y_path, 'rb') as f_y:
+        y = pickle.load(f_y)
+    return quantifier._fit_performance(X[train[0]], y[train[0]],
+                                       np.concatenate(X[val]), np.concatenate(y[val]),
+                                       pos_class, local)
