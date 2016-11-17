@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3a838331-9b37-4c92-811e-9ad5f39586aa" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/quantification.iml" afterPath="$PROJECT_DIR$/.idea/quantification.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/plancton.py" afterPath="$PROJECT_DIR$/examples/plancton.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/classify_and_count/adjusted.py" afterPath="$PROJECT_DIR$/quantification/classify_and_count/adjusted.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/utils/parallelism.py" afterPath="$PROJECT_DIR$/quantification/utils/parallelism.py" />
     </list>
     <ignored path="quantification.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -41,11 +38,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="test_probabilistic.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="test_probabilistic.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/quantification/tests/classify_and_count/test_probabilistic.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="540">
-                  <caret line="40" column="0" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
+                <state relative-caret-position="240">
+                  <caret line="16" column="8" selection-start-line="16" selection-start-column="8" selection-end-line="16" selection-end-column="8" />
                   <folding>
                     <element signature="e#0#42#0" expanded="true" />
                   </folding>
@@ -87,17 +84,30 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="adjusted.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="adjusted.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/adjusted.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="481">
-                  <caret line="135" column="0" selection-start-line="135" selection-start-column="0" selection-end-line="135" selection-end-column="0" />
+                <state relative-caret-position="269">
+                  <caret line="51" column="34" selection-start-line="51" selection-start-column="34" selection-end-line="51" selection-end-column="34" />
                   <folding>
                     <element signature="e#0#25#0" expanded="true" />
-                    <element signature="e#3116#3201#0" expanded="false" />
-                    <element signature="e#3238#4253#0" expanded="false" />
-                    <element signature="e#4312#4370#0" expanded="false" />
+                    <element signature="e#3210#3266#0" expanded="false" />
+                    <element signature="e#3619#4638#0" expanded="false" />
+                    <element signature="e#7665#8145#0" expanded="false" />
+                    <element signature="e#8216#8553#0" expanded="false" />
+                    <element signature="e#8603#8720#0" expanded="false" />
+                    <element signature="e#8941#9306#0" expanded="false" />
                   </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="__builtin__.py" pinned="false" current-in-tab="false">
+            <entry file="file://$USER_HOME$/Library/Caches/PyCharm2016.2/python_stubs/-923448878/__builtin__.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="299">
+                  <caret line="747" column="8" selection-start-line="747" selection-start-column="8" selection-end-line="747" selection-end-column="8" />
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -109,18 +119,18 @@
           <file leaf-file-name="base.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="690">
-                  <caret line="55" column="12" selection-start-line="55" selection-start-column="12" selection-end-line="55" selection-end-column="12" />
+                <state relative-caret-position="330">
+                  <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
                   <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="plancton.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="plancton.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/examples/plancton.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="420">
-                  <caret line="28" column="28" selection-start-line="28" selection-start-column="28" selection-end-line="28" selection-end-column="28" />
+                <state relative-caret-position="390">
+                  <caret line="26" column="21" selection-start-line="26" selection-start-column="21" selection-end-line="26" selection-end-column="21" />
                   <folding>
                     <element signature="e#15#34#0" expanded="true" />
                   </folding>
@@ -131,8 +141,8 @@
           <file leaf-file-name="test_adjusted.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/quantification/tests/classify_and_count/test_adjusted.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="360">
-                  <caret line="24" column="8" selection-start-line="24" selection-start-column="8" selection-end-line="24" selection-end-column="8" />
+                <state relative-caret-position="240">
+                  <caret line="16" column="8" selection-start-line="16" selection-start-column="8" selection-end-line="16" selection-end-column="8" />
                   <folding>
                     <element signature="e#0#18#0" expanded="true" />
                   </folding>
@@ -140,11 +150,31 @@
               </provider>
             </entry>
           </file>
+          <file leaf-file-name="case.py" pinned="false" current-in-tab="false">
+            <entry file="file:///Library/Python/2.7/site-packages/nose/case.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="245">
+                  <caret line="196" column="0" selection-start-line="196" selection-start-column="0" selection-end-line="196" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="case.py" pinned="false" current-in-tab="false">
+            <entry file="file:///usr/local/Cellar/python/2.7.12_2/Frameworks/Python.framework/Versions/2.7/lib/python2.7/unittest/case.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="560">
+                  <caret line="349" column="0" selection-start-line="349" selection-start-column="0" selection-end-line="349" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
           <file leaf-file-name="validation.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/quantification/utils/validation.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="255">
-                  <caret line="17" column="85" selection-start-line="17" selection-start-column="40" selection-end-line="17" selection-end-column="85" />
+                <state relative-caret-position="631">
+                  <caret line="64" column="0" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
                   <folding>
                     <element signature="e#0#18#0" expanded="true" />
                   </folding>
@@ -155,19 +185,11 @@
           <file leaf-file-name="parallelism.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/quantification/utils/parallelism.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="45">
-                  <caret line="3" column="9" selection-start-line="3" selection-start-column="9" selection-end-line="3" selection-end-column="9" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="__init__.py" pinned="false" current-in-tab="true">
-            <entry file="file:///usr/local/lib/python2.7/site-packages/dispy/__init__.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="275">
-                  <caret line="789" column="14" selection-start-line="789" selection-start-column="14" selection-end-line="789" selection-end-column="14" />
-                  <folding />
+                <state relative-caret-position="855">
+                  <caret line="57" column="0" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
+                  <folding>
+                    <element signature="e#15#29#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -216,8 +238,8 @@
         <option value="$PROJECT_DIR$/quantification/utils/validation.py" />
         <option value="$PROJECT_DIR$/quantification/utils/hola.txt" />
         <option value="$PROJECT_DIR$/quantification/utils/parallelism.py" />
-        <option value="$PROJECT_DIR$/examples/plancton.py" />
         <option value="$PROJECT_DIR$/quantification/classify_and_count/adjusted.py" />
+        <option value="$PROJECT_DIR$/examples/plancton.py" />
       </list>
     </option>
   </component>
@@ -402,7 +424,7 @@
       <recent name="$PROJECT_DIR$/quantification" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.placton">
+  <component name="RunManager" selected="Python tests.Nosetests in tests">
     <configuration default="false" name="placton" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -418,6 +440,48 @@
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/examples/plancton.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Nosetests in tests" type="tests" factoryName="Nosetests" temporary="true" nameIsGenerated="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/quantification/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="quantification" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="$PROJECT_DIR$/quantification/tests" />
+      <option name="TEST_TYPE" value="TEST_FOLDER" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Nosetest TestAdjustedCount.test_fit_single_sample_of_multiclass_data" type="tests" factoryName="Nosetests" temporary="true" nameIsGenerated="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/quantification/tests/classify_and_count" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="quantification" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/quantification/tests/classify_and_count/test_adjusted.py" />
+      <option name="CLASS_NAME" value="TestAdjustedCount" />
+      <option name="METHOD_NAME" value="test_fit_single_sample_of_multiclass_data" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_METHOD" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
       <method />
     </configuration>
     <configuration default="false" name="Nosetests in tests (1)" type="tests" factoryName="Nosetests" temporary="true" nameIsGenerated="true">
@@ -441,24 +505,7 @@
       <option name="USE_PARAM" value="false" />
       <method />
     </configuration>
-    <configuration default="false" name="base" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/quantification/utils" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="quantification" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/quantification/utils/base.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="Nosetests in tests (2)" type="tests" factoryName="Nosetests" temporary="true" nameIsGenerated="true">
+    <configuration default="false" name="Nosetest TestAdjustedCount.test_fit_ensemble_of_binary_data" type="tests" factoryName="Nosetests" temporary="true" nameIsGenerated="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs />
@@ -468,32 +515,15 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="quantification" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="CLASS_NAME" value="" />
-      <option name="METHOD_NAME" value="" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/quantification/tests/classify_and_count/test_adjusted.py" />
+      <option name="CLASS_NAME" value="TestAdjustedCount" />
+      <option name="METHOD_NAME" value="test_fit_ensemble_of_binary_data" />
       <option name="FOLDER_NAME" value="$PROJECT_DIR$/quantification/tests" />
-      <option name="TEST_TYPE" value="TEST_FOLDER" />
+      <option name="TEST_TYPE" value="TEST_METHOD" />
       <option name="PATTERN" value="" />
       <option name="USE_PATTERN" value="false" />
       <option name="PARAMS" value="" />
       <option name="USE_PARAM" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="parallelism" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/quantification/utils" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="quantification" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/quantification/utils/parallelism.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
     </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
@@ -632,23 +662,26 @@
     </configuration>
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.placton" />
-      <item index="1" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (1)" />
-      <item index="2" class="java.lang.String" itemvalue="Python.base" />
-      <item index="3" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (2)" />
-      <item index="4" class="java.lang.String" itemvalue="Python.parallelism" />
+      <item index="1" class="java.lang.String" itemvalue="Python tests.Nosetests in tests" />
+      <item index="2" class="java.lang.String" itemvalue="Python tests.Nosetest TestAdjustedCount.test_fit_single_sample_of_multiclass_data" />
+      <item index="3" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (1)" />
+      <item index="4" class="java.lang.String" itemvalue="Python tests.Nosetest TestAdjustedCount.test_fit_ensemble_of_binary_data" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.placton" />
-        <item index="1" class="java.lang.String" itemvalue="Python.parallelism" />
-        <item index="2" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (2)" />
-        <item index="3" class="java.lang.String" itemvalue="Python.base" />
-        <item index="4" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (1)" />
+        <item index="0" class="java.lang.String" itemvalue="Python tests.Nosetests in tests" />
+        <item index="1" class="java.lang.String" itemvalue="Python tests.Nosetest TestAdjustedCount.test_fit_ensemble_of_binary_data" />
+        <item index="2" class="java.lang.String" itemvalue="Python.placton" />
+        <item index="3" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (1)" />
+        <item index="4" class="java.lang.String" itemvalue="Python tests.Nosetest TestAdjustedCount.test_fit_single_sample_of_multiclass_data" />
       </list>
     </recent_temporary>
   </component>
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
+  </component>
+  <component name="StructureViewFactory">
+    <option name="ACTIVE_ACTIONS" value=",SHOW_FIELDS,SHOW_INHERITED" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -801,39 +834,46 @@
       <option name="project" value="LOCAL" />
       <updated>1479297955587</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="New version of ensemble AC">
+      <created>1479380026887</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1479380026887</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Nosetest_TestClassifiyAndCount_test_fit_ensemble_of_binary_data - 2016.11.14 at 12h 51m 46s.xml">
-      <configuration name="Nosetest TestClassifiyAndCount.test_fit_ensemble_of_binary_data" configurationId="tests" />
+    <history-entry file="Nosetest_TestAdjustedCount_test_fit_ensemble_of_binary_data - 2016.11.17 at 14h 29m 54s.xml">
+      <configuration name="Nosetest TestAdjustedCount.test_fit_ensemble_of_binary_data" configurationId="tests" />
     </history-entry>
-    <history-entry file="Nosetest_TestClassifiyAndCount_test_fit_ensemble_of_binary_data - 2016.11.14 at 12h 52m 29s.xml">
-      <configuration name="Nosetest TestClassifiyAndCount.test_fit_ensemble_of_binary_data" configurationId="tests" />
+    <history-entry file="Nosetest_TestAdjustedCount_test_fit_ensemble_of_binary_data - 2016.11.17 at 14h 30m 23s.xml">
+      <configuration name="Nosetest TestAdjustedCount.test_fit_ensemble_of_binary_data" configurationId="tests" />
     </history-entry>
-    <history-entry file="Nosetest_TestClassifiyAndCount_test_fit_ensemble_of_binary_data - 2016.11.14 at 12h 52m 48s.xml">
-      <configuration name="Nosetest TestClassifiyAndCount.test_fit_ensemble_of_binary_data" configurationId="tests" />
+    <history-entry file="Nosetest_TestAdjustedCount_test_fit_single_sample_of_multiclass_data - 2016.11.17 at 13h 54m 48s.xml">
+      <configuration name="Nosetest TestAdjustedCount.test_fit_single_sample_of_multiclass_data" configurationId="tests" />
     </history-entry>
-    <history-entry file="Nosetest_TestClassifiyAndCount_test_fit_ensemble_of_binary_data - 2016.11.14 at 13h 03m 12s.xml">
-      <configuration name="Nosetest TestClassifiyAndCount.test_fit_ensemble_of_binary_data" configurationId="tests" />
+    <history-entry file="Nosetest_TestAdjustedCount_test_fit_single_sample_of_multiclass_data - 2016.11.17 at 13h 56m 14s.xml">
+      <configuration name="Nosetest TestAdjustedCount.test_fit_single_sample_of_multiclass_data" configurationId="tests" />
     </history-entry>
-    <history-entry file="Nosetest_TestClassifiyAndCount_test_fit_ensemble_of_binary_data - 2016.11.14 at 13h 04m 18s.xml">
-      <configuration name="Nosetest TestClassifiyAndCount.test_fit_ensemble_of_binary_data" configurationId="tests" />
+    <history-entry file="Nosetest_TestAdjustedCount_test_fit_single_sample_of_multiclass_data - 2016.11.17 at 13h 56m 19s.xml">
+      <configuration name="Nosetest TestAdjustedCount.test_fit_single_sample_of_multiclass_data" configurationId="tests" />
     </history-entry>
-    <history-entry file="Nosetests_in_tests_(1) - 2016.11.14 at 13h 47m 57s.xml">
+    <history-entry file="Nosetest_TestAdjustedCount_test_fit_single_sample_of_multiclass_data - 2016.11.17 at 13h 56m 55s.xml">
+      <configuration name="Nosetest TestAdjustedCount.test_fit_single_sample_of_multiclass_data" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Nosetests_in_tests - 2016.11.17 at 13h 54m 15s.xml">
+      <configuration name="Nosetests in tests" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Nosetests_in_tests - 2016.11.17 at 14h 10m 50s.xml">
+      <configuration name="Nosetests in tests" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Nosetests_in_tests - 2016.11.17 at 14h 30m 35s.xml">
+      <configuration name="Nosetests in tests" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Nosetests_in_tests_(1) - 2016.11.17 at 13h 57m 08s.xml">
       <configuration name="Nosetests in tests (1)" configurationId="tests" />
-    </history-entry>
-    <history-entry file="Nosetests_in_tests_(1) - 2016.11.14 at 13h 48m 15s.xml">
-      <configuration name="Nosetests in tests (1)" configurationId="tests" />
-    </history-entry>
-    <history-entry file="Nosetests_in_tests_(2) - 2016.11.16 at 09h 42m 19s.xml">
-      <configuration name="Nosetests in tests (2)" configurationId="tests" />
-    </history-entry>
-    <history-entry file="Nosetests_in_tests_(2) - 2016.11.16 at 09h 43m 05s.xml">
-      <configuration name="Nosetests in tests (2)" configurationId="tests" />
-    </history-entry>
-    <history-entry file="Nosetests_in_tests_(2) - 2016.11.16 at 09h 43m 29s.xml">
-      <configuration name="Nosetests in tests (2)" configurationId="tests" />
     </history-entry>
   </component>
   <component name="TodoView">
@@ -854,7 +894,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39854014" sideWeight="0.51083106" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32991317" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32833466" sideWeight="0.48838127" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32846716" sideWeight="0.49311295" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32833466" sideWeight="0.49311295" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26992896" sideWeight="0.48523042" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24970461" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32919708" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -904,43 +944,29 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/quantification/tests/classify_and_count/test_adjusted.py</url>
-          <line>20</line>
-          <option name="timeStamp" value="178" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/quantification/utils/base.py</url>
           <line>9</line>
           <option name="timeStamp" value="214" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/quantification/classify_and_count/adjusted.py</url>
+          <line>90</line>
+          <option name="timeStamp" value="293" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="267" />
+      <option name="time" value="295" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file:///System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/abc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="14" column="4" selection-start-line="14" selection-start-column="4" selection-end-line="14" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/numpy/linalg/linalg.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-537">
-          <caret line="1726" column="4" selection-start-line="1726" selection-start-column="4" selection-end-line="1726" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/flags.py" />
     <entry file="file://$PROJECT_DIR$/quantification/base.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
           <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1033,16 +1059,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/tests/classify_and_count/test_probabilistic.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
-          <caret line="40" column="0" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#42#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///Library/Python/2.7/site-packages/sklearn/utils/validation.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="205">
@@ -1054,6 +1070,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="265">
           <caret line="2743" column="0" selection-start-line="2743" selection-start-column="0" selection-end-line="2743" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1121,29 +1138,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/tests/classify_and_count/test_adjusted.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="24" column="8" selection-start-line="24" selection-start-column="8" selection-end-line="24" selection-end-column="8" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="690">
-          <caret line="55" column="12" selection-start-line="55" selection-start-column="12" selection-end-line="55" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///Library/Python/2.7/site-packages/dispy/__init__.py" />
     <entry file="file:///Library/Python/2.7/site-packages/sklearn/base.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
           <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1187,26 +1187,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/utils/validation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="85" selection-start-line="17" selection-start-column="40" selection-end-line="17" selection-end-column="85" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/examples/plancton.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="28" column="28" selection-start-line="28" selection-start-column="28" selection-end-line="28" selection-end-column="28" />
-          <folding>
-            <element signature="e#15#34#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///Library/Python/2.7/site-packages/sklearn/svm/base.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="245">
@@ -1233,14 +1213,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/utils/parallelism.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="9" selection-start-line="3" selection-start-column="9" selection-end-line="3" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/local/lib/python2.7/site-packages/dispy/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="275">
@@ -1249,15 +1221,100 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/utils/validation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="631">
+          <caret line="64" column="0" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/utils/parallelism.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="855">
+          <caret line="57" column="0" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
+          <folding>
+            <element signature="e#15#29#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Library/Python/2.7/site-packages/nose/case.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="245">
+          <caret line="196" column="0" selection-start-line="196" selection-start-column="0" selection-end-line="196" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/Cellar/python/2.7.12_2/Frameworks/Python.framework/Versions/2.7/lib/python2.7/unittest/case.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="560">
+          <caret line="349" column="0" selection-start-line="349" selection-start-column="0" selection-end-line="349" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/tests/classify_and_count/test_adjusted.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" column="8" selection-start-line="16" selection-start-column="8" selection-end-line="16" selection-end-column="8" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Library/Caches/PyCharm2016.2/python_stubs/-923448878/__builtin__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="747" column="8" selection-start-line="747" selection-start-column="8" selection-end-line="747" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/adjusted.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="481">
-          <caret line="135" column="0" selection-start-line="135" selection-start-column="0" selection-end-line="135" selection-end-column="0" />
+        <state relative-caret-position="269">
+          <caret line="51" column="34" selection-start-line="51" selection-start-column="34" selection-end-line="51" selection-end-column="34" />
           <folding>
             <element signature="e#0#25#0" expanded="true" />
-            <element signature="e#3116#3201#0" expanded="false" />
-            <element signature="e#3238#4253#0" expanded="false" />
-            <element signature="e#4312#4370#0" expanded="false" />
+            <element signature="e#3210#3266#0" expanded="false" />
+            <element signature="e#3619#4638#0" expanded="false" />
+            <element signature="e#7665#8145#0" expanded="false" />
+            <element signature="e#8216#8553#0" expanded="false" />
+            <element signature="e#8603#8720#0" expanded="false" />
+            <element signature="e#8941#9306#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/tests/classify_and_count/test_probabilistic.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" column="8" selection-start-line="16" selection-start-column="8" selection-end-line="16" selection-end-column="8" />
+          <folding>
+            <element signature="e#0#42#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/plancton.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="26" column="21" selection-start-line="26" selection-start-column="21" selection-end-line="26" selection-end-column="21" />
+          <folding>
+            <element signature="e#15#34#0" expanded="true" />
           </folding>
         </state>
       </provider>
