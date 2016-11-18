@@ -1,13 +1,11 @@
 from abc import ABCMeta, abstractmethod
-from itertools import chain
 
-import numpy as np
 import six
 from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import LabelEncoder
+import numpy as np
 
-from quantification.base import BasicModel
-from quantification.utils.parallelism import ClusterParallel
+from quantification import BasicModel
+from quantification.utils.validation import cross_validation_score
 
 
 class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
@@ -16,23 +14,14 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
     def __init__(self, estimator_class=None, estimator_params=tuple()):
         self.estimator_class = estimator_class
         self.estimator_params = estimator_params
-        self.estimators_ = []
-        self.classes_= None
-
-    @abstractmethod
-    def _predict(self, X):
-        """Predict using the classifier model"""
 
     @abstractmethod
     def fit(self, X, y):
-        """Fit a set of models and combine them"""
+        """Fit a sample or a set of samples and combine them"""
 
-    def predict(self, X, local=False):
-        if not isinstance(X, list):
-            return self._predict(X)
-
-        parallel = ClusterParallel(predict_wrapper_per_sample, X, {'quantifier': self, 'local': local}, local=local)
-        return parallel.retrieve().tolist()
+    @abstractmethod
+    def predict(self, X, y):
+        """Predict the prevalence"""
 
     def _validate_estimator(self, default):
         """Check the estimator."""
@@ -43,6 +32,7 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
 
         if estimator is None:
             raise ValueError('estimator cannot be None')
+
         return estimator
 
     def _make_estimator(self):
@@ -51,53 +41,112 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
         estimator.set_params(**dict((p, getattr(self, p))
 
                                     for p in self.estimator_params))
+
         return estimator
 
-    def _fit(self, X, y):
-        clf = self._make_estimator()
-        clf.fit(X, y)
-        return clf
 
+class BinaryClassifyAndCount(BaseClassifyAndCountModel):
+    def __init__(self, estimator_class=None, estimator_params=tuple()):
+        super(BinaryClassifyAndCount, self).__init__(estimator_class, estimator_params)
+        self.estimator_ = self._make_estimator()
+        self.tpr_ = np.nan
+        self.fpr_ = np.nan
 
-class ClassifyAndCount(BaseClassifyAndCountModel):
-    """
-    Ordinary classify and count method.
+    def fit(self, X, y):
+        n_classes = len(np.unique(y))
+        if n_classes != 2:
+            raise ValueError("This solver is meant for binary samples "
+                             "thus number of classes must be 2, but the "
+                             "data contains %s", n_classes)
+        self.estimator_.fit(X, y)
+        self.compute_performance_(X, y)
+        return self
 
-    Parameters
-    ----------
+    def predict(self, X, method='cc'):
+        if method == 'cc':
+            return self._predict_cc(X)
+        elif method == 'ac':
+            return self._predict_ac(X)
+        elif method == 'pcc':
+            return self._predict_pcc(X)
+        elif method == 'pac':
+            return self._predict_pac(X)
+        else:
+            raise ValueError("Invalid method %s. Choices are `cc`, `ac`, `pcc`, `pac`.", method)
 
-    """
+    def compute_performance_(self, X, y):
+        self.confusion_matrix = np.mean(
+            cross_validation_score(self.estimator_, X, y, 50, score="confusion_matrix", local=True), 0)
+        try:
+            predictions = self.estimator_.predict_proba(X)
+        except AttributeError:
+            return
+        self.tp_pa_ = np.sum(predictions[y == self.estimator_.classes_[0], 0]) / \
+                      np.sum(y == self.estimator_.classes_[0])
+        self.fp_pa_ = np.sum(predictions[y == self.estimator_.classes_[1], 0]) / \
+                      np.sum(y == self.estimator_.classes_[1])
+        self.tn_pa_ = np.sum(predictions[y == self.estimator_.classes_[1], 1]) / \
+                      np.sum(y == self.estimator_.classes_[1])
+        self.fn_pa_ = np.sum(predictions[y == self.estimator_.classes_[0], 1]) / \
+                      np.sum(y == self.estimator_.classes_[0])
 
-    def _predict(self, X):
-        parallel = ClusterParallel(predict_wrapper_per_clf, self.estimators_, {'X': X}, local=True)  # TODO: Fix this
-        predictions = parallel.retrieve()
-
-        maj = np.apply_along_axis(lambda x: np.argmax(np.bincount(x)),
-                                  axis=0,
-                                  arr=predictions.astype('int'))
-        freq = np.bincount(maj, minlength=len(self.classes_))
+    def _predict_cc(self, X):
+        predictions = self.estimator_.predict(X)
+        freq = np.bincount(predictions, minlength=2)
         relative_freq = freq / float(np.sum(freq))
         return relative_freq
 
-    def fit(self, X, y, local=False):
-        if not isinstance(X, list):
-            clf = self._fit(X, y)
-            self.estimators_.append(clf)
-        else:
-            parallel = ClusterParallel(fit_wrapper, zip(X, y), {'quantifier': self}, local=local)
-            clfs = parallel.retrieve()
-            self.estimators_.extend(clfs)
-        self.classes_ = set(label for clf in self.estimators_ for label in clf.classes_)
+    def _predict_ac(self, X):
+        probabilities = self._predict_cc(X)
+        tpr = self.confusion_matrix[0, 0] / float(self.confusion_matrix[0, 0] + self.confusion_matrix[1, 0])
+        fpr = self.confusion_matrix[0, 1] / float(self.confusion_matrix[0, 1] + self.confusion_matrix[1, 1])
+        adjusted = (probabilities - fpr) / float(tpr - fpr)
+        return np.clip(adjusted, 0, 1)
+
+    def _predict_pcc(self, X):
+        try:
+            predictions = self.estimator_.predict_proba(X)
+        except AttributeError:
+            raise ValueError("Probabilistic methods like PCC or PAC cannot be used "
+                             "with hard (crisp) classifiers like %s", self.estimator_.__class__.__name__)
+
+        p = np.mean(predictions)
+        return np.array([p, 1 - p])
+
+    def _predict_pac(self, X):
+        predictions = self._predict_pcc(X)
+        pos = (predictions[0] - self.fp_pa_) / float(self.tp_pa_ - self.fp_pa_)
+        neg = (predictions[1] - self.fn_pa_) / float(self.tn_pa_ - self.fn_pa_)
+        return np.array([pos, neg])
+
+
+class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
+    def __init__(self, estimator_class=None, estimator_params=tuple()):
+        super(MulticlassClassifyAndCount, self).__init__(estimator_class, estimator_params)
+        self.classes_ = None
+        self.estimators_ = None
+
+    def fit(self, X, y):
+        self.classes_ = np.unique(y).tolist()
+        self.estimators_ = dict.fromkeys(self.classes_)
+        for pos_class in self.classes_:
+            mask = (y == pos_class)
+            y_bin = np.ones(y.shape, dtype=np.float64)
+            y_bin[~mask] = 0.
+            clf = self._make_estimator()
+            clf = clf.fit(X, y_bin)
+            self.estimators_[pos_class] = clf
+
         return self
 
-
-def predict_wrapper_per_sample(X, quantifier, local):
-    return quantifier.predict(X, local=False)  # TODO: Fix this, please
-
-
-def predict_wrapper_per_clf(clf, X):
-    return clf.predict(X)
-
-
-def fit_wrapper(X, y, quantifier):
-    return quantifier._fit(X, y)
+    def predict(self, X, method='cc'):
+        if method == 'cc':
+            return predict_cc(self, X)
+        elif method == 'ac':
+            return predict_ac(self, X)
+        elif method == 'pcc':
+            return predict_pcc(self, X)
+        elif method == 'pac':
+            return predict_pac(self, X)
+        else:
+            raise ValueError("Invalid method %s. Choices are `cc`, `ac`, `pcc`, `pac`.", method)
