@@ -100,7 +100,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         self.classes_ = None
         self.qnfs_ = None
 
-    def fit(self, X, y):
+    def fit(self, X, y, verbose=False):
 
         if len(X) != len(y):
             raise ValueError("X and y has to be the same length.")
@@ -117,6 +117,8 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             qnf.tp_pa_ = dict.fromkeys(classes)
             qnf.fp_pa_ = dict.fromkeys(classes)
             for pos_class in classes:
+                if verbose:
+                    print "Fitting classfier for class {}/{} on sample {}/{}".format(pos_class, n_classes, n, len(y))
                 mask = (y_sample == pos_class)
                 y_bin = np.ones(y_sample.shape, dtype=np.int)
                 y_bin[~mask] = 0
