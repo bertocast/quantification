@@ -102,10 +102,10 @@ class BinaryClassifyAndCount(BaseClassifyAndCountModel):
 
     def _predict_ac(self, X):
         probabilities = self._predict_cc(X)
-        tpr = self.confusion_matrix_[0, 0] / float(self.confusion_matrix_[0, 0] + self.confusion_matrix_[1, 0])
-        fpr = self.confusion_matrix_[0, 1] / float(self.confusion_matrix_[0, 1] + self.confusion_matrix_[1, 1])
-        adjusted = (probabilities - fpr) / float(tpr - fpr)
-        return np.clip(adjusted, 0, 1)
+        tpr = self.confusion_matrix_[1, 1] / float(self.confusion_matrix_[1, 1] + self.confusion_matrix_[0, 1])
+        fpr = self.confusion_matrix_[1, 0] / float(self.confusion_matrix_[1, 0] + self.confusion_matrix_[0, 0])
+        adjusted = np.clip((probabilities[1] - fpr) / float(tpr - fpr), 0, 1)
+        return np.array([adjusted, 1 - adjusted])
 
     def _predict_pcc(self, X):
         try:
@@ -139,9 +139,9 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
         self.classes_ = np.unique(y).tolist()
         n_classes = len(self.classes_)
         self.estimators_ = dict.fromkeys(self.classes_)
-        self.confusion_matrix_ = np.tile(np.full((2,2), np.nan), (n_classes, 1, 1))
-        self.tp_pa_ = np.full(n_classes, np.nan)
-        self.fp_pa_ = np.full(n_classes, np.nan)
+        self.confusion_matrix_ = dict.fromkeys(self.classes_)
+        self.tp_pa_ = dict.fromkeys(self.classes_)
+        self.fp_pa_ = dict.fromkeys(self.classes_)
         for pos_class in self.classes_:
             mask = (y == pos_class)
             y_bin = np.ones(y.shape, dtype=np.int)
@@ -195,10 +195,10 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
             predictions = clf.predict(X)
             freq = np.bincount(predictions, minlength=2)
             relative_freq = freq / float(np.sum(freq))
-            tpr = self.confusion_matrix_[cls][0, 0] / float(self.confusion_matrix_[cls][0, 0]
-                                                            + self.confusion_matrix_[cls][1, 0])
-            fpr = self.confusion_matrix_[cls][0, 1] / float(self.confusion_matrix_[cls][0, 1]
-                                                            + self.confusion_matrix_[cls][1, 1])
+            tpr = self.confusion_matrix_[cls][1, 1] / float(self.confusion_matrix_[cls][1, 1]
+                                                            + self.confusion_matrix_[cls][0, 1])
+            fpr = self.confusion_matrix_[cls][1, 0] / float(self.confusion_matrix_[cls][1, 0]
+                                                            + self.confusion_matrix_[cls][0, 0])
             adjusted = (relative_freq - fpr) / float(tpr - fpr)
             probabilities[cls] = np.clip(adjusted[1], 0, 1)
         return probabilities / np.sum(probabilities)
