@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="3a838331-9b37-4c92-811e-9ad5f39586aa" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/classify_and_count/ensemble.py" afterPath="$PROJECT_DIR$/quantification/classify_and_count/ensemble.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/classify_and_count/base.py" afterPath="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
     </list>
     <ignored path="quantification.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -35,11 +35,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ensemble.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ensemble.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/ensemble.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="630">
-              <caret line="120" column="116" selection-start-line="120" selection-start-column="116" selection-end-line="120" selection-end-column="116" />
+            <state relative-caret-position="495">
+              <caret line="111" column="26" selection-start-line="111" selection-start-column="26" selection-end-line="111" selection-end-column="26" />
               <folding>
                 <element signature="e#0#25#0" expanded="true" />
                 <element signature="e#517#4243#0" expanded="false" />
@@ -94,6 +94,19 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="base.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="515">
+              <caret line="143" column="50" selection-start-line="143" selection-start-column="50" selection-end-line="143" selection-end-column="50" />
+              <folding>
+                <element signature="e#0#39#0" expanded="true" />
+                <element signature="e#339#1320#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
     </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
@@ -137,10 +150,10 @@
         <option value="$PROJECT_DIR$/quantification/classify_and_count/probabilistic.py" />
         <option value="$PROJECT_DIR$/quantification/tests/classify_and_count/test_base.py" />
         <option value="$PROJECT_DIR$/quantification/datasets/data/iris/iris2.csv" />
-        <option value="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
         <option value="$PROJECT_DIR$/quantification/tests/classify_and_count/test_ensemble.py" />
         <option value="$PROJECT_DIR$/examples/plancton.py" />
         <option value="$PROJECT_DIR$/quantification/classify_and_count/ensemble.py" />
+        <option value="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
       </list>
     </option>
   </component>
@@ -850,7 +863,14 @@
       <option name="project" value="LOCAL" />
       <updated>1479810551146</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="Minor change to add verbosity to MCEnsemble">
+      <created>1479810684988</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1479810684988</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -951,7 +971,8 @@
     <MESSAGE value="Refactor and start almiost from zero." />
     <MESSAGE value="Refactor and almost complete everything local." />
     <MESSAGE value="Complete every cc method (single sample and ensemble) on local." />
-    <option name="LAST_COMMIT_MESSAGE" value="Complete every cc method (single sample and ensemble) on local." />
+    <MESSAGE value="Minor change to add verbosity to MCEnsemble" />
+    <option name="LAST_COMMIT_MESSAGE" value="Minor change to add verbosity to MCEnsemble" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1260,17 +1281,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1243">
-          <caret line="107" column="48" selection-start-line="107" selection-start-column="48" selection-end-line="107" selection-end-column="48" />
-          <folding>
-            <element signature="e#0#39#0" expanded="true" />
-            <element signature="e#339#1320#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base_old.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="313">
@@ -1311,11 +1321,22 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/ensemble.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="630">
-          <caret line="120" column="116" selection-start-line="120" selection-start-column="116" selection-end-line="120" selection-end-column="116" />
+        <state relative-caret-position="495">
+          <caret line="111" column="26" selection-start-line="111" selection-start-column="26" selection-end-line="111" selection-end-column="26" />
           <folding>
             <element signature="e#0#25#0" expanded="true" />
             <element signature="e#517#4243#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="515">
+          <caret line="143" column="50" selection-start-line="143" selection-start-column="50" selection-end-line="143" selection-end-column="50" />
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
+            <element signature="e#339#1320#0" expanded="false" />
           </folding>
         </state>
       </provider>

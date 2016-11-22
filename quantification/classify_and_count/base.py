@@ -135,7 +135,7 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
         self.tp_pa_ = None
         self.fp_pa_ = None
 
-    def fit(self, X, y):
+    def fit(self, X, y, verbose=False):
         self.classes_ = np.unique(y).tolist()
         n_classes = len(self.classes_)
         self.estimators_ = dict.fromkeys(self.classes_)
@@ -143,6 +143,8 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
         self.tp_pa_ = dict.fromkeys(self.classes_)
         self.fp_pa_ = dict.fromkeys(self.classes_)
         for pos_class in self.classes_:
+            if verbose:
+                print "Fiting classifier for class {}/{}".format(pos_class, n_classes)
             mask = (y == pos_class)
             y_bin = np.ones(y.shape, dtype=np.int)
             y_bin[~mask] = 0
