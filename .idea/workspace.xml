@@ -97,11 +97,11 @@
       <file leaf-file-name="base.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="515">
-              <caret line="143" column="50" selection-start-line="143" selection-start-column="50" selection-end-line="143" selection-end-column="50" />
+            <state relative-caret-position="630">
+              <caret line="177" column="0" selection-start-line="177" selection-start-column="0" selection-end-line="177" selection-end-column="0" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
-                <element signature="e#339#1320#0" expanded="false" />
+                <element signature="e#353#1334#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -870,7 +870,14 @@
       <option name="project" value="LOCAL" />
       <updated>1479810684988</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="Minor change to add verbosity to MCSingleSample">
+      <created>1479811234804</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1479811234804</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -972,7 +979,8 @@
     <MESSAGE value="Refactor and almost complete everything local." />
     <MESSAGE value="Complete every cc method (single sample and ensemble) on local." />
     <MESSAGE value="Minor change to add verbosity to MCEnsemble" />
-    <option name="LAST_COMMIT_MESSAGE" value="Minor change to add verbosity to MCEnsemble" />
+    <MESSAGE value="Minor change to add verbosity to MCSingleSample" />
+    <option name="LAST_COMMIT_MESSAGE" value="Minor change to add verbosity to MCSingleSample" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -984,7 +992,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/quantification/classify_and_count/base.py</url>
-          <line>107</line>
+          <line>109</line>
           <option name="timeStamp" value="378" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -1332,11 +1340,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="515">
-          <caret line="143" column="50" selection-start-line="143" selection-start-column="50" selection-end-line="143" selection-end-column="50" />
+        <state relative-caret-position="630">
+          <caret line="177" column="0" selection-start-line="177" selection-start-column="0" selection-end-line="177" selection-end-column="0" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
-            <element signature="e#339#1320#0" expanded="false" />
+            <element signature="e#353#1334#0" expanded="false" />
           </folding>
         </state>
       </provider>

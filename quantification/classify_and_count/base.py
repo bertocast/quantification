@@ -1,6 +1,8 @@
 from abc import ABCMeta, abstractmethod
 
 from itertools import product
+
+import dispy
 import six
 from sklearn.linear_model import LogisticRegression
 import numpy as np
@@ -135,13 +137,17 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
         self.tp_pa_ = None
         self.fp_pa_ = None
 
-    def fit(self, X, y, verbose=False):
+    def fit(self, X, y, verbose=False, local=True):
         self.classes_ = np.unique(y).tolist()
         n_classes = len(self.classes_)
         self.estimators_ = dict.fromkeys(self.classes_)
         self.confusion_matrix_ = dict.fromkeys(self.classes_)
         self.tp_pa_ = dict.fromkeys(self.classes_)
         self.fp_pa_ = dict.fromkeys(self.classes_)
+
+        if not local:
+            clfs_to_fit =[]
+
         for pos_class in self.classes_:
             if verbose:
                 print "Fiting classifier for class {}/{}".format(pos_class, n_classes)
@@ -149,9 +155,28 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
             y_bin = np.ones(y.shape, dtype=np.int)
             y_bin[~mask] = 0
             clf = self._make_estimator()
+            if not local:
+                clfs_to_fit.append((pos_class, clf, y_bin))
+                continue
             clf = clf.fit(X, y_bin)
             self.estimators_[pos_class] = clf
             self.compute_performance_(X, y_bin, pos_class)
+
+        if not local:
+            def wrapper(clf, X, y):
+                return clf.fit(X, y)
+            cluster = dispy.JobCluster(wrapper)
+            jobs = []
+            for cls, clf, y in clfs_to_fit:
+                job = cluster.submit(clf, X, y)
+                job.id = cls  # associate an ID to identify jobs (if needed later)
+                jobs.append(job)
+            for job in jobs:
+                clf = job()
+                self.estimators_[pos_class] = clf
+                self.compute_performance_(X, y, pos_class)
+
+
 
         return self
 
