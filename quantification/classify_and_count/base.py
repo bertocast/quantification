@@ -164,7 +164,7 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
             clf = clf.fit(X, y_bin)
             self.estimators_[pos_class] = clf
             print "Computing performance"
-            self.compute_performance_(X, y_bin, pos_class)
+            self.compute_performance_(X, y_bin, pos_class, local)
 
         if not local:
 
@@ -185,10 +185,12 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
             cluster.close()
         return self
 
-    def compute_performance_(self, X, y, pos_class):
-        # self.confusion_matrix_[pos_class] = np.mean(
-        #    cross_validation_score(self.estimators_[pos_class], X, y, 50, score="confusion_matrix", local=False), 0)
-        self.confusion_matrix_[pos_class] = parallel_cv_confusion_matrix(self.estimators_[pos_class],
+    def compute_performance_(self, X, y, pos_class, local):
+        if local:
+            self.confusion_matrix_[pos_class] = np.mean(
+                cross_validation_score(self.estimators_[pos_class], X, y, 50, score="confusion_matrix", local=True), 0)
+        else:
+            self.confusion_matrix_[pos_class] = parallel_cv_confusion_matrix(self.estimators_[pos_class],
                                                                          self.x_path_, self.y_path)
 
         try:
@@ -274,5 +276,5 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
         self.x_path_ = x_path
         self.y_path = y_path
 
-        np.pickle.dump(X, f_x)
-        np.pickle.dump(y, f_y)
+        np.save(X, f_x)
+        np.save(y, f_y)

@@ -25,7 +25,7 @@ if __name__ == '__main__':
     ac = MulticlassClassifyAndCount()
     X = plankton.data
     y = plankton.target
-    ac.fit(np.concatenate(X), np.concatenate(y), verbose=True, local=True)
+    ac.fit(np.concatenate(X), np.concatenate(y), verbose=True, local=False)
     print "Fitted"
     pred = []
     for X_s in X:

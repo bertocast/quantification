@@ -9,10 +9,10 @@ from quantification.utils.parallelism import ClusterParallel
 def setup(X_file, y_file):
     global X, y
     with open(X_file, 'rb') as f_x:
-        X = np.pickle.load(f_x)
+        X = np.load(f_x)
 
     with open(y_file, 'rb') as f_y:
-        y = np.pickle.load(f_y)
+        y = np.load(f_y)
     return 0
 
 
