@@ -65,6 +65,7 @@ class ClusterParallel:
 
 
 
+
 if __name__ == '__main__':
 
     def compute(n, path):

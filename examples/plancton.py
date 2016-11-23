@@ -25,9 +25,12 @@ if __name__ == '__main__':
     ac = MulticlassClassifyAndCount()
     X = plankton.data
     y = plankton.target
-    ac.fit(np.concatenate(X), np.concatenate(y))
+    ac.fit(np.concatenate(X), np.concatenate(y), verbose=True, local=True)
     print "Fitted"
-    predictions = ac.predict(X)
+    pred = []
+    for X_s in X:
+        predictions = ac.predict(X)
+        pred.append(predictions)
     true = []
     for y_s in plankton.target:
         freq = np.bincount(y_s, minlength=len(ac.classes_))

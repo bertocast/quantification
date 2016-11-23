@@ -1,3 +1,4 @@
+import threading
 from abc import ABCMeta, abstractmethod
 
 from itertools import product
@@ -8,7 +9,7 @@ from sklearn.linear_model import LogisticRegression
 import numpy as np
 
 from quantification import BasicModel
-from quantification.utils.validation import cross_validation_score
+from quantification.utils.validation import cross_validation_score, cv_confusion_matrix
 
 
 class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
@@ -160,29 +161,33 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
                 continue
             clf = clf.fit(X, y_bin)
             self.estimators_[pos_class] = clf
+            print "Computing performance"
             self.compute_performance_(X, y_bin, pos_class)
 
         if not local:
+
             def wrapper(clf, X, y):
                 return clf.fit(X, y)
-            cluster = dispy.JobCluster(wrapper)
-            jobs = []
+
+            cluster = dispy.SharedJobCluster(wrapper, scheduler_node='dhcp015.aic.uniovi.es')
             for cls, clf, y in clfs_to_fit:
+                print "Submitting job"
                 job = cluster.submit(clf, X, y)
-                job.id = cls  # associate an ID to identify jobs (if needed later)
-                jobs.append(job)
-            for job in jobs:
-                clf = job()
+                job.id = cls
+                job()
+                clf = job.result
                 self.estimators_[pos_class] = clf
+                print "Computing performance"
                 self.compute_performance_(X, y, pos_class)
-
-
-
+            cluster.print_status()
+            cluster.close()
         return self
 
     def compute_performance_(self, X, y, pos_class):
-        self.confusion_matrix_[pos_class] = np.mean(
-            cross_validation_score(self.estimators_[pos_class], X, y, 50, score="confusion_matrix", local=True), 0)
+        #self.confusion_matrix_[pos_class] = np.mean(
+        #    cross_validation_score(self.estimators_[pos_class], X, y, 50, score="confusion_matrix", local=False), 0)
+        self.confusion_matrix_[pos_class] = cv_confusion_matrix(self.estimators_[pos_class], X, y)
+
         try:
             predictions = self.estimators_[pos_class].predict_proba(X)
         except AttributeError:
@@ -258,3 +263,5 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
             probabilities[cls] = np.clip((p[1] - self.fp_pa_[cls]) / float(self.tp_pa_[cls] - self.fp_pa_[cls]), 0, 1)
 
         return probabilities / np.sum(probabilities)
+
+

@@ -1,13 +1,42 @@
+import dispy
 import numpy as np
+from sklearn.metrics import confusion_matrix
 
 from quantification.utils.parallelism import ClusterParallel
+
+
+def cv_confusion_matrix(clf, X, y, folds=50, local=True):
+    cv_iter = split(X, folds)
+    cms = []
+    if local:
+        for train, test in cv_iter:
+            clf.fit(X[train,], y[train])
+            cm = confusion_matrix(y[test], clf.predict(X[test]))
+            cms.append(cm)
+        return cms
+
+    def wrapper(clf, X, y, train, test):
+        clf.fit(X[train,], y[train])
+        return confusion_matrix(y[test], clf.predict(X[test]))
+
+    cluster = dispy.SharedJobCluster(wrapper, scheduler_node='dhcp015.aic.uniovi.es')
+    jobs = []
+    for train, test in cv_iter:
+        print "Submitting job CV_CM"
+        job = cluster.submit(clf, X, y, train, test)
+        jobs.append(job)
+    cluster.wait()
+    for job in jobs:
+        cms.append(job.result)
+    cluster.print_status()
+    cluster.close()
 
 
 def cross_validation_score(estimator, X, y, cv=50, score=None, local=False, **kwargs):
     # Standar number of folds is 50 (See George Forman17. 2008. Quantifying counts and costs via classification)
     cv_iter = split(X, cv)
     # TODO: Split data before give it to the cluster. Computational issues.
-    kw_args = {'X':X, 'y':y, 'estimator':estimator,'score':score}
+    kw_args = {'X': X, 'y': y, 'estimator': estimator, 'score': score}
     kw_args.update(**kwargs)
     parallel = ClusterParallel(_fit_and_score, cv_iter, kw_args, dependencies=[_score], local=local)
     return parallel.retrieve()
