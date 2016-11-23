@@ -1,7 +1,7 @@
-import threading
 from abc import ABCMeta, abstractmethod
 
 from itertools import product
+from tempfile import mkstemp
 
 import dispy
 import six
@@ -9,7 +9,7 @@ from sklearn.linear_model import LogisticRegression
 import numpy as np
 
 from quantification import BasicModel
-from quantification.utils.validation import cross_validation_score, cv_confusion_matrix
+from quantification.utils.validation import cross_validation_score, parallel_cv_confusion_matrix
 
 
 class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
@@ -146,7 +146,9 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
         self.tp_pa_ = dict.fromkeys(self.classes_)
         self.fp_pa_ = dict.fromkeys(self.classes_)
 
+
         if not local:
+            self._persist_data(X, y)
             clfs_to_fit =[]
 
         for pos_class in self.classes_:
@@ -184,9 +186,10 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
         return self
 
     def compute_performance_(self, X, y, pos_class):
-        #self.confusion_matrix_[pos_class] = np.mean(
+        # self.confusion_matrix_[pos_class] = np.mean(
         #    cross_validation_score(self.estimators_[pos_class], X, y, 50, score="confusion_matrix", local=False), 0)
-        self.confusion_matrix_[pos_class] = cv_confusion_matrix(self.estimators_[pos_class], X, y)
+        self.confusion_matrix_[pos_class] = parallel_cv_confusion_matrix(self.estimators_[pos_class],
+                                                                         self.x_path_, self.y_path)
 
         try:
             predictions = self.estimators_[pos_class].predict_proba(X)
@@ -264,4 +267,12 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
 
         return probabilities / np.sum(probabilities)
 
+    def _persist_data(self, X, y):
+        f_x, x_path = mkstemp()
+        f_y, y_path = mkstemp()
 
+        self.x_path_ = x_path
+        self.y_path = y_path
+
+        np.pickle.dump(X, f_x)
+        np.pickle.dump(y, f_y)

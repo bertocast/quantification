@@ -1,35 +1,59 @@
 import dispy
+import functools
 import numpy as np
 from sklearn.metrics import confusion_matrix
 
 from quantification.utils.parallelism import ClusterParallel
 
 
-def cv_confusion_matrix(clf, X, y, folds=50, local=True):
+def setup(X_file, y_file):
+    global X, y
+    with open(X_file, 'rb') as f_x:
+        X = np.pickle.load(f_x)
+
+    with open(y_file, 'rb') as f_y:
+        y = np.pickle.load(f_y)
+    return 0
+
+
+def cleanup():
+    global X, y
+    del X, y
+
+
+def wrapper(clf, train, test):
+    global X, y
+    clf.fit(X[train,], y[train])
+    return confusion_matrix(y[test], clf.predict(X[test]))
+
+
+def parallel_cv_confusion_matrix(clf, X_file, y_file, folds=50):
     cv_iter = split(X, folds)
     cms = []
-    if local:
+    # if local:
+    #     for train, test in cv_iter:
+    #         clf.fit(X[train,], y[train])
+    #         cm = confusion_matrix(y[test], clf.predict(X[test]))
+    #         cms.append(cm)
+    #     return cms
+
+    cluster = dispy.SharedJobCluster(wrapper, depends=[X_file, y_file],
+                                     setup=functools.partial(setup, X_file, y_file), cleanup=cleanup,
+                                     scheduler_node='dhcp015.aic.uniovi.es')
+    try:
+        jobs = []
         for train, test in cv_iter:
-            clf.fit(X[train,], y[train])
-            cm = confusion_matrix(y[test], clf.predict(X[test]))
-            cms.append(cm)
-        return cms
-
-    def wrapper(clf, X, y, train, test):
-        clf.fit(X[train,], y[train])
-        return confusion_matrix(y[test], clf.predict(X[test]))
-
-    cluster = dispy.SharedJobCluster(wrapper, scheduler_node='dhcp015.aic.uniovi.es')
-    jobs = []
-    for train, test in cv_iter:
-        print "Submitting job CV_CM"
-        job = cluster.submit(clf, X, y, train, test)
-        jobs.append(job)
-    cluster.wait()
-    for job in jobs:
-        cms.append(job.result)
-    cluster.print_status()
-    cluster.close()
+            job = cluster.submit(clf, train, test)
+            jobs.append(job)
+        cluster.wait()
+        for job in jobs:
+            cms.append(job.result)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        cluster.print_status()
+        cluster.close()
+    return cms
 
 
 def cross_validation_score(estimator, X, y, cv=50, score=None, local=False, **kwargs):

@@ -3,10 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="3a838331-9b37-4c92-811e-9ad5f39586aa" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/plancton.py" afterPath="$PROJECT_DIR$/examples/plancton.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/classify_and_count/base.py" afterPath="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/tests/classify_and_count/test_base.py" afterPath="$PROJECT_DIR$/quantification/tests/classify_and_count/test_base.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/utils/parallelism.py" afterPath="$PROJECT_DIR$/quantification/utils/parallelism.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/utils/validation.py" afterPath="$PROJECT_DIR$/quantification/utils/validation.py" />
     </list>
     <ignored path="quantification.iws" />
@@ -30,11 +27,11 @@
       <file leaf-file-name="base.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="690">
-              <caret line="188" column="52" selection-start-line="188" selection-start-column="52" selection-end-line="188" selection-end-column="52" />
+            <state relative-caret-position="628">
+              <caret line="191" column="73" selection-start-line="191" selection-start-column="73" selection-end-line="191" selection-end-column="73" />
               <folding>
-                <element signature="e#0#16#0" expanded="true" />
-                <element signature="e#391#1372#0" expanded="false" />
+                <element signature="e#0#39#0" expanded="true" />
+                <element signature="e#412#1393#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -43,8 +40,8 @@
       <file leaf-file-name="validation.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/quantification/utils/validation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="7" column="23" selection-start-line="7" selection-start-column="23" selection-end-line="7" selection-end-column="23" />
+            <state relative-caret-position="540">
+              <caret line="41" column="76" selection-start-line="41" selection-start-column="76" selection-end-line="41" selection-end-column="76" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
               </folding>
@@ -55,8 +52,8 @@
       <file leaf-file-name="plancton.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/examples/plancton.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="405">
-              <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+            <state relative-caret-position="435">
+              <caret line="29" column="13" selection-start-line="29" selection-start-column="13" selection-end-line="29" selection-end-column="13" />
               <folding>
                 <element signature="e#15#34#0" expanded="true" />
               </folding>
@@ -841,7 +838,14 @@
       <option name="project" value="LOCAL" />
       <updated>1479813016139</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="First test of a parallel CV">
+      <created>1479889887941</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1479889887941</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -920,7 +924,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add setup configuration" />
     <MESSAGE value="Move setup configuration" />
     <MESSAGE value="Implement AC method" />
     <MESSAGE value="Reduce dispy verbosity" />
@@ -945,7 +948,8 @@
     <MESSAGE value="Minor change to add verbosity to MCEnsemble" />
     <MESSAGE value="Minor change to add verbosity to MCSingleSample" />
     <MESSAGE value="First version of distribute MulticlassCC" />
-    <option name="LAST_COMMIT_MESSAGE" value="First version of distribute MulticlassCC" />
+    <MESSAGE value="First test of a parallel CV" />
+    <option name="LAST_COMMIT_MESSAGE" value="First test of a parallel CV" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1296,8 +1300,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/examples/plancton.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+        <state relative-caret-position="435">
+          <caret line="29" column="13" selection-start-line="29" selection-start-column="13" selection-end-line="29" selection-end-column="13" />
           <folding>
             <element signature="e#15#34#0" expanded="true" />
           </folding>
@@ -1306,19 +1310,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="690">
-          <caret line="188" column="52" selection-start-line="188" selection-start-column="52" selection-end-line="188" selection-end-column="52" />
+        <state relative-caret-position="628">
+          <caret line="191" column="73" selection-start-line="191" selection-start-column="73" selection-end-line="191" selection-end-column="73" />
           <folding>
-            <element signature="e#0#16#0" expanded="true" />
-            <element signature="e#391#1372#0" expanded="false" />
+            <element signature="e#0#39#0" expanded="true" />
+            <element signature="e#412#1393#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/quantification/utils/validation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="7" column="23" selection-start-line="7" selection-start-column="23" selection-end-line="7" selection-end-column="23" />
+        <state relative-caret-position="540">
+          <caret line="41" column="76" selection-start-line="41" selection-start-column="76" selection-end-line="41" selection-end-column="76" />
           <folding>
             <element signature="e#0#12#0" expanded="true" />
           </folding>
