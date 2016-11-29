@@ -83,7 +83,7 @@ class MulticlassEnsembleHDy(BaseEnsembleDMModel):
         for cls in classes:
             if verbose:
                 print "\tFitting classifier for class {}/{}".format(cls, n_classes)
-            mask = (y == cls)
+            mask = (y_sample == cls)
             y_bin = np.ones(y_sample.shape, dtype=np.int)
             y_bin[~mask] = 0
             clf = qnf._make_estimator()
@@ -120,7 +120,7 @@ class MulticlassEnsembleHDy(BaseEnsembleDMModel):
 
         def wrapper(qnf, n):
             X_sample = X[n]
-            y_sample = X[n]
+            y_sample = y[n]
             return qnf.fit_and_get_distributions(X_sample, y_sample, False)
 
         cluster = dispy.SharedJobCluster(wrapper,
