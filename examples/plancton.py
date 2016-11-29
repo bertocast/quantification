@@ -7,6 +7,8 @@ import numpy as np
 
 from quantification.classify_and_count.base import MulticlassClassifyAndCount
 from quantification.classify_and_count.ensemble import EnsembleMulticlassCC
+from quantification.distribution_matching.base import MulticlassHDy
+from quantification.metrics.multiclass import absolute_error
 
 
 def load_plankton_file(path, sample_col="Sample", target_col="class"):
@@ -21,7 +23,7 @@ def load_plankton_file(path, sample_col="Sample", target_col="class"):
                  target_names=le.classes_), le
 
 
-def multiclass():
+def cc():
     plankton,le = load_plankton_file('/Users/albertocastano/Dropbox/PlataformaCuantificación/plancton.csv')
     cc = MulticlassClassifyAndCount()
     X = plankton.data
@@ -58,7 +60,7 @@ def multiclass():
         print ""
 
 
-def ensemble():
+def cc_ensemble():
     plankton, le = load_plankton_file('/Users/albertocastano/Dropbox/PlataformaCuantificación/plancton.csv')
     cc = EnsembleMulticlassCC()
     X = plankton.data
@@ -92,7 +94,32 @@ def ensemble():
         print "PCC:\t", ["{0:0.2f}".format(i) for i in pcc]
         print "PAC:\t", ["{0:0.2f}".format(i) for i in pac]
         print "True:\t", ["{0:0.2f}".format(i) for i in tr]
-        print ""
+
+
+def hdy():
+    plankton, le = load_plankton_file('/Users/albertocastano/Dropbox/PlataformaCuantificación/plancton.csv')
+    cc = MulticlassHDy(b=100)
+    X = plankton.data
+    y = plankton.target
+    cc.fit(np.concatenate(X), np.concatenate(y), verbose=True, plot=False)
+    print "Fitted"
+    preds = []
+    for X_s in X:
+        predictions = cc.predict(X_s)
+        preds.append(predictions)
+    true = []
+    for y_s in y:
+        freq = np.bincount(y_s, minlength=len(cc.classes_))
+        true.append(freq / float(np.sum(freq)))
+
+    aes = []
+    for pr, tr in zip(preds, true):
+        ae = absolute_error(tr, pr)
+        aes.append(ae)
+        print "Absolute error:", ae
+
+    print "Mean absolute error:", np.mean(aes)
+
 
 if __name__ == '__main__':
-    ensemble()
+    hdy()

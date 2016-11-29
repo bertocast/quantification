@@ -108,6 +108,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         self.classes_ = np.unique(np.concatenate(y)).tolist()
         self.qnfs_ = [None for _ in y]
         cls_smp = {k: [] for k in self.classes_}
+
         for n, (X_sample, y_sample) in enumerate(zip(X, y)):
             if verbose:
                 print "Processing sample {}/{}".format(n, len(y))

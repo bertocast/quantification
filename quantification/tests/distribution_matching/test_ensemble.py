@@ -29,7 +29,7 @@ class TestMulticlassEnsembleHDy(ModelTestCase):
         hdy = MulticlassEnsembleHDy(b=100)
         X = self.multiclass_data.data
         y = self.multiclass_data.target
-        hdy.fit(X, y)
+        hdy.fit(X, y,local=False)
 
         probabilities = hdy.predict(X[0])
         assert_true(np.all(probabilities <= 1.))

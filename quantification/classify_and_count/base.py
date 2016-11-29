@@ -1,15 +1,11 @@
-import threading
 from abc import ABCMeta, abstractmethod
 
-from itertools import product
-from tempfile import mkstemp
-import os
+import numpy as np
 import six
 from sklearn.linear_model import LogisticRegression
-import numpy as np
 
 from quantification import BasicModel
-from quantification.metrics import distributed, binary, model_score
+from quantification.metrics import distributed, model_score
 
 
 class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
@@ -48,10 +44,6 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
 
         return estimator
 
-    def _persist_data(self, X, y):
-        f, path = mkstemp()
-        self.X_y_path_ = path + '.npz'
-        np.savez(path, X=X, y=y)
 
 class BinaryClassifyAndCount(BaseClassifyAndCountModel):
     def __init__(self, estimator_class=None, estimator_params=tuple()):
@@ -270,4 +262,3 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
             probabilities[n] = np.clip((p[1] - self.fp_pa_[cls]) / float(self.tp_pa_[cls] - self.fp_pa_[cls]), 0, 1)
 
         return probabilities / np.sum(probabilities)
-

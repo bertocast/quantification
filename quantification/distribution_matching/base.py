@@ -117,7 +117,7 @@ class MulticlassHDy(BaseDistributionMatchingModel):
         self.b = b
         self.train_dist_ = None
 
-    def fit(self, X, y, verbose=True, plot=False):
+    def fit(self, X, y, verbose=False, plot=False):
         self.classes_ = np.unique(y).tolist()
         n_classes = len(self.classes_)
         self.estimators_ = dict.fromkeys(self.classes_)
