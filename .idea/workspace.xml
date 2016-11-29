@@ -4,7 +4,6 @@
     <list default="true" id="3a838331-9b37-4c92-811e-9ad5f39586aa" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/distribution_matching/ensemble.py" afterPath="$PROJECT_DIR$/quantification/distribution_matching/ensemble.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/metrics/multiclass.py" afterPath="$PROJECT_DIR$/quantification/metrics/multiclass.py" />
     </list>
     <ignored path="quantification.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -26,11 +25,11 @@
     <splitter split-orientation="horizontal" split-proportion="0.5">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="base.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="base.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/base.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="2205">
-                  <caret line="147" column="0" lean-forward="true" selection-start-line="147" selection-start-column="0" selection-end-line="147" selection-end-column="0" />
+                <state relative-caret-position="1012">
+                  <caret line="152" column="0" lean-forward="false" selection-start-line="152" selection-start-column="0" selection-end-line="152" selection-end-column="0" />
                   <folding>
                     <element signature="e#0#39#0" expanded="true" />
                   </folding>
@@ -50,7 +49,7 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="test_ensemble.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="test_ensemble.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/quantification/tests/distribution_matching/test_ensemble.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="390">
@@ -79,8 +78,8 @@
           <file leaf-file-name="ensemble.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/ensemble.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-8">
-                  <caret line="62" column="23" lean-forward="true" selection-start-line="62" selection-start-column="23" selection-end-line="62" selection-end-column="23" />
+                <state relative-caret-position="622">
+                  <caret line="102" column="8" lean-forward="false" selection-start-line="102" selection-start-column="8" selection-end-line="102" selection-end-column="8" />
                   <folding>
                     <element signature="e#0#25#0" expanded="true" />
                   </folding>
@@ -916,13 +915,17 @@
       <option name="project" value="LOCAL" />
       <updated>1480420003506</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="Fix a bug">
+      <created>1480421422825</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1480421422825</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Nosetest_TestEnsembleMulticlassCC_test_predict_returns_feasible_probabilities - 2016.11.29 at 11h 02m 07s.xml">
-      <configuration name="Nosetest TestEnsembleMulticlassCC.test_predict_returns_feasible_probabilities" configurationId="tests" />
-    </history-entry>
     <history-entry file="Nosetest_TestEnsembleMulticlassCC_test_predict_returns_feasible_probabilities - 2016.11.29 at 11h 02m 17s.xml">
       <configuration name="Nosetest TestEnsembleMulticlassCC.test_predict_returns_feasible_probabilities" configurationId="tests" />
     </history-entry>
@@ -942,6 +945,9 @@
       <configuration name="Nosetests in TestMulticlassEnsembleHDy" configurationId="tests" />
     </history-entry>
     <history-entry file="Nosetests_in_TestMulticlassEnsembleHDy - 2016.11.29 at 13h 08m 48s.xml">
+      <configuration name="Nosetests in TestMulticlassEnsembleHDy" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Nosetests_in_TestMulticlassEnsembleHDy - 2016.11.29 at 13h 11m 20s.xml">
       <configuration name="Nosetests in TestMulticlassEnsembleHDy" configurationId="tests" />
     </history-entry>
     <history-entry file="Nosetests_in_tests_(1) - 2016.11.29 at 11h 03m 11s.xml">
@@ -995,7 +1001,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Implement multiclass adjusted count." />
     <MESSAGE value="Start to implement several input datasets feature" />
     <MESSAGE value="Update requirements" />
     <MESSAGE value="Improve parallelism. Start making ensemble on CC when multiple dataset are given." />
@@ -1020,7 +1025,8 @@
     <MESSAGE value="Minor change on parallelism" />
     <MESSAGE value="Implement matching distribution models and fix some problems" />
     <MESSAGE value="Hdy paralell fit" />
-    <option name="LAST_COMMIT_MESSAGE" value="Hdy paralell fit" />
+    <MESSAGE value="Fix a bug" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix a bug" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1056,11 +1062,16 @@
           <line>117</line>
           <option name="timeStamp" value="475" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/quantification/distribution_matching/ensemble.py</url>
+          <line>139</line>
+          <option name="timeStamp" value="476" />
+        </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="476" />
+      <option name="time" value="477" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -1333,16 +1344,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2205">
-          <caret line="147" column="0" lean-forward="true" selection-start-line="147" selection-start-column="0" selection-end-line="147" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#39#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/quantification/base.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
@@ -1412,10 +1413,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1012">
+          <caret line="152" column="0" lean-forward="false" selection-start-line="152" selection-start-column="0" selection-end-line="152" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/ensemble.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="62" column="23" lean-forward="true" selection-start-line="62" selection-start-column="23" selection-end-line="62" selection-end-column="23" />
+        <state relative-caret-position="622">
+          <caret line="102" column="8" lean-forward="false" selection-start-line="102" selection-start-column="8" selection-end-line="102" selection-end-column="8" />
           <folding>
             <element signature="e#0#25#0" expanded="true" />
           </folding>

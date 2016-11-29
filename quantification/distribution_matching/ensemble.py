@@ -81,8 +81,6 @@ class MulticlassEnsembleHDy(BaseEnsembleDMModel):
         qnf.estimators_ = dict.fromkeys(classes)
         qnf.train_dist_ = dict.fromkeys(classes)
         for cls in classes:
-            if verbose:
-                print "\tFitting classifier for class {}/{}".format(cls, n_classes)
             mask = (y_sample == cls)
             y_bin = np.ones(y_sample.shape, dtype=np.int)
             y_bin[~mask] = 0
@@ -102,7 +100,7 @@ class MulticlassEnsembleHDy(BaseEnsembleDMModel):
             for i in range(self.b):
                 qnf.train_dist_[cls][i] = [train_pos_pdf[i] / float(sum(y_bin == pos_class)),
                                            train_neg_pdf[i] / float(sum(y_bin == neg_class))]
-            return qnf
+        return qnf
 
     def parallel_fit(self, X, y):
         def setup(data_file):
@@ -121,7 +119,7 @@ class MulticlassEnsembleHDy(BaseEnsembleDMModel):
         def wrapper(qnf, n):
             X_sample = X[n]
             y_sample = y[n]
-            return qnf.fit_and_get_distributions(X_sample, y_sample, False)
+            return qnf.fit_and_get_distributions(X_sample, y_sample, True)
 
         cluster = dispy.SharedJobCluster(wrapper,
                                          depends=[self.X_y_path_],
