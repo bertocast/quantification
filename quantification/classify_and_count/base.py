@@ -1,15 +1,15 @@
+import threading
 from abc import ABCMeta, abstractmethod
 
 from itertools import product
 from tempfile import mkstemp
-
-import dispy
+import os
 import six
 from sklearn.linear_model import LogisticRegression
 import numpy as np
 
 from quantification import BasicModel
-from quantification.utils.validation import cross_validation_score, parallel_cv_confusion_matrix
+from quantification.metrics import distributed, binary, model_score
 
 
 class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
@@ -48,6 +48,10 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
 
         return estimator
 
+    def _persist_data(self, X, y):
+        f, path = mkstemp()
+        self.X_y_path_ = path + '.npz'
+        np.savez(path, X=X, y=y)
 
 class BinaryClassifyAndCount(BaseClassifyAndCountModel):
     def __init__(self, estimator_class=None, estimator_params=tuple()):
@@ -59,14 +63,18 @@ class BinaryClassifyAndCount(BaseClassifyAndCountModel):
         self.tn_pa_ = np.nan
         self.fn_pa_ = np.nan
 
-    def fit(self, X, y):
+    def fit(self, X, y, local=True):
         n_classes = len(np.unique(y))
         if n_classes != 2:
             raise ValueError("This solver is meant for binary samples "
                              "thus number of classes must be 2, but the "
                              "data contains %s", n_classes)
+
+        if not local:
+            self._persist_data(X, y)
+
         self.estimator_.fit(X, y)
-        self.compute_performance_(X, y)
+        self.compute_performance_(X, y, local=local)
         return self
 
     def predict(self, X, method='cc'):
@@ -81,9 +89,13 @@ class BinaryClassifyAndCount(BaseClassifyAndCountModel):
         else:
             raise ValueError("Invalid method %s. Choices are `cc`, `ac`, `pcc`, `pac`.", method)
 
-    def compute_performance_(self, X, y):
-        self.confusion_matrix_ = np.mean(
-            cross_validation_score(self.estimator_, X, y, 50, score="confusion_matrix", local=True), 0)
+    def compute_performance_(self, X, y, local):
+        if local:
+            self.confusion_matrix_ = np.mean(
+                model_score.cv_confusion_matrix(self.estimator_, X, y, 50), axis=0)
+        else:
+            self.confusion_matrix_ = np.mean(
+                distributed.cv_confusion_matrix(self.estimator_, X, self.X_y_path_, folds=50), axis=0)
         try:
             predictions = self.estimator_.predict_proba(X)
         except AttributeError:
@@ -107,8 +119,12 @@ class BinaryClassifyAndCount(BaseClassifyAndCountModel):
         probabilities = self._predict_cc(X)
         tpr = self.confusion_matrix_[1, 1] / float(self.confusion_matrix_[1, 1] + self.confusion_matrix_[0, 1])
         fpr = self.confusion_matrix_[1, 0] / float(self.confusion_matrix_[1, 0] + self.confusion_matrix_[0, 0])
+        if np.isnan(tpr):
+            tpr = 0
+        if np.isnan(fpr):
+            fpr = 0
         adjusted = np.clip((probabilities[1] - fpr) / float(tpr - fpr), 0, 1)
-        return np.array([adjusted, 1 - adjusted])
+        return np.array([1 - adjusted, adjusted])
 
     def _predict_pcc(self, X):
         try:
@@ -122,9 +138,9 @@ class BinaryClassifyAndCount(BaseClassifyAndCountModel):
 
     def _predict_pac(self, X):
         predictions = self._predict_pcc(X)
-        pos = np.clip((predictions[0] - self.fp_pa_) / float(self.tp_pa_ - self.fp_pa_), 0, 1)
-        neg = np.clip((predictions[1] - self.fn_pa_) / float(self.tn_pa_ - self.fn_pa_), 0, 1)
-        return np.array([pos, neg])
+        neg = np.clip((predictions[0] - self.fp_pa_) / float(self.tp_pa_ - self.fp_pa_), 0, 1)
+        pos = np.clip((predictions[1] - self.fn_pa_) / float(self.tn_pa_ - self.fn_pa_), 0, 1)
+        return np.array([neg, pos])
 
 
 class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
@@ -138,7 +154,7 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
         self.tp_pa_ = None
         self.fp_pa_ = None
 
-    def fit(self, X, y, verbose=False, local=True):
+    def fit(self, X, y, cv=50, verbose=False, local=True):
         self.classes_ = np.unique(y).tolist()
         n_classes = len(self.classes_)
         self.estimators_ = dict.fromkeys(self.classes_)
@@ -146,52 +162,33 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
         self.tp_pa_ = dict.fromkeys(self.classes_)
         self.fp_pa_ = dict.fromkeys(self.classes_)
 
-
         if not local:
             self._persist_data(X, y)
-            clfs_to_fit =[]
 
         for pos_class in self.classes_:
             if verbose:
-                print "Fiting classifier for class {}/{}".format(pos_class, n_classes)
+                print "Fiting classifier for class {}/{}".format(pos_class + 1, n_classes)
             mask = (y == pos_class)
             y_bin = np.ones(y.shape, dtype=np.int)
             y_bin[~mask] = 0
             clf = self._make_estimator()
-            if not local:
-                clfs_to_fit.append((pos_class, clf, y_bin))
-                continue
             clf = clf.fit(X, y_bin)
             self.estimators_[pos_class] = clf
-            print "Computing performance"
-            self.compute_performance_(X, y_bin, pos_class, local)
+            if verbose:
+                print "Computing performance for classifier of class {}/{}".format(pos_class + 1, n_classes)
+            self.compute_performance_(X, y_bin, pos_class, folds=cv, local=local)
 
-        if not local:
-
-            def wrapper(clf, X, y):
-                return clf.fit(X, y)
-
-            cluster = dispy.SharedJobCluster(wrapper, scheduler_node='dhcp015.aic.uniovi.es')
-            for cls, clf, y in clfs_to_fit:
-                print "Submitting job"
-                job = cluster.submit(clf, X, y)
-                job.id = cls
-                job()
-                clf = job.result
-                self.estimators_[pos_class] = clf
-                print "Computing performance"
-                self.compute_performance_(X, y, pos_class)
-            cluster.print_status()
-            cluster.close()
         return self
 
-    def compute_performance_(self, X, y, pos_class, local):
+    def compute_performance_(self, X, y, pos_class, folds, local):
         if local:
             self.confusion_matrix_[pos_class] = np.mean(
-                cross_validation_score(self.estimators_[pos_class], X, y, 50, score="confusion_matrix", local=True), 0)
+                model_score.cv_confusion_matrix(self.estimators_[pos_class], X, y, folds=folds), axis=0)
         else:
-            self.confusion_matrix_[pos_class] = parallel_cv_confusion_matrix(self.estimators_[pos_class],
-                                                                         self.x_path_, self.y_path)
+
+            self.confusion_matrix_[pos_class] = np.mean(
+                distributed.cv_confusion_matrix(self.estimators_[pos_class], X, pos_class, self.X_y_path_, folds=folds),
+                axis=0)
 
         try:
             predictions = self.estimators_[pos_class].predict_proba(X)
@@ -218,17 +215,17 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
     def _predict_cc(self, X):
         n_classes = len(self.classes_)
         probabilities = np.full(n_classes, np.nan)
-        for cls, clf in self.estimators_.iteritems():
+        for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
             predictions = clf.predict(X)
             freq = np.bincount(predictions, minlength=2)
             relative_freq = freq / float(np.sum(freq))
-            probabilities[cls] = relative_freq[1]
+            probabilities[n] = relative_freq[1]
         return probabilities / np.sum(probabilities)
 
     def _predict_ac(self, X):
         n_classes = len(self.classes_)
         probabilities = np.full(n_classes, np.nan)
-        for cls, clf in self.estimators_.iteritems():
+        for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
             predictions = clf.predict(X)
             freq = np.bincount(predictions, minlength=2)
             relative_freq = freq / float(np.sum(freq))
@@ -236,14 +233,19 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
                                                             + self.confusion_matrix_[cls][0, 1])
             fpr = self.confusion_matrix_[cls][1, 0] / float(self.confusion_matrix_[cls][1, 0]
                                                             + self.confusion_matrix_[cls][0, 0])
+            if np.isnan(tpr):
+                tpr = 0
+            if np.isnan(fpr):
+                fpr = 0
+
             adjusted = (relative_freq - fpr) / float(tpr - fpr)
-            probabilities[cls] = np.clip(adjusted[1], 0, 1)
+            probabilities[n] = np.clip(adjusted[1], 0, 1)
         return probabilities / np.sum(probabilities)
 
     def _predict_pcc(self, X):
         n_classes = len(self.classes_)
         probabilities = np.full(n_classes, np.nan)
-        for cls, clf in self.estimators_.iteritems():
+        for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
             try:
                 predictions = clf.predict_proba(X)
             except AttributeError:
@@ -251,13 +253,13 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
                                  "with hard (crisp) classifiers like %s", clf.__class__.__name__)
 
             p = np.mean(predictions, axis=0)
-            probabilities[cls] = p[1]
+            probabilities[n] = p[1]
         return probabilities / np.sum(probabilities)
 
     def _predict_pac(self, X):
         n_classes = len(self.classes_)
         probabilities = np.full(n_classes, np.nan)
-        for cls, clf in self.estimators_.iteritems():
+        for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
             try:
                 predictions = clf.predict_proba(X)
             except AttributeError:
@@ -265,16 +267,7 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
                                  "with hard (crisp) classifiers like %s", clf.__class__.__name__)
 
             p = np.mean(predictions, axis=0)
-            probabilities[cls] = np.clip((p[1] - self.fp_pa_[cls]) / float(self.tp_pa_[cls] - self.fp_pa_[cls]), 0, 1)
+            probabilities[n] = np.clip((p[1] - self.fp_pa_[cls]) / float(self.tp_pa_[cls] - self.fp_pa_[cls]), 0, 1)
 
         return probabilities / np.sum(probabilities)
 
-    def _persist_data(self, X, y):
-        f_x, x_path = mkstemp()
-        f_y, y_path = mkstemp()
-
-        self.x_path_ = x_path
-        self.y_path = y_path
-
-        np.save(X, f_x)
-        np.save(y, f_y)

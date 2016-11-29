@@ -6,6 +6,7 @@ from sklearn.preprocessing import LabelEncoder
 import numpy as np
 
 from quantification.classify_and_count.base import MulticlassClassifyAndCount
+from quantification.classify_and_count.ensemble import EnsembleMulticlassCC
 
 
 def load_plankton_file(path, sample_col="Sample", target_col="class"):
@@ -20,23 +21,78 @@ def load_plankton_file(path, sample_col="Sample", target_col="class"):
                  target_names=le.classes_), le
 
 
-if __name__ == '__main__':
+def multiclass():
     plankton,le = load_plankton_file('/Users/albertocastano/Dropbox/PlataformaCuantificación/plancton.csv')
-    ac = MulticlassClassifyAndCount()
+    cc = MulticlassClassifyAndCount()
     X = plankton.data
     y = plankton.target
-    ac.fit(np.concatenate(X), np.concatenate(y), verbose=True, local=False)
+    cc.fit(np.concatenate(X), np.concatenate(y), cv=50, verbose=True, local=False)
     print "Fitted"
-    pred = []
+    pred_cc = []
+    pred_ac = []
+    pred_pcc = []
+    pred_pac = []
     for X_s in X:
-        predictions = ac.predict(X)
-        pred.append(predictions)
+        predictions = cc.predict(X_s, method='cc')
+        pred_cc.append(predictions)
+
+        predictions = cc.predict(X_s, method='ac')
+        pred_ac.append(predictions)
+
+        predictions = cc.predict(X_s, method='pcc')
+        pred_pcc.append(predictions)
+
+        predictions = cc.predict(X_s, method='pac')
+        pred_pac.append(predictions)
     true = []
-    for y_s in plankton.target:
-        freq = np.bincount(y_s, minlength=len(ac.classes_))
+    for y_s in y:
+        freq = np.bincount(y_s, minlength=len(cc.classes_))
         true.append(freq / float(np.sum(freq)))
 
-    for (pr, tr) in zip(predictions, true):
-        print ["{0:0.2f}".format(i) for i in pr]
-        print ["{0:0.2f}".format(i) for i in tr]
+    for (cc, ac, pcc, pac, tr) in zip(pred_cc, pred_ac, pred_pcc, pred_pac, true):
+        print "CC:\t\t", ["{0:0.2f}".format(i) for i in cc]
+        print "AC:\t\t", ["{0:0.2f}".format(i) for i in ac]
+        print "PCC:\t", ["{0:0.2f}".format(i) for i in pcc]
+        print "PAC:\t", ["{0:0.2f}".format(i) for i in pac]
+        print "True:\t", ["{0:0.2f}".format(i) for i in tr]
         print ""
+
+
+def ensemble():
+    plankton, le = load_plankton_file('/Users/albertocastano/Dropbox/PlataformaCuantificación/plancton.csv')
+    cc = EnsembleMulticlassCC()
+    X = plankton.data
+    y = plankton.target
+    cc.fit(X, y, verbose=True)
+    print "Fitted"
+    pred_cc = []
+    pred_ac = []
+    pred_pcc = []
+    pred_pac = []
+    for X_s in X:
+        predictions = cc.predict(X_s, method='cc')
+        pred_cc.append(predictions)
+
+        predictions = cc.predict(X_s, method='ac')
+        pred_ac.append(predictions)
+
+        predictions = cc.predict(X_s, method='pcc')
+        pred_pcc.append(predictions)
+
+        predictions = cc.predict(X_s, method='pac')
+        pred_pac.append(predictions)
+    true = []
+    for y_s in y:
+        freq = np.bincount(y_s, minlength=len(cc.classes_))
+        true.append(freq / float(np.sum(freq)))
+
+    for (cc, ac, pcc, pac, tr) in zip(pred_cc, pred_ac, pred_pcc, pred_pac, true):
+        print "CC:\t\t", ["{0:0.2f}".format(i) for i in cc]
+        print "AC:\t\t", ["{0:0.2f}".format(i) for i in ac]
+        print "PCC:\t", ["{0:0.2f}".format(i) for i in pcc]
+        print "PAC:\t", ["{0:0.2f}".format(i) for i in pac]
+        print "True:\t", ["{0:0.2f}".format(i) for i in tr]
+        print ""
+
+if __name__ == '__main__':
+    ensemble()

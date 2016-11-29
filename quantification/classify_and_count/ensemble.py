@@ -109,16 +109,19 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         self.qnfs_ = [None for _ in y]
         cls_smp = {k: [] for k in self.classes_}
         for n, (X_sample, y_sample) in enumerate(zip(X, y)):
+            if verbose:
+                print "Processing sample {}/{}".format(n, len(y))
             qnf = MulticlassClassifyAndCount(self.estimator_class, self.estimator_params)
             classes = np.unique(y_sample).tolist()
             n_classes = len(classes)
+            qnf.classes_ = classes
             qnf.estimators_ = dict.fromkeys(classes)
             qnf.confusion_matrix_ = dict.fromkeys(classes)
             qnf.tp_pa_ = dict.fromkeys(classes)
             qnf.fp_pa_ = dict.fromkeys(classes)
             for pos_class in classes:
                 if verbose:
-                    print "Fitting classfier for class {}/{} on sample {}/{}".format(pos_class, n_classes, n, len(y))
+                    print "\tFitting classfier for class {}/{}".format(pos_class, n_classes)
                 mask = (y_sample == pos_class)
                 y_bin = np.ones(y_sample.shape, dtype=np.int)
                 y_bin[~mask] = 0
@@ -129,7 +132,6 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             self.qnfs_[n] = deepcopy(qnf)
 
         for pos_class in self.classes_:
-
             for sample in cls_smp[pos_class]:
                 self.qnfs_[sample] = self._performance(cls_smp[pos_class], sample, pos_class, X, y)
 
@@ -151,10 +153,10 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         except AttributeError:
             return
 
-        qnf.tp_pa_[label] = np.sum(predictions[y_val == qnf.estimators_[label].classes_[1], 1]) / \
-                            np.sum(y_val == qnf.estimators_[label].classes_[1])
-        qnf.fp_pa_[label] = np.sum(predictions[y_val == qnf.estimators_[label].classes_[0], 1]) / \
-                            np.sum(y_val == qnf.estimators_[label].classes_[0])
+        qnf.tp_pa_[label] = np.sum(predictions[y_bin == qnf.estimators_[label].classes_[1], 1]) / \
+                            np.sum(y_bin == qnf.estimators_[label].classes_[1])
+        qnf.fp_pa_[label] = np.sum(predictions[y_bin == qnf.estimators_[label].classes_[0], 1]) / \
+                            np.sum(y_bin == qnf.estimators_[label].classes_[0])
 
         return qnf
 
@@ -203,12 +205,11 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 fpr = qnf.confusion_matrix_[cls][1, 0] / float(qnf.confusion_matrix_[cls][1, 0]
                                                                 + qnf.confusion_matrix_[cls][0, 0])
                 adjusted = (relative_freq[1] - fpr) / float(tpr - fpr)
-                binary_freqs[cls].append(adjusted)
+                binary_freqs[cls].append(np.clip(adjusted,0,1))
 
         for cls, freqs in binary_freqs.iteritems():
             freqs = np.array(freqs)
-            maj = np.mean(freqs)
-            probabilities[cls] = np.clip(maj, 0, 1)
+            probabilities[cls] = np.mean(freqs)
         probs = np.array(probabilities.values())
         return probs / np.sum(probs)
 
@@ -237,12 +238,11 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 pred = clf.predict_proba(X)
                 relative_freq = np.mean(pred, axis=0)
                 adjusted = (relative_freq[1] - qnf.fp_pa_[cls]) / float(qnf.tp_pa_[cls] - qnf.fp_pa_[cls])
-                binary_freqs[cls].append(adjusted)
+                binary_freqs[cls].append(np.clip(adjusted,0,1))
 
         for cls, freqs in binary_freqs.iteritems():
             freqs = np.array(freqs)
-            maj = np.mean(freqs)
-            probabilities[cls] = np.clip(maj, 0, 1)
+            probabilities[cls] = np.mean(freqs)
         probs = np.array(probabilities.values())
         return probs / np.sum(probs)
 
