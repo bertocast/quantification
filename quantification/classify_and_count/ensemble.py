@@ -8,7 +8,7 @@ import numpy as np
 
 
 class BaseEnsembleCCModel(BaseClassifyAndCountModel):
-    def __init__(self, estimator_class=None, estimator_params=tuple()):
+    def __init__(self, estimator_class=None, estimator_params=dict()):
         super(BaseEnsembleCCModel, self).__init__(estimator_class, estimator_params)
         self.qnfs_ = None
 
@@ -95,7 +95,7 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
 
 
 class EnsembleMulticlassCC(BaseEnsembleCCModel):
-    def __init__(self, estimator_class=None, estimator_params=tuple()):
+    def __init__(self, estimator_class=None, estimator_params=dict()):
         super(EnsembleMulticlassCC, self).__init__(estimator_class, estimator_params)
         self.classes_ = None
         self.qnfs_ = None
@@ -122,7 +122,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             qnf.fp_pa_ = dict.fromkeys(classes)
             for pos_class in classes:
                 if verbose:
-                    print "\tFitting classfier for class {}/{}".format(pos_class, n_classes)
+                    print "\tFitting classifier for class {}/{}".format(pos_class, n_classes)
                 mask = (y_sample == pos_class)
                 y_bin = np.ones(y_sample.shape, dtype=np.int)
                 y_bin[~mask] = 0

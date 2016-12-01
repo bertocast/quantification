@@ -14,7 +14,7 @@ from quantification.utils.errors import ClusterException
 
 
 class BaseEnsembleDMModel(BaseDistributionMatchingModel):
-    def __init__(self, b, estimator_class=None, estimator_params=tuple()):
+    def __init__(self, b, estimator_class=None, estimator_params=dict()):
         super(BaseEnsembleDMModel, self).__init__(estimator_class, estimator_params)
         self.b = b
         self.qnfs_ = None
@@ -38,7 +38,7 @@ class BinaryEnsembleHDy(BaseEnsembleDMModel):
 
 
 class MulticlassEnsembleHDy(BaseEnsembleDMModel):
-    def __init__(self, b, estimator_class=None, estimator_params=tuple()):
+    def __init__(self, b, estimator_class=None, estimator_params=dict()):
         super(MulticlassEnsembleHDy, self).__init__(b, estimator_class, estimator_params)
         self.classes_ = None
         self.qnfs_ = None

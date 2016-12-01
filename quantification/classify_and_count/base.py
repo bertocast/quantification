@@ -44,7 +44,7 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
 
 
 class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
-    def __init__(self, estimator_class=None, estimator_params=tuple()):
+    def __init__(self, estimator_class=None, estimator_params=dict()):
         super(BaseBinaryClassifyAndCount, self).__init__(estimator_class, estimator_params)
         self.estimator_ = self._make_estimator()
         self.confusion_matrix_ = None
@@ -85,7 +85,7 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
                 model_score.cv_confusion_matrix(self.estimator_, X, y, 50), axis=0)
         else:
             self.confusion_matrix_ = np.mean(
-                distributed.cv_confusion_matrix(self.estimator_, X, self.X_y_path_, folds=50), axis=0)
+                distributed.cv_confusion_matrix(self.estimator_, X, y, self.X_y_path_, folds=50), axis=0)
         try:
             predictions = self.estimator_.predict_proba(X)
         except AttributeError:
@@ -134,7 +134,7 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
 
 
 class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
-    def __init__(self, estimator_class=None, estimator_params=tuple()):
+    def __init__(self, estimator_class=None, estimator_params=dict()):
         super(BaseMulticlassClassifyAndCount, self).__init__(estimator_class, estimator_params)
         self.classes_ = None
         self.estimators_ = None
@@ -149,6 +149,8 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
         n_classes = len(self.classes_)
         self.estimators_ = dict.fromkeys(self.classes_)
         self.confusion_matrix_ = dict.fromkeys(self.classes_)
+        self.fpr_ = dict.fromkeys(self.classes_)
+        self.tpr_ = dict.fromkeys(self.classes_)
         self.tp_pa_ = dict.fromkeys(self.classes_)
         self.fp_pa_ = dict.fromkeys(self.classes_)
 
@@ -172,12 +174,23 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
 
     def compute_performance_(self, X, y, pos_class, folds, local, verbose):
         if local:
+            tprs = []
+            fprs = []
+            for cm in model_score.cv_confusion_matrix(self.estimators_[pos_class], X, y, folds=folds):
+                tprs.append(cm[1, 1] / float(cm[1, 1] + cm[0, 1]))
+                fprs.append(cm[1, 0] / float(cm[1, 0] + cm[0, 0]))
+            self.fpr_[pos_class] = np.mean(fprs)
+            self.tpr_[pos_class] = np.mean(tprs)
+            if np.isnan(self.tpr_[pos_class]):
+                self.tpr_[pos_class] = 0
+            if np.isnan(self.fpr_[pos_class]):
+                self.fpr_[pos_class] = 0
             self.confusion_matrix_[pos_class] = np.mean(
                 model_score.cv_confusion_matrix(self.estimators_[pos_class], X, y, folds=folds), axis=0)
         else:
 
             self.confusion_matrix_[pos_class] = np.mean(
-                distributed.cv_confusion_matrix(self.estimators_[pos_class], X, pos_class, self.X_y_path_, folds=folds,
+                distributed.cv_confusion_matrix(self.estimators_[pos_class], X, y, pos_class, self.X_y_path_, folds=folds,
                                                 verbose=verbose),
                 axis=0)
 
@@ -220,16 +233,7 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
             predictions = clf.predict(X)
             freq = np.bincount(predictions, minlength=2)
             relative_freq = freq / float(np.sum(freq))
-            tpr = self.confusion_matrix_[cls][1, 1] / float(self.confusion_matrix_[cls][1, 1]
-                                                            + self.confusion_matrix_[cls][0, 1])
-            fpr = self.confusion_matrix_[cls][1, 0] / float(self.confusion_matrix_[cls][1, 0]
-                                                            + self.confusion_matrix_[cls][0, 0])
-            if np.isnan(tpr):
-                tpr = 0
-            if np.isnan(fpr):
-                fpr = 0
-
-            adjusted = (relative_freq - fpr) / float(tpr - fpr)
+            adjusted = (relative_freq - self.fpr_[cls]) / float(self.tpr_[cls] - self.fpr_[cls])
             probabilities[n] = np.clip(adjusted[1], 0, 1)
         return probabilities / np.sum(probabilities)
 

@@ -6,6 +6,8 @@ import numpy as np
 
 import functools
 
+from sklearn.model_selection import StratifiedKFold
+
 from quantification.utils.errors import ClusterException
 from quantification.utils.validation import split
 
@@ -40,8 +42,9 @@ def cleanup():
     del X, y
 
 
-def cv_confusion_matrix(clf, X, pos_class, data_file, folds=50, verbose=False):
-    cv_iter = split(X, folds)
+def cv_confusion_matrix(clf, X, y, pos_class, data_file, folds=50, verbose=False):
+    skf = StratifiedKFold(n_splits=folds)
+    cv_iter = skf.split(X, y)
     cms = []
     cluster = dispy.SharedJobCluster(wrapper,
                                      depends=[data_file],

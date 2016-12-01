@@ -58,14 +58,22 @@ def cc():
         true.append(freq / float(np.sum(freq)))
 
     cc_bcs = []
+    cc_aes = []
     ac_bcs = []
+    ac_aes = []
     pcc_bcs = []
+    pcc_aes = []
     pac_bcs = []
+    pac_aes = []
     for (cc, ac, pcc, pac, tr) in zip(pred_cc, pred_ac, pred_pcc, pred_pac, true):
         cc_bcs.append(bray_curtis(tr, cc))
+        cc_aes.append(absolute_error(tr, cc))
         ac_bcs.append(bray_curtis(tr, ac))
+        ac_aes.append(absolute_error(tr, ac))
         pcc_bcs.append(bray_curtis(tr, pcc))
+        pcc_aes.append(absolute_error(tr, pcc))
         pac_bcs.append(bray_curtis(tr, pac))
+        pac_aes.append(absolute_error(tr, pac))
 
     print "CC Mean Bray-Curtis Dissimilarity:", np.mean(cc_bcs)
     print "AC Mean Bray-Curtis Dissimilarity:", np.mean(ac_bcs)
@@ -106,14 +114,22 @@ def cc_ensemble():
         true.append(freq / float(np.sum(freq)))
 
     cc_bcs = []
+    cc_aes = []
     ac_bcs = []
+    ac_aes = []
     pcc_bcs = []
+    pcc_aes = []
     pac_bcs = []
+    pac_aes = []
     for (cc, ac, pcc, pac, tr) in zip(pred_cc, pred_ac, pred_pcc, pred_pac, true):
         cc_bcs.append(bray_curtis(tr, cc))
+        cc_aes.append(absolute_error(tr, cc))
         ac_bcs.append(bray_curtis(tr, ac))
+        ac_aes.append(absolute_error(tr, ac))
         pcc_bcs.append(bray_curtis(tr, pcc))
+        pcc_aes.append(absolute_error(tr, pcc))
         pac_bcs.append(bray_curtis(tr, pac))
+        pac_aes.append(absolute_error(tr, pac))
 
     print "CC-Ensemble Mean Bray-Curtis Dissimilarity:", np.mean(cc_bcs)
     print "AC-Ensemble Mean Bray-Curtis Dissimilarity:", np.mean(ac_bcs)
@@ -142,9 +158,10 @@ def hdy():
         true.append(freq / float(np.sum(freq)))
 
     bcs = []
+    aes = []
     for pr, tr in zip(preds, true):
-        bc = bray_curtis(tr, pr)
-        bcs.append(bc)
+        bcs.append(bray_curtis(tr, pr))
+        aes.append(absolute_error(tr, pr))
 
     print "HDy Mean Bray-Curtis Dissimilarity:", np.mean(bcs)
 
@@ -171,9 +188,10 @@ def hdy_ensemble():
         true.append(freq / float(np.sum(freq)))
 
     bcs = []
+    aes = []
     for pr, tr in zip(preds, true):
-        bc = bray_curtis(tr, pr)
-        bcs.append(bc)
+        bcs.append(bray_curtis(tr, pr))
+        aes.append(absolute_error(tr, pr))
 
     print "HDy-Ensemble Mean Bray-Curtis Dissimilarity:", np.mean(bcs)
 

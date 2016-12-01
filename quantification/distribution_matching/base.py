@@ -11,7 +11,7 @@ from quantification import BasicModel
 class BaseDistributionMatchingModel(six.with_metaclass(ABCMeta, BasicModel)):
     """Basic Distribution Matching Model"""
 
-    def __init__(self, estimator_class=None, estimator_params=tuple()):
+    def __init__(self, estimator_class=None, estimator_params=dict()):
         self.estimator_class = estimator_class
         self.estimator_params = estimator_params
 
@@ -43,7 +43,7 @@ class BaseDistributionMatchingModel(six.with_metaclass(ABCMeta, BasicModel)):
 
 
 class BinaryHDy(BaseDistributionMatchingModel):
-    def __init__(self, b, estimator_class=None, estimator_params=tuple()):
+    def __init__(self, b, estimator_class=None, estimator_params=dict()):
         super(BinaryHDy, self).__init__(estimator_class, estimator_params)
         self.estimator_ = self._make_estimator()
         self.b = b
@@ -110,7 +110,7 @@ class BinaryHDy(BaseDistributionMatchingModel):
 
 
 class MulticlassHDy(BaseDistributionMatchingModel):
-    def __init__(self, b, estimator_class=None, estimator_params=tuple()):
+    def __init__(self, b, estimator_class=None, estimator_params=dict()):
         super(MulticlassHDy, self).__init__(estimator_class, estimator_params)
         self.b = b
         self.train_dist_ = None
