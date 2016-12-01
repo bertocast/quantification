@@ -3,7 +3,16 @@
   <component name="ChangeListManager">
     <list default="true" id="3a838331-9b37-4c92-811e-9ad5f39586aa" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/plancton.py" afterPath="$PROJECT_DIR$/examples/plancton.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/classify_and_count/base.py" afterPath="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/classify_and_count/ensemble.py" afterPath="$PROJECT_DIR$/quantification/classify_and_count/ensemble.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/distribution_matching/base.py" afterPath="$PROJECT_DIR$/quantification/distribution_matching/base.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/distribution_matching/ensemble.py" afterPath="$PROJECT_DIR$/quantification/distribution_matching/ensemble.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/metrics/distributed.py" afterPath="$PROJECT_DIR$/quantification/metrics/distributed.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/metrics/multiclass.py" afterPath="$PROJECT_DIR$/quantification/metrics/multiclass.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/tests/classify_and_count/test_base.py" afterPath="$PROJECT_DIR$/quantification/tests/classify_and_count/test_base.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/tests/distribution_matching/test_base.py" afterPath="$PROJECT_DIR$/quantification/tests/distribution_matching/test_base.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/tests/distribution_matching/test_ensemble.py" afterPath="$PROJECT_DIR$/quantification/tests/distribution_matching/test_ensemble.py" />
     </list>
     <ignored path="quantification.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -25,86 +34,13 @@
     <splitter split-orientation="horizontal" split-proportion="0.5">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="base.py" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/base.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1012">
-                  <caret line="152" column="0" lean-forward="false" selection-start-line="152" selection-start-column="0" selection-end-line="152" selection-end-column="0" />
-                  <folding>
-                    <element signature="e#0#39#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="plancton.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="plancton.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/examples/plancton.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="606">
-                  <caret line="117" column="0" lean-forward="false" selection-start-line="117" selection-start-column="0" selection-end-line="117" selection-end-column="0" />
+                <state relative-caret-position="412">
+                  <caret line="133" column="0" lean-forward="false" selection-start-line="133" selection-start-column="0" selection-end-line="133" selection-end-column="0" />
                   <folding>
-                    <element signature="e#15#34#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="test_ensemble.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/quantification/tests/distribution_matching/test_ensemble.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="390">
-                  <caret line="26" column="26" lean-forward="true" selection-start-line="26" selection-start-column="26" selection-end-line="26" selection-end-column="26" />
-                  <folding>
-                    <element signature="e#0#42#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="multiclass.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/quantification/metrics/multiclass.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="195">
-                  <caret line="14" column="42" lean-forward="false" selection-start-line="14" selection-start-column="42" selection-end-line="14" selection-end-column="42" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-first>
-      <split-second>
-        <leaf>
-          <file leaf-file-name="ensemble.py" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/ensemble.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="622">
-                  <caret line="102" column="8" lean-forward="false" selection-start-line="102" selection-start-column="8" selection-end-line="102" selection-end-column="8" />
-                  <folding>
-                    <element signature="e#0#25#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="distributed.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/quantification/metrics/distributed.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="210">
-                  <caret line="22" column="8" lean-forward="false" selection-start-line="22" selection-start-column="8" selection-end-line="22" selection-end-column="8" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="base.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="585">
-                  <caret line="181" column="104" lean-forward="false" selection-start-line="181" selection-start-column="91" selection-end-line="181" selection-end-column="104" />
-                  <folding>
-                    <element signature="e#0#39#0" expanded="true" />
-                    <element signature="e#1347#5102#0" expanded="false" />
+                    <element signature="e#15#30#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -113,13 +49,147 @@
           <file leaf-file-name="ensemble.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/ensemble.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="405">
-                  <caret line="111" column="0" lean-forward="false" selection-start-line="111" selection-start-column="0" selection-end-line="111" selection-end-column="0" />
+                <state relative-caret-position="135">
+                  <caret line="96" column="48" lean-forward="false" selection-start-line="96" selection-start-column="48" selection-end-line="96" selection-end-column="48" />
                   <folding>
-                    <element signature="e#517#4243#0" expanded="false" />
-                    <element signature="e#3502#3698#0" expanded="false" />
-                    <element signature="e#3739#4243#0" expanded="false" />
+                    <element signature="e#295#473#0" expanded="false" />
+                    <element signature="e#525#4255#0" expanded="false" />
+                    <element signature="e#3514#3710#0" expanded="false" />
+                    <element signature="e#3751#4255#0" expanded="false" />
+                    <element signature="e#4311#10969#0" expanded="false" />
+                    <element signature="e#7152#7528#0" expanded="false" />
+                    <element signature="e#7568#8363#0" expanded="false" />
+                    <element signature="e#8403#9617#0" expanded="false" />
+                    <element signature="e#9658#10248#0" expanded="false" />
+                    <element signature="e#10289#10969#0" expanded="false" />
                   </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="test_ensemble.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/quantification/tests/distribution_matching/test_ensemble.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="495">
+                  <caret line="33" column="41" lean-forward="true" selection-start-line="33" selection-start-column="41" selection-end-line="33" selection-end-column="41" />
+                  <folding>
+                    <element signature="e#0#42#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="test_base.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/quantification/tests/classify_and_count/test_base.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="90">
+                  <caret line="6" column="35" lean-forward="false" selection-start-line="6" selection-start-column="35" selection-end-line="6" selection-end-column="35" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="test_ensemble.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/quantification/tests/classify_and_count/test_ensemble.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="407">
+                  <caret line="62" column="26" lean-forward="false" selection-start-line="62" selection-start-column="26" selection-end-line="62" selection-end-column="26" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="test_base.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/quantification/tests/distribution_matching/test_base.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="525">
+                  <caret line="42" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="multiclass.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/quantification/metrics/multiclass.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="510">
+                  <caret line="35" column="15" lean-forward="false" selection-start-line="35" selection-start-column="4" selection-end-line="35" selection-end-column="15" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+          <file leaf-file-name="base.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/base.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="375">
+                  <caret line="32" column="51" lean-forward="true" selection-start-line="32" selection-start-column="51" selection-end-line="32" selection-end-column="51" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="ensemble.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/ensemble.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="1035">
+                  <caret line="83" column="24" lean-forward="true" selection-start-line="83" selection-start-column="24" selection-end-line="83" selection-end-column="24" />
+                  <folding>
+                    <element signature="e#0#25#0" expanded="true" />
+                    <element signature="e#608#1175#0" expanded="false" />
+                    <element signature="e#6000#7476#0" expanded="false" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="distributed.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/quantification/metrics/distributed.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="359">
+                  <caret line="34" column="47" lean-forward="true" selection-start-line="34" selection-start-column="47" selection-end-line="34" selection-end-column="47" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="base.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="495">
+                  <caret line="40" column="52" lean-forward="false" selection-start-line="40" selection-start-column="52" selection-end-line="40" selection-end-column="52" />
+                  <folding>
+                    <element signature="e#1277#5036#0" expanded="false" />
+                    <element signature="e#7655#8031#0" expanded="false" />
+                    <element signature="e#8071#8476#0" expanded="false" />
+                    <element signature="e#8516#9486#0" expanded="false" />
+                    <element signature="e#9527#10103#0" expanded="false" />
+                    <element signature="e#10144#10802#0" expanded="false" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="logistic.py" pinned="false" current-in-tab="false">
+            <entry file="file:///Library/Python/2.7/site-packages/sklearn/linear_model/logistic.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="2614">
+                  <caret line="1128" column="23" lean-forward="true" selection-start-line="1128" selection-start-column="23" selection-end-line="1128" selection-end-column="23" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="model_score.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/quantification/metrics/model_score.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="135">
+                  <caret line="12" column="21" lean-forward="true" selection-start-line="12" selection-start-column="21" selection-end-line="12" selection-end-column="21" />
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -141,6 +211,9 @@
       <find>plot=Fal</find>
       <find>cv_</find>
       <find>,2</find>
+      <find>verbose</find>
+      <find>local</find>
+      <find>loca</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -180,19 +253,20 @@
         <option value="$PROJECT_DIR$/quantification/score/distributed.py" />
         <option value="$PROJECT_DIR$/quantification/metrics/metrics.py" />
         <option value="$PROJECT_DIR$/quantification/metrics/binary.py" />
-        <option value="$PROJECT_DIR$/quantification/metrics/model_score.py" />
-        <option value="$PROJECT_DIR$/quantification/tests/distribution_matching/test_base.py" />
         <option value="$PROJECT_DIR$/quantification/datasets/data/iris/iris2.csv" />
         <option value="$PROJECT_DIR$/quantification/datasets/data/iris/iris.csv" />
         <option value="$PROJECT_DIR$/quantification/datasets/data/iris/iris3.csv" />
-        <option value="$PROJECT_DIR$/quantification/distribution_matching/base.py" />
-        <option value="$PROJECT_DIR$/examples/plancton.py" />
-        <option value="$PROJECT_DIR$/quantification/classify_and_count/ensemble.py" />
         <option value="$PROJECT_DIR$/quantification/base.py" />
-        <option value="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
-        <option value="$PROJECT_DIR$/quantification/tests/distribution_matching/test_ensemble.py" />
         <option value="$PROJECT_DIR$/quantification/metrics/multiclass.py" />
+        <option value="$PROJECT_DIR$/quantification/classify_and_count/ensemble.py" />
+        <option value="$PROJECT_DIR$/quantification/metrics/model_score.py" />
+        <option value="$PROJECT_DIR$/quantification/metrics/distributed.py" />
+        <option value="$PROJECT_DIR$/quantification/tests/distribution_matching/test_base.py" />
+        <option value="$PROJECT_DIR$/quantification/tests/distribution_matching/test_ensemble.py" />
+        <option value="$PROJECT_DIR$/examples/plancton.py" />
         <option value="$PROJECT_DIR$/quantification/distribution_matching/ensemble.py" />
+        <option value="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
+        <option value="$PROJECT_DIR$/quantification/distribution_matching/base.py" />
       </list>
     </option>
   </component>
@@ -235,7 +309,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -395,12 +468,14 @@
         </subPane>
       </pane>
       <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="FullScreen" value="true" />
+    <property name="ToolWindowFind.ShowToolbar" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -414,28 +489,7 @@
       <recent name="$PROJECT_DIR$/quantification" />
     </key>
   </component>
-  <component name="RunManager" selected="Python tests.Nosetests in TestMulticlassEnsembleHDy">
-    <configuration default="false" name="Nosetests in tests" type="tests" factoryName="Nosetests" temporary="true" nameIsGenerated="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/quantification/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="quantification" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="CLASS_NAME" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="FOLDER_NAME" value="$PROJECT_DIR$/quantification/tests" />
-      <option name="TEST_TYPE" value="TEST_FOLDER" />
-      <option name="PATTERN" value="" />
-      <option name="USE_PATTERN" value="false" />
-      <option name="PARAMS" value="" />
-      <option name="USE_PARAM" value="false" />
-      <method />
-    </configuration>
+  <component name="RunManager" selected="Python.plancton">
     <configuration default="false" name="Nosetest TestEnsembleMulticlassCC.test_predict_returns_feasible_probabilities" type="tests" factoryName="Nosetests" temporary="true" nameIsGenerated="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -510,6 +564,27 @@
       <option name="METHOD_NAME" value="" />
       <option name="FOLDER_NAME" value="" />
       <option name="TEST_TYPE" value="TEST_CLASS" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Nosetests in tests (2)" type="tests" factoryName="Nosetests" temporary="true" nameIsGenerated="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/quantification/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="quantification" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="$PROJECT_DIR$/quantification/tests" />
+      <option name="TEST_TYPE" value="TEST_FOLDER" />
       <option name="PATTERN" value="" />
       <option name="USE_PATTERN" value="false" />
       <option name="PARAMS" value="" />
@@ -651,19 +726,19 @@
       <method />
     </configuration>
     <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="Python tests.Nosetests in tests" />
-      <item index="1" class="java.lang.String" itemvalue="Python tests.Nosetest TestEnsembleMulticlassCC.test_predict_returns_feasible_probabilities" />
-      <item index="2" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (1)" />
-      <item index="3" class="java.lang.String" itemvalue="Python.plancton" />
-      <item index="4" class="java.lang.String" itemvalue="Python tests.Nosetests in TestMulticlassEnsembleHDy" />
+      <item index="0" class="java.lang.String" itemvalue="Python tests.Nosetest TestEnsembleMulticlassCC.test_predict_returns_feasible_probabilities" />
+      <item index="1" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (1)" />
+      <item index="2" class="java.lang.String" itemvalue="Python.plancton" />
+      <item index="3" class="java.lang.String" itemvalue="Python tests.Nosetests in TestMulticlassEnsembleHDy" />
+      <item index="4" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (2)" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python tests.Nosetests in TestMulticlassEnsembleHDy" />
-        <item index="1" class="java.lang.String" itemvalue="Python.plancton" />
-        <item index="2" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (1)" />
-        <item index="3" class="java.lang.String" itemvalue="Python tests.Nosetest TestEnsembleMulticlassCC.test_predict_returns_feasible_probabilities" />
-        <item index="4" class="java.lang.String" itemvalue="Python tests.Nosetests in tests" />
+        <item index="0" class="java.lang.String" itemvalue="Python.plancton" />
+        <item index="1" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (2)" />
+        <item index="2" class="java.lang.String" itemvalue="Python tests.Nosetests in TestMulticlassEnsembleHDy" />
+        <item index="3" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (1)" />
+        <item index="4" class="java.lang.String" itemvalue="Python tests.Nosetest TestEnsembleMulticlassCC.test_predict_returns_feasible_probabilities" />
       </list>
     </recent_temporary>
   </component>
@@ -922,25 +997,17 @@
       <option name="project" value="LOCAL" />
       <updated>1480421422825</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="Fix a bug">
+      <created>1480421882986</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1480421882986</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Nosetest_TestEnsembleMulticlassCC_test_predict_returns_feasible_probabilities - 2016.11.29 at 11h 02m 17s.xml">
-      <configuration name="Nosetest TestEnsembleMulticlassCC.test_predict_returns_feasible_probabilities" configurationId="tests" />
-    </history-entry>
-    <history-entry file="Nosetest_TestEnsembleMulticlassCC_test_predict_returns_feasible_probabilities - 2016.11.29 at 11h 02m 46s.xml">
-      <configuration name="Nosetest TestEnsembleMulticlassCC.test_predict_returns_feasible_probabilities" configurationId="tests" />
-    </history-entry>
-    <history-entry file="Nosetests_in_TestMulticlassEnsembleHDy - 2016.11.29 at 12h 45m 29s.xml">
-      <configuration name="Nosetests in TestMulticlassEnsembleHDy" configurationId="tests" />
-    </history-entry>
-    <history-entry file="Nosetests_in_TestMulticlassEnsembleHDy - 2016.11.29 at 12h 45m 59s.xml">
-      <configuration name="Nosetests in TestMulticlassEnsembleHDy" configurationId="tests" />
-    </history-entry>
-    <history-entry file="Nosetests_in_TestMulticlassEnsembleHDy - 2016.11.29 at 12h 53m 02s.xml">
-      <configuration name="Nosetests in TestMulticlassEnsembleHDy" configurationId="tests" />
-    </history-entry>
     <history-entry file="Nosetests_in_TestMulticlassEnsembleHDy - 2016.11.29 at 12h 53m 44s.xml">
       <configuration name="Nosetests in TestMulticlassEnsembleHDy" configurationId="tests" />
     </history-entry>
@@ -950,11 +1017,26 @@
     <history-entry file="Nosetests_in_TestMulticlassEnsembleHDy - 2016.11.29 at 13h 11m 20s.xml">
       <configuration name="Nosetests in TestMulticlassEnsembleHDy" configurationId="tests" />
     </history-entry>
+    <history-entry file="Nosetests_in_TestMulticlassEnsembleHDy - 2016.11.29 at 13h 19m 18s.xml">
+      <configuration name="Nosetests in TestMulticlassEnsembleHDy" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Nosetests_in_TestMulticlassEnsembleHDy - 2016.11.29 at 13h 19m 35s.xml">
+      <configuration name="Nosetests in TestMulticlassEnsembleHDy" configurationId="tests" />
+    </history-entry>
     <history-entry file="Nosetests_in_tests_(1) - 2016.11.29 at 11h 03m 11s.xml">
       <configuration name="Nosetests in tests (1)" configurationId="tests" />
     </history-entry>
     <history-entry file="Nosetests_in_tests_(1) - 2016.11.29 at 11h 04m 18s.xml">
       <configuration name="Nosetests in tests (1)" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Nosetests_in_tests_(2) - 2016.11.30 at 13h 12m 41s.xml">
+      <configuration name="Nosetests in tests (2)" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Nosetests_in_tests_(2) - 2016.11.30 at 13h 14m 55s.xml">
+      <configuration name="Nosetests in tests (2)" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Nosetests_in_tests_(2) - 2016.11.30 at 13h 17m 10s.xml">
+      <configuration name="Nosetests in tests (2)" configurationId="tests" />
     </history-entry>
   </component>
   <component name="TodoView" selected-index="4">
@@ -973,6 +1055,7 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13863726" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32919708" sideWeight="0.49665222" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39854014" sideWeight="0.51083106" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="true" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.32919708" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32627738" sideWeight="0.48838127" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32517758" sideWeight="0.49311295" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27956206" sideWeight="0.48523042" order="2" side_tool="false" content_ui="tabs" />
@@ -985,7 +1068,6 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32991317" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -1041,53 +1123,24 @@
           <line>37</line>
           <option name="timeStamp" value="385" />
         </line-breakpoint>
-        <line-breakpoint suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/quantification/tests/distribution_matching/test_base.py</url>
-          <line>47</line>
-          <option name="timeStamp" value="434" />
-        </line-breakpoint>
-        <line-breakpoint suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/quantification/tests/distribution_matching/test_base.py</url>
-          <line>46</line>
-          <option name="timeStamp" value="435" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/examples/plancton.py</url>
-          <line>120</line>
-          <option name="timeStamp" value="472" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <condition expression="ae == 0.0" language="Python" />
-          <url>file://$PROJECT_DIR$/examples/plancton.py</url>
-          <line>117</line>
-          <option name="timeStamp" value="475" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/quantification/distribution_matching/ensemble.py</url>
-          <line>139</line>
-          <option name="timeStamp" value="476" />
+          <url>file://$PROJECT_DIR$/quantification/classify_and_count/base.py</url>
+          <line>222</line>
+          <option name="timeStamp" value="484" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="477" />
+      <option name="time" value="487" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/quantification/tests/classify_and_count/test_adjusted.py" />
     <entry file="file:///Library/Python/2.7/site-packages/sklearn/svm/base.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1442">
           <caret line="774" column="4" lean-forward="false" selection-start-line="774" selection-start-column="4" selection-end-line="774" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///Library/Python/2.7/site-packages/sklearn/linear_model/logistic.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="118">
-          <caret line="1181" column="54" lean-forward="false" selection-start-line="1181" selection-start-column="54" selection-end-line="1181" selection-end-column="54" />
         </state>
       </provider>
     </entry>
@@ -1146,13 +1199,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/examples/_dispy_20161122122512" />
-    <entry file="file:///Library/Python/2.7/site-packages/sklearn/metrics/classification.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="181" column="4" lean-forward="false" selection-start-line="181" selection-start-column="4" selection-end-line="181" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1237,14 +1283,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file:///Library/Python/2.7/site-packages/sklearn/linear_model/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="358">
-          <caret line="351" column="0" lean-forward="false" selection-start-line="351" selection-start-column="0" selection-end-line="351" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/quantification/utils/parallelism.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1245">
@@ -1257,7 +1295,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="413">
           <caret line="165" column="4" lean-forward="false" selection-start-line="165" selection-start-column="4" selection-end-line="165" selection-end-column="4" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1276,31 +1313,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/metrics/model_score.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="18" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="14" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/quantification/metrics/binary.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
           <caret line="3" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="39" selection-end-column="75" />
-          <folding>
-            <element signature="e#0#18#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/tests/distribution_matching/test_base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="705">
-          <caret line="47" column="0" lean-forward="false" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#42#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1308,7 +1324,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1350">
           <caret line="90" column="17" lean-forward="true" selection-start-line="90" selection-start-column="17" selection-end-line="90" selection-end-column="17" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1316,7 +1331,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="171">
           <caret line="57" column="17" lean-forward="false" selection-start-line="57" selection-start-column="17" selection-end-line="57" selection-end-column="17" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1324,23 +1338,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2250">
           <caret line="150" column="17" lean-forward="false" selection-start-line="150" selection-start-column="17" selection-end-line="150" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/tests/classify_and_count/test_base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="464">
-          <caret line="95" column="8" lean-forward="false" selection-start-line="95" selection-start-column="8" selection-end-line="95" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/tests/classify_and_count/test_ensemble.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="516">
-          <caret line="78" column="0" lean-forward="false" selection-start-line="78" selection-start-column="0" selection-end-line="78" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1349,86 +1346,161 @@
         <state relative-caret-position="120">
           <caret line="8" column="0" lean-forward="true" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
           <folding>
-            <element signature="e#0#28#0" expanded="true" />
+            <element signature="e#0#28#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
+    <entry file="file:///Library/Python/2.7/site-packages/sklearn/linear_model/base.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="585">
-          <caret line="181" column="104" lean-forward="false" selection-start-line="181" selection-start-column="91" selection-end-line="181" selection-end-column="104" />
-          <folding>
-            <element signature="e#0#39#0" expanded="true" />
-            <element signature="e#1347#5102#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="319">
+          <caret line="351" column="0" lean-forward="false" selection-start-line="351" selection-start-column="0" selection-end-line="351" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/metrics/distributed.py">
+    <entry file="file://$PROJECT_DIR$/quantification/metrics/multiclass.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="22" column="8" lean-forward="false" selection-start-line="22" selection-start-column="8" selection-end-line="22" selection-end-column="8" />
+        <state relative-caret-position="510">
+          <caret line="35" column="15" lean-forward="false" selection-start-line="35" selection-start-column="4" selection-end-line="35" selection-end-column="15" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/ensemble.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="111" column="0" lean-forward="false" selection-start-line="111" selection-start-column="0" selection-end-line="111" selection-end-column="0" />
+        <state relative-caret-position="135">
+          <caret line="96" column="48" lean-forward="false" selection-start-line="96" selection-start-column="48" selection-end-line="96" selection-end-column="48" />
           <folding>
-            <element signature="e#517#4243#0" expanded="false" />
-            <element signature="e#3502#3698#0" expanded="false" />
-            <element signature="e#3739#4243#0" expanded="false" />
+            <element signature="e#295#473#0" expanded="false" />
+            <element signature="e#525#4255#0" expanded="false" />
+            <element signature="e#3514#3710#0" expanded="false" />
+            <element signature="e#3751#4255#0" expanded="false" />
+            <element signature="e#4311#10969#0" expanded="false" />
+            <element signature="e#7152#7528#0" expanded="false" />
+            <element signature="e#7568#8363#0" expanded="false" />
+            <element signature="e#8403#9617#0" expanded="false" />
+            <element signature="e#9658#10248#0" expanded="false" />
+            <element signature="e#10289#10969#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/examples/plancton.py">
+    <entry file="file://$PROJECT_DIR$/quantification/tests/classify_and_count/test_base.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="606">
-          <caret line="117" column="0" lean-forward="false" selection-start-line="117" selection-start-column="0" selection-end-line="117" selection-end-column="0" />
-          <folding>
-            <element signature="e#15#34#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="90">
+          <caret line="6" column="35" lean-forward="false" selection-start-line="6" selection-start-column="35" selection-end-line="6" selection-end-column="35" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/metrics/multiclass.py">
+    <entry file="file://$PROJECT_DIR$/quantification/tests/classify_and_count/test_ensemble.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="14" column="42" lean-forward="false" selection-start-line="14" selection-start-column="42" selection-end-line="14" selection-end-column="42" />
+        <state relative-caret-position="407">
+          <caret line="62" column="26" lean-forward="false" selection-start-line="62" selection-start-column="26" selection-end-line="62" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/tests/distribution_matching/test_base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="525">
+          <caret line="42" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/quantification/tests/distribution_matching/test_ensemble.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="26" column="26" lean-forward="true" selection-start-line="26" selection-start-column="26" selection-end-line="26" selection-end-column="26" />
+        <state relative-caret-position="495">
+          <caret line="33" column="41" lean-forward="true" selection-start-line="33" selection-start-column="41" selection-end-line="33" selection-end-column="41" />
           <folding>
             <element signature="e#0#42#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/metrics/distributed.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="359">
+          <caret line="34" column="47" lean-forward="true" selection-start-line="34" selection-start-column="47" selection-end-line="34" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/lib/python2.7/site-packages/scipy/sparse/coo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="117" column="8" lean-forward="false" selection-start-line="117" selection-start-column="8" selection-end-line="117" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Library/Python/2.7/site-packages/sklearn/metrics/classification.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="604">
+          <caret line="270" column="14" lean-forward="false" selection-start-line="270" selection-start-column="14" selection-end-line="270" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/metrics/model_score.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="12" column="21" lean-forward="true" selection-start-line="12" selection-start-column="21" selection-end-line="12" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///Library/Python/2.7/site-packages/sklearn/linear_model/logistic.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2614">
+          <caret line="1128" column="23" lean-forward="true" selection-start-line="1128" selection-start-column="23" selection-end-line="1128" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="40" column="52" lean-forward="false" selection-start-line="40" selection-start-column="52" selection-end-line="40" selection-end-column="52" />
+          <folding>
+            <element signature="e#1277#5036#0" expanded="false" />
+            <element signature="e#7655#8031#0" expanded="false" />
+            <element signature="e#8071#8476#0" expanded="false" />
+            <element signature="e#8516#9486#0" expanded="false" />
+            <element signature="e#9527#10103#0" expanded="false" />
+            <element signature="e#10144#10802#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/plancton.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="412">
+          <caret line="133" column="0" lean-forward="false" selection-start-line="133" selection-start-column="0" selection-end-line="133" selection-end-column="0" />
+          <folding>
+            <element signature="e#15#30#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/base.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1012">
-          <caret line="152" column="0" lean-forward="false" selection-start-line="152" selection-start-column="0" selection-end-line="152" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#39#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="375">
+          <caret line="32" column="51" lean-forward="true" selection-start-line="32" selection-start-column="51" selection-end-line="32" selection-end-column="51" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/ensemble.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="622">
-          <caret line="102" column="8" lean-forward="false" selection-start-line="102" selection-start-column="8" selection-end-line="102" selection-end-column="8" />
+        <state relative-caret-position="1035">
+          <caret line="83" column="24" lean-forward="true" selection-start-line="83" selection-start-column="24" selection-end-line="83" selection-end-column="24" />
           <folding>
             <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#608#1175#0" expanded="false" />
+            <element signature="e#6000#7476#0" expanded="false" />
           </folding>
         </state>
       </provider>

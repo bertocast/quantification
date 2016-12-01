@@ -38,16 +38,14 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
     def _make_estimator(self):
         estimator = self._validate_estimator(default=LogisticRegression())
 
-        estimator.set_params(**dict((p, getattr(self, p))
-
-                                    for p in self.estimator_params))
+        estimator.set_params(**self.estimator_params)
 
         return estimator
 
 
-class BinaryClassifyAndCount(BaseClassifyAndCountModel):
+class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
     def __init__(self, estimator_class=None, estimator_params=tuple()):
-        super(BinaryClassifyAndCount, self).__init__(estimator_class, estimator_params)
+        super(BaseBinaryClassifyAndCount, self).__init__(estimator_class, estimator_params)
         self.estimator_ = self._make_estimator()
         self.confusion_matrix_ = None
         self.tp_pa_ = np.nan
@@ -135,9 +133,9 @@ class BinaryClassifyAndCount(BaseClassifyAndCountModel):
         return np.array([neg, pos])
 
 
-class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
+class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
     def __init__(self, estimator_class=None, estimator_params=tuple()):
-        super(MulticlassClassifyAndCount, self).__init__(estimator_class, estimator_params)
+        super(BaseMulticlassClassifyAndCount, self).__init__(estimator_class, estimator_params)
         self.classes_ = None
         self.estimators_ = None
         self.confusion_matrix_ = None
@@ -168,18 +166,19 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
             self.estimators_[pos_class] = clf
             if verbose:
                 print "Computing performance for classifier of class {}/{}".format(pos_class + 1, n_classes)
-            self.compute_performance_(X, y_bin, pos_class, folds=cv, local=local)
+            self.compute_performance_(X, y_bin, pos_class, folds=cv, local=local, verbose=verbose)
 
         return self
 
-    def compute_performance_(self, X, y, pos_class, folds, local):
+    def compute_performance_(self, X, y, pos_class, folds, local, verbose):
         if local:
             self.confusion_matrix_[pos_class] = np.mean(
                 model_score.cv_confusion_matrix(self.estimators_[pos_class], X, y, folds=folds), axis=0)
         else:
 
             self.confusion_matrix_[pos_class] = np.mean(
-                distributed.cv_confusion_matrix(self.estimators_[pos_class], X, pos_class, self.X_y_path_, folds=folds),
+                distributed.cv_confusion_matrix(self.estimators_[pos_class], X, pos_class, self.X_y_path_, folds=folds,
+                                                verbose=verbose),
                 axis=0)
 
         try:
@@ -262,3 +261,51 @@ class MulticlassClassifyAndCount(BaseClassifyAndCountModel):
             probabilities[n] = np.clip((p[1] - self.fp_pa_[cls]) / float(self.tp_pa_[cls] - self.fp_pa_[cls]), 0, 1)
 
         return probabilities / np.sum(probabilities)
+
+
+class BinaryClassifyAndCount(BaseBinaryClassifyAndCount):
+    def predict(self, X, method='cc'):
+        assert method == 'cc'
+        return self._predict_cc(X)
+
+
+class BinaryAdjustedCount(BaseBinaryClassifyAndCount):
+    def predict(self, X, method='ac'):
+        assert method == 'ac'
+        return self._predict_ac(X)
+
+
+class BinaryProbabilisticCC(BaseBinaryClassifyAndCount):
+    def predict(self, X, method='pcc'):
+        assert method == 'pcc'
+        return self._predict_pcc(X)
+
+
+class BinaryProbabilisticAC(BaseBinaryClassifyAndCount):
+    def predict(self, X, method='pac'):
+        assert method == 'pac'
+        return self._predict_pac(X)
+
+
+class MulticlassClassifyAndCount(BaseMulticlassClassifyAndCount):
+    def predict(self, X, method='cc'):
+        assert method == 'cc'
+        return self._predict_cc(X)
+
+
+class MulticlassAdjustedCount(BaseMulticlassClassifyAndCount):
+    def predict(self, X, method='ac'):
+        assert method == 'ac'
+        return self._predict_ac(X)
+
+
+class MulticlassProbabilisticCC(BaseMulticlassClassifyAndCount):
+    def predict(self, X, method='pcc'):
+        assert method == 'pcc'
+        return self._predict_pcc(X)
+
+
+class MulticlassProbabilisticAC(BaseMulticlassClassifyAndCount):
+    def predict(self, X, method='pac'):
+        assert method == 'pac'
+        return self._predict_pac(X)

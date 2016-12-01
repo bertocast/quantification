@@ -1,6 +1,7 @@
 from os.path import basename
 
 import dispy
+import logging
 import numpy as np
 
 import functools
@@ -39,7 +40,7 @@ def cleanup():
     del X, y
 
 
-def cv_confusion_matrix(clf, X, pos_class, data_file, folds=50):
+def cv_confusion_matrix(clf, X, pos_class, data_file, folds=50, verbose=False):
     cv_iter = split(X, folds)
     cms = []
     cluster = dispy.SharedJobCluster(wrapper,
@@ -47,7 +48,8 @@ def cv_confusion_matrix(clf, X, pos_class, data_file, folds=50):
                                      reentrant=True,
                                      setup=functools.partial(setup, basename(data_file)),
                                      cleanup=cleanup,
-                                     scheduler_node='dhcp015.aic.uniovi.es')
+                                     scheduler_node='dhcp015.aic.uniovi.es',
+                                     loglevel=logging.ERROR)
     try:
         jobs = []
         for train, test in cv_iter:
@@ -60,7 +62,7 @@ def cv_confusion_matrix(clf, X, pos_class, data_file, folds=50):
             cms.append(job.result)
     except KeyboardInterrupt:
         cluster.close()
-    finally:
+    if verbose:
         cluster.print_status()
-        cluster.close()
+    cluster.close()
     return np.array(cms)

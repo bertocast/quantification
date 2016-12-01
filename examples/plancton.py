@@ -1,18 +1,20 @@
 # coding=utf-8
+import warnings
+
 import pandas as pd
 from sklearn.datasets.base import Bunch
 from sklearn.preprocessing import LabelEncoder
 
 import numpy as np
 
-from quantification.classify_and_count.base import MulticlassClassifyAndCount
+from quantification.classify_and_count.base import BaseMulticlassClassifyAndCount
 from quantification.classify_and_count.ensemble import EnsembleMulticlassCC
 from quantification.distribution_matching.base import MulticlassHDy
-from quantification.metrics.multiclass import absolute_error
+from quantification.distribution_matching.ensemble import MulticlassEnsembleHDy
+from quantification.metrics.multiclass import absolute_error, bray_curtis
 
 
 def load_plankton_file(path, sample_col="Sample", target_col="class"):
-
     data_file = pd.read_csv(path, delimiter=' ')
     le = LabelEncoder()
     data_file[target_col] = le.fit_transform(data_file[target_col])
@@ -24,17 +26,21 @@ def load_plankton_file(path, sample_col="Sample", target_col="class"):
 
 
 def cc():
-    plankton,le = load_plankton_file('/Users/albertocastano/Dropbox/PlataformaCuantificación/plancton.csv')
-    cc = MulticlassClassifyAndCount()
+    plankton, le = load_plankton_file('/Users/albertocastano/Dropbox/PlataformaCuantificación/plancton.csv')
+    cc = BaseMulticlassClassifyAndCount(estimator_params={'class_weight': 'balanced'})
     X = plankton.data
     y = plankton.target
-    cc.fit(np.concatenate(X), np.concatenate(y), cv=50, verbose=True, local=False)
-    print "Fitted"
+    X_train = X[:40]
+    y_train = y[:40]
+    X_test = X[40:]
+    y_test = y[40:]
+
+    cc.fit(np.concatenate(X_train), np.concatenate(y_train), verbose=False, local=False)
     pred_cc = []
     pred_ac = []
     pred_pcc = []
     pred_pac = []
-    for X_s in X:
+    for X_s in X_test:
         predictions = cc.predict(X_s, method='cc')
         pred_cc.append(predictions)
 
@@ -47,31 +53,42 @@ def cc():
         predictions = cc.predict(X_s, method='pac')
         pred_pac.append(predictions)
     true = []
-    for y_s in y:
+    for y_s in y_test:
         freq = np.bincount(y_s, minlength=len(cc.classes_))
         true.append(freq / float(np.sum(freq)))
 
+    cc_bcs = []
+    ac_bcs = []
+    pcc_bcs = []
+    pac_bcs = []
     for (cc, ac, pcc, pac, tr) in zip(pred_cc, pred_ac, pred_pcc, pred_pac, true):
-        print "CC:\t\t", ["{0:0.2f}".format(i) for i in cc]
-        print "AC:\t\t", ["{0:0.2f}".format(i) for i in ac]
-        print "PCC:\t", ["{0:0.2f}".format(i) for i in pcc]
-        print "PAC:\t", ["{0:0.2f}".format(i) for i in pac]
-        print "True:\t", ["{0:0.2f}".format(i) for i in tr]
-        print ""
+        cc_bcs.append(bray_curtis(tr, cc))
+        ac_bcs.append(bray_curtis(tr, ac))
+        pcc_bcs.append(bray_curtis(tr, pcc))
+        pac_bcs.append(bray_curtis(tr, pac))
+
+    print "CC Mean Bray-Curtis Dissimilarity:", np.mean(cc_bcs)
+    print "AC Mean Bray-Curtis Dissimilarity:", np.mean(ac_bcs)
+    print "PCC Mean Bray-Curtis Dissimilarity:", np.mean(pcc_bcs)
+    print "PAC Mean Bray-Curtis Dissimilarity:", np.mean(pac_bcs)
 
 
 def cc_ensemble():
     plankton, le = load_plankton_file('/Users/albertocastano/Dropbox/PlataformaCuantificación/plancton.csv')
-    cc = EnsembleMulticlassCC()
+    cc = EnsembleMulticlassCC(estimator_params={'class_weight': 'balanced'})
     X = plankton.data
     y = plankton.target
-    cc.fit(X, y, verbose=True)
-    print "Fitted"
+    X_train = X[:40]
+    y_train = y[:40]
+    X_test = X[40:]
+    y_test = y[40:]
+
+    cc.fit(X_train, y_train, verbose=False)
     pred_cc = []
     pred_ac = []
     pred_pcc = []
     pred_pac = []
-    for X_s in X:
+    for X_s in X_test:
         predictions = cc.predict(X_s, method='cc')
         pred_cc.append(predictions)
 
@@ -84,42 +101,89 @@ def cc_ensemble():
         predictions = cc.predict(X_s, method='pac')
         pred_pac.append(predictions)
     true = []
-    for y_s in y:
+    for y_s in y_test:
         freq = np.bincount(y_s, minlength=len(cc.classes_))
         true.append(freq / float(np.sum(freq)))
 
+    cc_bcs = []
+    ac_bcs = []
+    pcc_bcs = []
+    pac_bcs = []
     for (cc, ac, pcc, pac, tr) in zip(pred_cc, pred_ac, pred_pcc, pred_pac, true):
-        print "CC:\t\t", ["{0:0.2f}".format(i) for i in cc]
-        print "AC:\t\t", ["{0:0.2f}".format(i) for i in ac]
-        print "PCC:\t", ["{0:0.2f}".format(i) for i in pcc]
-        print "PAC:\t", ["{0:0.2f}".format(i) for i in pac]
-        print "True:\t", ["{0:0.2f}".format(i) for i in tr]
+        cc_bcs.append(bray_curtis(tr, cc))
+        ac_bcs.append(bray_curtis(tr, ac))
+        pcc_bcs.append(bray_curtis(tr, pcc))
+        pac_bcs.append(bray_curtis(tr, pac))
+
+    print "CC-Ensemble Mean Bray-Curtis Dissimilarity:", np.mean(cc_bcs)
+    print "AC-Ensemble Mean Bray-Curtis Dissimilarity:", np.mean(ac_bcs)
+    print "PCC-Ensemble Mean Bray-Curtis Dissimilarity:", np.mean(pcc_bcs)
+    print "PAC-Ensemble Mean Bray-Curtis Dissimilarity:", np.mean(pac_bcs)
 
 
 def hdy():
     plankton, le = load_plankton_file('/Users/albertocastano/Dropbox/PlataformaCuantificación/plancton.csv')
-    cc = MulticlassHDy(b=100)
+    cc = MulticlassHDy(b=100, estimator_params={'class_weight': 'balanced'})
     X = plankton.data
     y = plankton.target
-    cc.fit(np.concatenate(X), np.concatenate(y), verbose=True, plot=False)
-    print "Fitted"
+    X_train = X[:40]
+    y_train = y[:40]
+    X_test = X[40:]
+    y_test = y[40:]
+
+    cc.fit(np.concatenate(X_train), np.concatenate(y_train), verbose=False, plot=False)
     preds = []
-    for X_s in X:
+    for X_s in X_test:
         predictions = cc.predict(X_s)
         preds.append(predictions)
     true = []
-    for y_s in y:
+    for y_s in y_test:
         freq = np.bincount(y_s, minlength=len(cc.classes_))
         true.append(freq / float(np.sum(freq)))
 
-    aes = []
+    bcs = []
     for pr, tr in zip(preds, true):
-        ae = absolute_error(tr, pr)
-        aes.append(ae)
-        print "Absolute error:", ae
+        bc = bray_curtis(tr, pr)
+        bcs.append(bc)
 
-    print "Mean absolute error:", np.mean(aes)
+    print "HDy Mean Bray-Curtis Dissimilarity:", np.mean(bcs)
+
+
+def hdy_ensemble():
+    plankton, le = load_plankton_file('/Users/albertocastano/Dropbox/PlataformaCuantificación/plancton.csv')
+    cc = MulticlassEnsembleHDy(b=100, estimator_params={'class_weight': 'balanced'})
+    X = plankton.data
+    y = plankton.target
+    X_train = X[:40]
+    y_train = y[:40]
+    X_test = X[40:]
+    y_test = y[40:]
+
+    cc.fit(X_train, y_train, verbose=False, plot=False, local=False)
+    preds = []
+    for n, X_s in enumerate(X_test):
+        # print "\rPredicting sample {}/{}".format(n+1, len(X_test))
+        predictions = cc.predict(X_s, local=False)
+        preds.append(predictions)
+    true = []
+    for y_s in y_test:
+        freq = np.bincount(y_s, minlength=len(cc.classes_))
+        true.append(freq / float(np.sum(freq)))
+
+    bcs = []
+    for pr, tr in zip(preds, true):
+        bc = bray_curtis(tr, pr)
+        bcs.append(bc)
+
+    print "HDy-Ensemble Mean Bray-Curtis Dissimilarity:", np.mean(bcs)
 
 
 if __name__ == '__main__':
+    warnings.filterwarnings('ignore')
+    cc()
+    print ""
+    cc_ensemble()
+    print ""
     hdy()
+    print ""
+    hdy_ensemble()

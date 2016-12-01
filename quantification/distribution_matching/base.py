@@ -30,9 +30,7 @@ class BaseDistributionMatchingModel(six.with_metaclass(ABCMeta, BasicModel)):
     def _make_estimator(self):
         estimator = self._validate_estimator(default=LogisticRegression())
 
-        estimator.set_params(**dict((p, getattr(self, p))
-
-                                    for p in self.estimator_params))
+        estimator.set_params(**self.estimator_params)
         return estimator
 
     @abstractmethod

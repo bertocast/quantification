@@ -32,3 +32,8 @@ def normalized_relative_absolute_error(p_true, p_pred):
     l = p_true.shape[0]
     return relative_absolute_error(p_true, p_pred) / (l - 1 + (1 - np.min(p_true)) / np.min(p_true))
 
+
+def bray_curtis(p_true, p_pred):
+    check_consistent_length(p_true, p_pred)
+    return np.sum(np.abs(p_true - p_pred)) / np.sum(p_true + p_pred)
+
