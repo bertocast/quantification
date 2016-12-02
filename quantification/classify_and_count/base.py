@@ -185,14 +185,19 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
                 self.tpr_[pos_class] = 0
             if np.isnan(self.fpr_[pos_class]):
                 self.fpr_[pos_class] = 0
-            self.confusion_matrix_[pos_class] = np.mean(
-                model_score.cv_confusion_matrix(self.estimators_[pos_class], X, y, folds=folds), axis=0)
         else:
-
-            self.confusion_matrix_[pos_class] = np.mean(
-                distributed.cv_confusion_matrix(self.estimators_[pos_class], X, y, pos_class, self.X_y_path_, folds=folds,
-                                                verbose=verbose),
-                axis=0)
+            tprs = []
+            fprs = []
+            for cm in distributed.cv_confusion_matrix(self.estimators_[pos_class], X, y, pos_class, self.X_y_path_,
+                                                      folds=folds, verbose=verbose):
+                tprs.append(cm[1, 1] / float(cm[1, 1] + cm[0, 1]))
+                fprs.append(cm[1, 0] / float(cm[1, 0] + cm[0, 0]))
+            self.fpr_[pos_class] = np.mean(fprs)
+            self.tpr_[pos_class] = np.mean(tprs)
+            if np.isnan(self.tpr_[pos_class]):
+                self.tpr_[pos_class] = 0
+            if np.isnan(self.fpr_[pos_class]):
+                self.fpr_[pos_class] = 0
 
         try:
             predictions = self.estimators_[pos_class].predict_proba(X)

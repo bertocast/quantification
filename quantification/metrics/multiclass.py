@@ -12,7 +12,7 @@ def kl_divergence(p_true, p_pred):
 
 def absolute_error(p_true, p_pred):
     check_consistent_length(p_true, p_pred)
-    return np.sum(np.abs(p_pred - p_true))
+    return np.mean(np.abs(p_pred - p_true))
 
 
 def normalized_absolute_error(p_true, p_pred):
