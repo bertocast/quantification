@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import six
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import GridSearchCV
 
 from quantification import BasicModel
 
@@ -11,16 +12,21 @@ from quantification import BasicModel
 class BaseDistributionMatchingModel(six.with_metaclass(ABCMeta, BasicModel)):
     """Basic Distribution Matching Model"""
 
-    def __init__(self, estimator_class=None, estimator_params=dict()):
+    def __init__(self, estimator_class, estimator_params, estimator_grid):
         self.estimator_class = estimator_class
         self.estimator_params = estimator_params
+        self.estimator_grid = estimator_grid
 
-    def _validate_estimator(self, default):
+    def _validate_estimator(self, default, default_params, default_grid):
         """Check the estimator."""
         if self.estimator_class is not None:
-            estimator = self.estimator_class
+            clf = self.estimator_class
+            clf.set_params(**self.estimator_params)
+            estimator = GridSearchCV(estimator=self.estimator_class, param_grid=self.estimator_grid)
         else:
-            estimator = default
+            clf = default
+            clf.set_params(**default_params)
+            estimator = GridSearchCV(estimator=clf, param_grid=default_grid)
 
         if estimator is None:
             raise ValueError('estimator cannot be None')
@@ -28,9 +34,8 @@ class BaseDistributionMatchingModel(six.with_metaclass(ABCMeta, BasicModel)):
         return estimator
 
     def _make_estimator(self):
-        estimator = self._validate_estimator(default=LogisticRegression())
-
-        estimator.set_params(**self.estimator_params)
+        estimator = self._validate_estimator(default=LogisticRegression(), default_grid={'C': [0.1, 0.5, 1]},
+                                             default_params=dict())
         return estimator
 
     @abstractmethod
@@ -43,8 +48,8 @@ class BaseDistributionMatchingModel(six.with_metaclass(ABCMeta, BasicModel)):
 
 
 class BinaryHDy(BaseDistributionMatchingModel):
-    def __init__(self, b, estimator_class=None, estimator_params=dict()):
-        super(BinaryHDy, self).__init__(estimator_class, estimator_params)
+    def __init__(self, b, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
+        super(BinaryHDy, self).__init__(estimator_class, estimator_params, estimator_grid)
         self.estimator_ = self._make_estimator()
         self.b = b
         self.train_dist_ = None
@@ -56,6 +61,7 @@ class BinaryHDy(BaseDistributionMatchingModel):
                              "thus number of classes must be 2, but the "
                              "data contains %s", n_classes)
         self.estimator_.fit(X, y)
+        self.estimator_ = self.estimator_.best_estimator_
         pos_class = self.estimator_.classes_[1]
         neg_class = self.estimator_.classes_[0]
         pos_preds = self.estimator_.predict_proba(X[y == pos_class,])[:, 1]
@@ -110,8 +116,8 @@ class BinaryHDy(BaseDistributionMatchingModel):
 
 
 class MulticlassHDy(BaseDistributionMatchingModel):
-    def __init__(self, b, estimator_class=None, estimator_params=dict()):
-        super(MulticlassHDy, self).__init__(estimator_class, estimator_params)
+    def __init__(self, b, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
+        super(MulticlassHDy, self).__init__(estimator_class, estimator_params, estimator_grid)
         self.b = b
         self.train_dist_ = None
 
@@ -129,6 +135,7 @@ class MulticlassHDy(BaseDistributionMatchingModel):
             if verbose:
                 print "Fitting classifier for class {}/{}".format(cls + 1, n_classes)
             clf.fit(X, y_bin)
+            clf = clf.best_estimator_
             self.estimators_[cls] = clf
             pos_class = clf.classes_[1]
             neg_class = clf.classes_[0]

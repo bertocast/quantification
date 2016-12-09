@@ -22,9 +22,13 @@ def setup(data_file):
     return 0
 
 
-def wrapper(clf, train, test, pos_class):
+def wrapper(clf, train, test, pos_class=None):
     from sklearn.metrics import confusion_matrix
     import numpy as np
+
+    if not pos_class:
+        return confusion_matrix(y[test], clf.predict(X[test]))
+
     mask = (y[train] == pos_class)
     y_bin_train = np.ones(y[train].shape, dtype=np.int)
     y_bin_train[~mask] = 0
@@ -42,7 +46,7 @@ def cleanup():
     del X, y
 
 
-def cv_confusion_matrix(clf, X, y, pos_class, data_file, folds=50, verbose=False):
+def cv_confusion_matrix(clf, X, y, data_file, pos_class=None, folds=50, verbose=False):
     skf = StratifiedKFold(n_splits=folds)
     cv_iter = skf.split(X, y)
     cms = []

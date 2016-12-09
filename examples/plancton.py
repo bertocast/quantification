@@ -3,15 +3,16 @@ import warnings
 
 import pandas as pd
 from sklearn.datasets.base import Bunch
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import LeaveOneOut
 from sklearn.preprocessing import LabelEncoder
 
 import numpy as np
 
-from quantification.classify_and_count.base import BaseMulticlassClassifyAndCount
-from quantification.classify_and_count.ensemble import EnsembleMulticlassCC
-from quantification.distribution_matching.base import MulticlassHDy
-from quantification.distribution_matching.ensemble import MulticlassEnsembleHDy
+from quantification.classify_and_count.base import BaseMulticlassClassifyAndCount, BaseBinaryClassifyAndCount
+from quantification.classify_and_count.ensemble import EnsembleMulticlassCC, EnsembleBinaryCC
+from quantification.distribution_matching.base import MulticlassHDy, BinaryHDy
+from quantification.distribution_matching.ensemble import MulticlassEnsembleHDy, BinaryEnsembleHDy
 from quantification.metrics.multiclass import absolute_error, bray_curtis
 
 
@@ -26,10 +27,9 @@ def load_plankton_file(path, sample_col="Sample", target_col="class"):
                  target_names=le.classes_), le
 
 
-def cc():
-    plankton, le = load_plankton_file('/Users/albertocastano/Dropbox/PlataformaCuantificación/plancton.csv')
-    X = np.array(plankton.data)
-    y = np.array(plankton.target)
+def cc(X, y):
+    f = open('cc.txt', 'wb')
+
     loo = LeaveOneOut()
 
     cc_bcs = []
@@ -43,57 +43,60 @@ def cc():
 
     print "CC MONOCLASE"
     for n_fold, (train_index, test_index) in enumerate(loo.split(X)):
-        print "\rTraining fold {}/{}".format(n_fold, 60),
+        print "Training fold {}/{}".format(n_fold+1, 60)
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
 
-        cc = BaseMulticlassClassifyAndCount(estimator_params={'class_weight': 'balanced'})
-        cc.fit(np.concatenate(X_train), np.concatenate(y_train), verbose=False, local=False)
-        pred_cc = []
-        pred_ac = []
-        pred_pcc = []
-        pred_pac = []
-        for X_s in X_test:
-            predictions = cc.predict(X_s, method='cc')
-            pred_cc.append(predictions)
+        cc = BaseBinaryClassifyAndCount(estimator_class=LogisticRegression(),
+                                        estimator_params={'class_weight': 'balanced'},
+                                        estimator_grid={'C': [10 ** i for i in xrange(-3, 2)]})
+        cc.fit(np.concatenate(X_train), np.concatenate(y_train), local=False)
 
-            predictions = cc.predict(X_s, method='ac')
-            pred_ac.append(predictions)
+        predictions = cc.predict(X_test[0], method='cc')
+        pred_cc = predictions
 
-            predictions = cc.predict(X_s, method='pcc')
-            pred_pcc.append(predictions)
+        predictions = cc.predict(X_test[0], method='ac')
+        pred_ac = predictions
 
-            predictions = cc.predict(X_s, method='pac')
-            pred_pac.append(predictions)
-        true = []
-        for y_s in y_test:
-            freq = np.bincount(y_s, minlength=len(cc.classes_))
-            true.append(freq / float(np.sum(freq)))
+        predictions = cc.predict(X_test[0], method='pcc')
+        pred_pcc= predictions
+
+        predictions = cc.predict(X_test[0], method='pac')
+        pred_pac = predictions
+
+        freq = np.bincount(y_test[0], minlength=2)
+        true = freq / float(np.sum(freq))
 
 
-        for (cc_pr, ac_pr, pcc_pr, pac_pr, tr) in zip(pred_cc, pred_ac, pred_pcc, pred_pac, true):
-            cc_bcs.append(bray_curtis(tr, cc_pr))
-            cc_aes.append(absolute_error(tr, cc_pr))
-            ac_bcs.append(bray_curtis(tr, ac_pr))
-            ac_aes.append(absolute_error(tr, ac_pr))
-            pcc_bcs.append(bray_curtis(tr, pcc_pr))
-            pcc_aes.append(absolute_error(tr, pcc_pr))
-            pac_bcs.append(bray_curtis(tr, pac_pr))
-            pac_aes.append(absolute_error(tr, pac_pr))
+        cc_bcs.append(bray_curtis(true, pred_cc))
+        cc_aes.append(absolute_error(true, pred_cc))
+        ac_bcs.append(bray_curtis(true, pred_ac))
+        ac_aes.append(absolute_error(true, pred_ac))
+        pcc_bcs.append(bray_curtis(true, pred_pcc))
+        pcc_aes.append(absolute_error(true, pred_pcc))
+        pac_bcs.append(bray_curtis(true, pred_pac))
+        pac_aes.append(absolute_error(true, pred_pac))
+        f.write("Fold {}/{}\n".format(n_fold + 1, 60))
+        f.write("\tRegularization C = {}\n".format(cc.estimator_.C))
+        f.write("\tPredictions CC: {}\n".format(pred_cc.tolist()))
+        f.write("\tPredictions AC: {}\n".format(pred_ac.tolist()))
+        f.write("\tPredictions PCC: {}\n".format(pred_pcc.tolist()))
+        f.write("\tPredictions PAC: {}\n".format(pred_pac.tolist()))
+        print""
 
-    head = "{:>15}" * 3
-    row_format = '{:>15}{:>15.2f}{:>15.2f}'
-    print head.format("Method", "Bray-Curtis", "AE")
-    print row_format.format("CC", np.mean(cc_bcs), np.mean(cc_aes))
-    print row_format.format("AC", np.mean(ac_bcs), np.mean(ac_aes))
-    print row_format.format("PCC", np.mean(pcc_bcs), np.mean(pcc_aes))
-    print row_format.format("PAC", np.mean(pac_bcs), np.mean(pac_aes))
+    head = "{:>15}" * 3 + '\n'
+    row_format = '{:>15}{:>15.2f}{:>15.2f}\n'
+    f.write(head.format("Method", "Bray-Curtis", "AE"))
+    f.write(row_format.format("CC", np.mean(cc_bcs), np.mean(cc_aes)))
+    f.write(row_format.format("AC", np.mean(ac_bcs), np.mean(ac_aes)))
+    f.write(row_format.format("PCC", np.mean(pcc_bcs), np.mean(pcc_aes)))
+    f.write(row_format.format("PAC", np.mean(pac_bcs), np.mean(pac_aes)))
+
+    f.close()
 
 
-def cc_ensemble():
-    plankton, le = load_plankton_file('/Users/albertocastano/Dropbox/PlataformaCuantificación/plancton.csv')
-    X = np.array(plankton.data)
-    y = np.array(plankton.target)
+def cc_ensemble(X, y):
+    f = open('cc_ensemble.txt', 'wb')
     loo = LeaveOneOut()
 
     cc_bcs = []
@@ -107,37 +110,38 @@ def cc_ensemble():
 
     print "CC ENSEMBLE"
     for n_fold, (train_index, test_index) in enumerate(loo.split(X)):
-        print "\rTraining fold {}/{}".format(n_fold, 60),
+        print "Training fold {}/{}".format(n_fold+1, 60),
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
 
-        cc = EnsembleMulticlassCC(estimator_params={'class_weight': 'balanced'})
-        cc.fit(X_train, y_train, verbose=False)
+        cc = EnsembleBinaryCC(estimator_class=LogisticRegression(),
+                              estimator_params={'class_weight': 'balanced'},
+                              estimator_grid={'C': [10 ** i for i in xrange(-3, 2)]})
+        cc.fit(X_train, y_train)
         pred_cc = []
         pred_ac = []
         pred_pcc = []
         pred_pac = []
         for X_s in X_test:
             predictions = cc.predict(X_s, method='cc')
-            pred_cc.append(predictions)
+            pred_cc.append(predictions.tolist())
 
             predictions = cc.predict(X_s, method='ac')
-            pred_ac.append(predictions)
+            pred_ac.append(predictions.tolist())
 
             predictions = cc.predict(X_s, method='pcc')
-            pred_pcc.append(predictions)
+            pred_pcc.append(predictions.tolist())
 
             predictions = cc.predict(X_s, method='pac')
-            pred_pac.append(predictions)
+            pred_pac.append(predictions.tolist())
         true = []
         for y_s in y_test:
-            freq = np.bincount(y_s, minlength=len(cc.classes_))
+            freq = np.bincount(y_s, minlength=2)
             true.append(freq / float(np.sum(freq)))
 
-
         for (cc_pr, ac_pr, pcc_pr, pac_pr, tr) in zip(pred_cc, pred_ac, pred_pcc, pred_pac, true):
-            cc_bcs.append(bray_curtis(tr, cc))
-            cc_aes.append(absolute_error(tr, cc))
+            cc_bcs.append(bray_curtis(tr, cc_pr))
+            cc_aes.append(absolute_error(tr, cc_pr))
             ac_bcs.append(bray_curtis(tr, ac_pr))
             ac_aes.append(absolute_error(tr, ac_pr))
             pcc_bcs.append(bray_curtis(tr, pcc_pr))
@@ -145,17 +149,27 @@ def cc_ensemble():
             pac_bcs.append(bray_curtis(tr, pac_pr))
             pac_aes.append(absolute_error(tr, pac_pr))
 
-    row_format = '{:>15}{:>15.2f}{:>15.2f}'
+        f.write("Fold {}/{}\n".format(n_fold + 1, 60))
+        f.write("\tRegularization C's = {}\n".format([qnf.estimator_.C for qnf in cc.qnfs_]))
+        f.write("\tPredictions CC: {}\n".format(pred_cc))
+        f.write("\tPredictions AC: {}\n".format(pred_ac))
+        f.write("\tPredictions PCC: {}\n".format(pred_pcc))
+        f.write("\tPredictions PAC: {}\n".format(pred_pac))
+        print ""
+
+    head = "{:>15}" * 3 + '\n'
+    row_format = '{:>15}{:>15.2f}{:>15.2f}\n'
+    f.write(head.format("Method", "Bray-Curtis", "AE"))
     print row_format.format("CC-Ensemble", np.mean(cc_bcs), np.mean(cc_aes))
     print row_format.format("AC-Ensemble", np.mean(ac_bcs), np.mean(ac_aes))
     print row_format.format("PCC-Ensemble", np.mean(pcc_bcs), np.mean(pcc_aes))
     print row_format.format("PAC-Ensemble", np.mean(pac_bcs), np.mean(pac_aes))
 
+    f.close()
 
-def hdy():
-    plankton, le = load_plankton_file('/Users/albertocastano/Dropbox/PlataformaCuantificación/plancton.csv')
-    X = np.array(plankton.data)
-    y = np.array(plankton.target)
+
+def hdy(X, y):
+    f = open('hdy.txt', 'wb')
     loo = LeaveOneOut()
 
     bcs = []
@@ -163,35 +177,34 @@ def hdy():
 
     print "HDy MONOCLASE"
     for n_fold, (train_index, test_index) in enumerate(loo.split(X)):
-        print "\rTraining fold {}/{}".format(n_fold, 60),
+        print "Training fold {}/{}".format(n_fold, 60)
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
 
-        hdy = MulticlassHDy(b=100, estimator_params={'class_weight': 'balanced'})
-        hdy.fit(np.concatenate(X_train), np.concatenate(y_train), verbose=False, plot=False)
-        preds = []
-        for X_s in X_test:
-            predictions = hdy.predict(X_s)
-            preds.append(predictions)
-        true = []
-        for y_s in y_test:
-            freq = np.bincount(y_s, minlength=len(hdy.classes_))
-            true.append(freq / float(np.sum(freq)))
+        hdy = BinaryHDy(b=100, estimator_class=LogisticRegression(),
+                                        estimator_params={'class_weight': 'balanced'},
+                                        estimator_grid={'C': [10 ** i for i in xrange(-3, 2)]})
+        hdy.fit(np.concatenate(X_train), np.concatenate(y_train), plot=False)
+        predictions = hdy.predict(X_test[0])
+
+        freq = np.bincount(y_test[0], minlength=2)
+        true = freq / float(np.sum(freq))
+
+        bcs.append(bray_curtis(true, predictions))
+        aes.append(absolute_error(true, predictions))
+        f.write("Fold {}/{}\n".format(n_fold + 1, 60))
+        f.write("\tRegularization C = {}\n".format(hdy.estimator_.C))
+        f.write("\tPredictions CC: {}\n".format(predictions.tolist()))
+        print""
+
+    head = "{:>15}" * 3 + '\n'
+    row_format = '{:>15}{:>15.2f}{:>15.2f}\n'
+    f.write(head.format("Method", "Bray-Curtis", "AE"))
+    f.write(row_format.format("HDy", np.mean(bcs), np.mean(aes)))
 
 
-        for pr, tr in zip(preds, true):
-            bcs.append(bray_curtis(tr, pr))
-            aes.append(absolute_error(tr, pr))
-
-    row_format = '{:>15}{:>15.2f}{:>15.2f}'
-    print row_format.format("HDy", np.mean(bcs), np.mean(aes))
-
-
-def hdy_ensemble():
-    plankton, le = load_plankton_file('/Users/albertocastano/Dropbox/PlataformaCuantificación/plancton.csv')
-    
-    X = np.array(plankton.data)
-    y = np.array(plankton.target)
+def hdy_ensemble(X, y):
+    f = open('hdy_ensemble.txt', 'wb')
     loo = LeaveOneOut()
 
     bcs = []
@@ -199,34 +212,52 @@ def hdy_ensemble():
 
     print "HDy ENSEMBLE"
     for n_fold, (train_index, test_index) in enumerate(loo.split(X)):
-        print "\rTraining fold {}/{}".format(n_fold, 60),
+        print "\rTraining fold {}/{}".format(n_fold + 1, 60),
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
 
-        hdy = MulticlassEnsembleHDy(b=100, estimator_params={'class_weight': 'balanced'})
-        hdy.fit(X_train, y_train, verbose=False, plot=False, local=False)
+        hdy = BinaryEnsembleHDy(b=100, estimator_class=LogisticRegression(),
+                              estimator_params={'class_weight': 'balanced'},
+                              estimator_grid={'C': [10 ** i for i in xrange(-3, 2)]})
+        hdy.fit(X_train, y_train, plot=False)
         preds = []
         for n, X_s in enumerate(X_test):
             # print "\rPredicting sample {}/{}".format(n+1, len(X_test))
-            predictions = hdy.predict(X_s, local=False)
+            predictions = hdy.predict(X_s)
             preds.append(predictions)
         true = []
         for y_s in y_test:
-            freq = np.bincount(y_s, minlength=len(hdy.classes_))
+            freq = np.bincount(y_s, minlength=2)
             true.append(freq / float(np.sum(freq)))
-
 
         for pr, tr in zip(preds, true):
             bcs.append(bray_curtis(tr, pr))
             aes.append(absolute_error(tr, pr))
 
-    row_format = '{:>15}{:>15.2f}{:>15.2f}'
-    print row_format.format("HDy-Ensemble", np.mean(bcs), np.mean(aes))
+        f.write("Fold {}/{}\n".format(n_fold + 1, 60))
+        f.write("\tRegularization C's = {}\n".format([qnf.estimator_.C for qnf in hdy.qnfs_]))
+        f.write("\tPredictions CC: {}\n".format(preds))
+        print ""
+
+    head = "{:>15}" * 3 + '\n'
+    row_format = '{:>15}{:>15.2f}{:>15.2f}\n'
+    f.write(head.format("Method", "Bray-Curtis", "AE"))
+    print row_format.format("CC-Ensemble", np.mean(bcs), np.mean(aes))
+
+    f.close()
 
 
 if __name__ == '__main__':
     warnings.filterwarnings('ignore')
-    cc()
-    cc_ensemble()
-    hdy()
-    hdy_ensemble()
+    plankton, le = load_plankton_file('/Users/albertocastano/Dropbox/PlataformaCuantificación/plancton.csv')
+    X = np.array(plankton.data)
+    y = np.array(plankton.target)
+    for n, y_sample in enumerate(y):
+        mask = (y_sample == 4)  # Diatomeas
+        y_bin = np.ones(y_sample.shape, dtype=np.int)
+        y_bin[~mask] = 0
+        y[n] = y_bin
+    #cc(X, y)
+    #cc_ensemble(X, y)
+    #hdy(X, y)
+    hdy_ensemble(X, y)

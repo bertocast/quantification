@@ -8,27 +8,32 @@ import numpy as np
 
 
 class BaseEnsembleCCModel(BaseClassifyAndCountModel):
-    def __init__(self, estimator_class=None, estimator_params=dict()):
-        super(BaseEnsembleCCModel, self).__init__(estimator_class, estimator_params)
-        self.qnfs_ = None
+    def __init__(self, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
+        super(BaseEnsembleCCModel, self).__init__(estimator_class, estimator_params, estimator_grid)
+        self.qnfs_ = []
 
 
 class EnsembleBinaryCC(BaseEnsembleCCModel):
     def fit(self, X, y):
         if len(X) != len(y):
             raise ValueError("X and y has to be the same length.")
-        self.qnfs_ = [None for _ in y]
         for n, (X_sample, y_sample) in enumerate(zip(X, y)):
+            if len(np.unique(y_sample)) != 2:
+                continue
             qnf = BaseBinaryClassifyAndCount(self.estimator_class, self.estimator_params)
-            qnf.estimator_.fit(X_sample, y_sample)
+            try:
+                qnf.estimator_.fit(X_sample, y_sample)
+            except ValueError: # Positive classes has not enough samples to perform cv
+                continue
+            qnf.estimator_ = qnf.estimator_.best_estimator_
             qnf = self._performance(qnf, n, X, y)
-            self.qnfs_[n] = qnf
+            self.qnfs_.append(qnf)
 
         return self
 
     def _performance(self, qnf, n, X, y):
-        X_val = np.concatenate(X[:n] + X[(n + 1):])
-        y_val = np.concatenate(y[:n] + y[(n + 1):])
+        X_val = np.concatenate(np.concatenate([X[:n], X[(n + 1):]]))
+        y_val = np.concatenate(np.concatenate([y[:n], y[(n + 1):]]))
         qnf.confusion_matrix_ = confusion_matrix(y_val, qnf.estimator_.predict(X_val))
 
         try:
@@ -73,7 +78,7 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
             tpr = qnf.confusion_matrix_[1, 1] / float(qnf.confusion_matrix_[1, 1] + qnf.confusion_matrix_[0, 1])
             fpr = qnf.confusion_matrix_[1, 0] / float(qnf.confusion_matrix_[1, 0] + qnf.confusion_matrix_[0, 0])
             adjusted = (probabilities[1] - fpr) / float(tpr - fpr)
-            predictions[n] = np.array([adjusted, 1 - adjusted])
+            predictions[n] = np.array([1 - adjusted, adjusted])
         predictions = np.clip(np.mean(predictions, axis=0), 0, 1)
         return predictions / np.sum(predictions)
 
@@ -95,8 +100,8 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
 
 
 class EnsembleMulticlassCC(BaseEnsembleCCModel):
-    def __init__(self, estimator_class=None, estimator_params=dict()):
-        super(EnsembleMulticlassCC, self).__init__(estimator_class, estimator_params)
+    def __init__(self, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
+        super(EnsembleMulticlassCC, self).__init__(estimator_class, estimator_params, estimator_grid)
         self.classes_ = None
         self.qnfs_ = None
 
@@ -111,7 +116,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
 
         for n, (X_sample, y_sample) in enumerate(zip(X, y)):
             if verbose:
-                print "Processing sample {}/{}".format(n, len(y))
+                print "\rProcessing sample {}/{}".format(n+1, len(y))
             qnf = BaseMulticlassClassifyAndCount(self.estimator_class, self.estimator_params)
             classes = np.unique(y_sample).tolist()
             n_classes = len(classes)
@@ -122,12 +127,15 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             qnf.fp_pa_ = dict.fromkeys(classes)
             for pos_class in classes:
                 if verbose:
-                    print "\tFitting classifier for class {}/{}".format(pos_class, n_classes)
+                    print "\rFitting classifier for class {}".format(pos_class+1)
                 mask = (y_sample == pos_class)
                 y_bin = np.ones(y_sample.shape, dtype=np.int)
                 y_bin[~mask] = 0
+                if np.unique(y_bin) != 2:
+                    continue
                 clf = qnf._make_estimator()
                 clf = clf.fit(X_sample, y_bin)
+                clf = clf.best_estimator_
                 qnf.estimators_[pos_class] = clf
                 cls_smp[pos_class].append(n)
             self.qnfs_[n] = deepcopy(qnf)

@@ -3,6 +3,7 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 import six
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import GridSearchCV
 
 from quantification import BasicModel
 from quantification.metrics import distributed, model_score
@@ -11,9 +12,10 @@ from quantification.metrics import distributed, model_score
 class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
     """Base class for C&C Models"""
 
-    def __init__(self, estimator_class, estimator_params):
+    def __init__(self, estimator_class, estimator_params, estimator_grid):
         self.estimator_class = estimator_class
         self.estimator_params = estimator_params
+        self.estimator_grid = estimator_grid
 
     @abstractmethod
     def fit(self, X, y):
@@ -23,12 +25,16 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
     def predict(self, X, method):
         """Predict the prevalence"""
 
-    def _validate_estimator(self, default):
+    def _validate_estimator(self, default, default_params, default_grid):
         """Check the estimator."""
         if self.estimator_class is not None:
-            estimator = self.estimator_class
+            clf = self.estimator_class
+            clf.set_params(**self.estimator_params)
+            estimator = GridSearchCV(estimator=self.estimator_class, param_grid=self.estimator_grid)
         else:
-            estimator = default
+            clf = default
+            clf.set_params(**default_params)
+            estimator = GridSearchCV(estimator=clf, param_grid=default_grid)
 
         if estimator is None:
             raise ValueError('estimator cannot be None')
@@ -36,16 +42,14 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
         return estimator
 
     def _make_estimator(self):
-        estimator = self._validate_estimator(default=LogisticRegression())
-
-        estimator.set_params(**self.estimator_params)
-
+        estimator = self._validate_estimator(default=LogisticRegression(), default_grid={'C': [0.1, 1, 10]},
+                                             default_params=dict())
         return estimator
 
 
 class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
-    def __init__(self, estimator_class=None, estimator_params=dict()):
-        super(BaseBinaryClassifyAndCount, self).__init__(estimator_class, estimator_params)
+    def __init__(self, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
+        super(BaseBinaryClassifyAndCount, self).__init__(estimator_class, estimator_params, estimator_grid)
         self.estimator_ = self._make_estimator()
         self.confusion_matrix_ = None
         self.tp_pa_ = np.nan
@@ -64,6 +68,7 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
             self._persist_data(X, y)
 
         self.estimator_.fit(X, y)
+        self.estimator_ = self.estimator_.best_estimator_
         self.compute_performance_(X, y, local=local)
         return self
 
@@ -134,8 +139,8 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
 
 
 class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
-    def __init__(self, estimator_class=None, estimator_params=dict()):
-        super(BaseMulticlassClassifyAndCount, self).__init__(estimator_class, estimator_params)
+    def __init__(self, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
+        super(BaseMulticlassClassifyAndCount, self).__init__(estimator_class, estimator_params, estimator_grid)
         self.classes_ = None
         self.estimators_ = None
         self.confusion_matrix_ = None
@@ -150,6 +155,7 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
         self.estimators_ = dict.fromkeys(self.classes_)
         self.confusion_matrix_ = dict.fromkeys(self.classes_)
         self.fpr_ = dict.fromkeys(self.classes_)
+
         self.tpr_ = dict.fromkeys(self.classes_)
         self.tp_pa_ = dict.fromkeys(self.classes_)
         self.fp_pa_ = dict.fromkeys(self.classes_)
@@ -165,6 +171,7 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
             y_bin[~mask] = 0
             clf = self._make_estimator()
             clf = clf.fit(X, y_bin)
+            clf = clf.best_estimator_
             self.estimators_[pos_class] = clf
             if verbose:
                 print "Computing performance for classifier of class {}/{}".format(pos_class + 1, n_classes)
@@ -188,7 +195,7 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
         else:
             tprs = []
             fprs = []
-            for cm in distributed.cv_confusion_matrix(self.estimators_[pos_class], X, y, pos_class, self.X_y_path_,
+            for cm in distributed.cv_confusion_matrix(self.estimators_[pos_class], X, y, self.X_y_path_, pos_class,
                                                       folds=folds, verbose=verbose):
                 tprs.append(cm[1, 1] / float(cm[1, 1] + cm[0, 1]))
                 fprs.append(cm[1, 0] / float(cm[1, 0] + cm[0, 0]))

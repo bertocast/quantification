@@ -14,21 +14,23 @@ from quantification.utils.errors import ClusterException
 
 
 class BaseEnsembleDMModel(BaseDistributionMatchingModel):
-    def __init__(self, b, estimator_class=None, estimator_params=dict()):
-        super(BaseEnsembleDMModel, self).__init__(estimator_class, estimator_params)
+    def __init__(self, b, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
+        super(BaseEnsembleDMModel, self).__init__(estimator_class, estimator_params, estimator_grid)
         self.b = b
-        self.qnfs_ = None
+        self.qnfs_ = []
 
 
 class BinaryEnsembleHDy(BaseEnsembleDMModel):
     def fit(self, X, y, plot=False):
         if len(X) != len(y):
             raise ValueError("X and y has to be the same length.")
-        self.qnfs_ = [None for _ in y]
         for n, (X_sample, y_sample) in enumerate(zip(X, y)):
             qnf = BinaryHDy(self.b, self.estimator_class, self.estimator_params)
-            qnf.fit(X_sample, y_sample, plot=plot)
-            self.qnfs_[n] = qnf
+            try:
+                qnf.fit(X_sample, y_sample, plot=plot)
+            except ValueError: # Positive classes has not enough samples to perform cv
+                continue
+            self.qnfs_.append(qnf)
 
         return self
 
@@ -91,10 +93,13 @@ class MulticlassEnsembleHDy(BaseEnsembleDMModel):
             mask = (y_sample == cls)
             y_bin = np.ones(y_sample.shape, dtype=np.int)
             y_bin[~mask] = 0
+            if np.unique(y_bin) != 2:
+                continue
             clf = qnf._make_estimator()
             if verbose:
                 print "\rFitting classifier for class {}/{}".format(cls + 1, n_classes),
             clf.fit(X_sample, y_bin)
+            clf = clf.best_estimator_
             qnf.estimators_[cls] = clf
             pos_class = clf.classes_[1]
             neg_class = clf.classes_[0]
