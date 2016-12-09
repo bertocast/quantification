@@ -36,6 +36,14 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
         y_val = np.concatenate(np.concatenate([y[:n], y[(n + 1):]]))
         qnf.confusion_matrix_ = confusion_matrix(y_val, qnf.estimator_.predict(X_val))
 
+        qnf.tpr_ = qnf.confusion_matrix_[1, 1] / float(qnf.confusion_matrix_[1, 1] + qnf.confusion_matrix_[0, 1])
+        qnf.fpr_ = qnf.confusion_matrix_[1, 0] / float(qnf.confusion_matrix_[1, 0] + qnf.confusion_matrix_[0, 0])
+
+        if np.isnan(qnf.tpr_):
+            qnf.tpr_ = 0
+        if np.isnan(qnf.fpr_):
+            qnf.fpr_ = 0
+
         try:
             predictions = qnf.estimator_.predict_proba(X_val)
         except AttributeError:
@@ -75,9 +83,7 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
         predictions = np.full((len(self.qnfs_), 2), np.nan)
         for n, qnf in enumerate(self.qnfs_):
             probabilities = qnf._predict_cc(X)
-            tpr = qnf.confusion_matrix_[1, 1] / float(qnf.confusion_matrix_[1, 1] + qnf.confusion_matrix_[0, 1])
-            fpr = qnf.confusion_matrix_[1, 0] / float(qnf.confusion_matrix_[1, 0] + qnf.confusion_matrix_[0, 0])
-            adjusted = (probabilities[1] - fpr) / float(tpr - fpr)
+            adjusted = (probabilities[1] - qnf.fpr_) / float(qnf.tpr_ - qnf.fpr_)
             predictions[n] = np.array([1 - adjusted, adjusted])
         predictions = np.clip(np.mean(predictions, axis=0), 0, 1)
         return predictions / np.sum(predictions)
@@ -157,6 +163,8 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         qnf = self.qnfs_[n]
         qnf.confusion_matrix_[label] = confusion_matrix(y_bin, qnf.estimators_[label].predict(X_val))
 
+
+
         try:
             predictions = qnf.estimators_[label].predict_proba(X_val)
         except AttributeError:
@@ -209,6 +217,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 pred = clf.predict(X)
                 freq = np.bincount(pred, minlength=2)
                 relative_freq = freq / float(np.sum(freq))
+                # TODO: Pasar esto al training
                 tpr = qnf.confusion_matrix_[cls][1, 1] / float(qnf.confusion_matrix_[cls][1, 1]
                                                                 + qnf.confusion_matrix_[cls][0, 1])
                 fpr = qnf.confusion_matrix_[cls][1, 0] / float(qnf.confusion_matrix_[cls][1, 0]

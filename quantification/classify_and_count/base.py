@@ -91,6 +91,14 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
         else:
             self.confusion_matrix_ = np.mean(
                 distributed.cv_confusion_matrix(self.estimator_, X, y, self.X_y_path_, folds=50), axis=0)
+
+        self.tpr_ = self.confusion_matrix_[1, 1] / float(self.confusion_matrix_[1, 1] + self.confusion_matrix_[1, 0])
+        self.fpr_ = self.confusion_matrix_[0, 1] / float(self.confusion_matrix_[0, 1] + self.confusion_matrix_[0, 0])
+        if np.isnan(self.tpr_):
+            self.tpr_ = 0
+        if np.isnan(self.fpr_):
+            self.fpr_ = 0
+
         try:
             predictions = self.estimator_.predict_proba(X)
         except AttributeError:
@@ -112,13 +120,7 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
 
     def _predict_ac(self, X):
         probabilities = self._predict_cc(X)
-        tpr = self.confusion_matrix_[1, 1] / float(self.confusion_matrix_[1, 1] + self.confusion_matrix_[0, 1])
-        fpr = self.confusion_matrix_[1, 0] / float(self.confusion_matrix_[1, 0] + self.confusion_matrix_[0, 0])
-        if np.isnan(tpr):
-            tpr = 0
-        if np.isnan(fpr):
-            fpr = 0
-        adjusted = np.clip((probabilities[1] - fpr) / float(tpr - fpr), 0, 1)
+        adjusted = np.clip((probabilities[1] - self.fpr_) / float(self.tpr_ - self.fpr_), 0, 1)
         return np.array([1 - adjusted, adjusted])
 
     def _predict_pcc(self, X):
