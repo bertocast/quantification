@@ -43,7 +43,7 @@ def cc(X, y):
 
     print "CC MONOCLASE"
     for n_fold, (train_index, test_index) in enumerate(loo.split(X)):
-        print "Training fold {}/{}".format(n_fold+1, 60)
+        print "Training fold {}/{}".format(n_fold + 1, 60)
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
 
@@ -67,7 +67,6 @@ def cc(X, y):
         freq = np.bincount(y_test[0], minlength=2)
         true = freq / float(np.sum(freq))
 
-
         cc_bcs.append(bray_curtis(true, pred_cc))
         cc_aes.append(absolute_error(true, pred_cc))
         ac_bcs.append(bray_curtis(true, pred_ac))
@@ -82,7 +81,8 @@ def cc(X, y):
         f.write("\tPredictions AC: {}\n".format(pred_ac.tolist()))
         f.write("\tPredictions PCC: {}\n".format(pred_pcc.tolist()))
         f.write("\tPredictions PAC: {}\n".format(pred_pac.tolist()))
-        print""
+
+        print cc.confusion_matrix_
 
     head = "{:>15}" * 3 + '\n'
     row_format = '{:>15}{:>15.2f}{:>15.2f}\n'
@@ -160,10 +160,10 @@ def cc_ensemble(X, y):
     head = "{:>15}" * 3 + '\n'
     row_format = '{:>15}{:>15.2f}{:>15.2f}\n'
     f.write(head.format("Method", "Bray-Curtis", "AE"))
-    print row_format.format("CC-Ensemble", np.mean(cc_bcs), np.mean(cc_aes))
-    print row_format.format("AC-Ensemble", np.mean(ac_bcs), np.mean(ac_aes))
-    print row_format.format("PCC-Ensemble", np.mean(pcc_bcs), np.mean(pcc_aes))
-    print row_format.format("PAC-Ensemble", np.mean(pac_bcs), np.mean(pac_aes))
+    f.write(row_format.format("CC-Ensemble", np.mean(cc_bcs), np.mean(cc_aes)))
+    f.write(row_format.format("AC-Ensemble", np.mean(ac_bcs), np.mean(ac_aes)))
+    f.write(row_format.format("PCC-Ensemble", np.mean(pcc_bcs), np.mean(pcc_aes)))
+    f.write(row_format.format("PAC-Ensemble", np.mean(pac_bcs), np.mean(pac_aes)))
 
     f.close()
 
@@ -242,7 +242,7 @@ def hdy_ensemble(X, y):
     head = "{:>15}" * 3 + '\n'
     row_format = '{:>15}{:>15.2f}{:>15.2f}\n'
     f.write(head.format("Method", "Bray-Curtis", "AE"))
-    print row_format.format("CC-Ensemble", np.mean(bcs), np.mean(aes))
+    f.write(row_format.format("HDy-Ensemble", np.mean(bcs), np.mean(aes)))
 
     f.close()
 
@@ -257,7 +257,7 @@ if __name__ == '__main__':
         y_bin = np.ones(y_sample.shape, dtype=np.int)
         y_bin[~mask] = 0
         y[n] = y_bin
-    #cc(X, y)
-    #cc_ensemble(X, y)
-    #hdy(X, y)
+    cc(X, y)
+    cc_ensemble(X, y)
+    hdy(X, y)
     hdy_ensemble(X, y)
