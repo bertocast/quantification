@@ -186,8 +186,8 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
             tprs = []
             fprs = []
             for cm in model_score.cv_confusion_matrix(self.estimators_[pos_class], X, y, folds=folds):
-                tprs.append(cm[1, 1] / float(cm[1, 1] + cm[0, 1]))
-                fprs.append(cm[1, 0] / float(cm[1, 0] + cm[0, 0]))
+                tprs.append(cm[1, 1] / float(cm[1, 1] + cm[1, 0]))
+                fprs.append(cm[0, 1] / float(cm[0, 1] + cm[0, 0]))
             self.fpr_[pos_class] = np.mean(fprs)
             self.tpr_[pos_class] = np.mean(tprs)
             if np.isnan(self.tpr_[pos_class]):

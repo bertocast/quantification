@@ -36,8 +36,8 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
         y_val = np.concatenate(np.concatenate([y[:n], y[(n + 1):]]))
         qnf.confusion_matrix_ = confusion_matrix(y_val, qnf.estimator_.predict(X_val))
 
-        qnf.tpr_ = qnf.confusion_matrix_[1, 1] / float(qnf.confusion_matrix_[1, 1] + qnf.confusion_matrix_[0, 1])
-        qnf.fpr_ = qnf.confusion_matrix_[1, 0] / float(qnf.confusion_matrix_[1, 0] + qnf.confusion_matrix_[0, 0])
+        qnf.tpr_ = qnf.confusion_matrix_[1, 1] / float(qnf.confusion_matrix_[1, 1] + qnf.confusion_matrix_[1, 0])
+        qnf.fpr_ = qnf.confusion_matrix_[0, 1] / float(qnf.confusion_matrix_[0, 1] + qnf.confusion_matrix_[0, 0])
 
         if np.isnan(qnf.tpr_):
             qnf.tpr_ = 0
@@ -219,8 +219,8 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 relative_freq = freq / float(np.sum(freq))
                 # TODO: Pasar esto al training
                 tpr = qnf.confusion_matrix_[cls][1, 1] / float(qnf.confusion_matrix_[cls][1, 1]
-                                                                + qnf.confusion_matrix_[cls][0, 1])
-                fpr = qnf.confusion_matrix_[cls][1, 0] / float(qnf.confusion_matrix_[cls][1, 0]
+                                                                + qnf.confusion_matrix_[cls][1, 0])
+                fpr = qnf.confusion_matrix_[cls][0, 1] / float(qnf.confusion_matrix_[cls][0, 1]
                                                                 + qnf.confusion_matrix_[cls][0, 0])
                 if np.isnan(tpr):
                     tpr = 0
