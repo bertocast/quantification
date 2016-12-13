@@ -53,7 +53,7 @@ class TestEnsembleBinaryCC(ModelTestCase):
 
 class TestEnsembleMulticlassCC(ModelTestCase):
     def test_performance_not_null_after_fit(self):
-        cc = EnsembleMulticlassCC()
+        cc = EnsembleMulticlassCC(b=100)
         X = self.multiclass_data.data
         y = self.multiclass_data.target
         cc.fit(X, y)
@@ -65,7 +65,7 @@ class TestEnsembleMulticlassCC(ModelTestCase):
                 assert_false(np.isnan(fp))
 
     def test_predict_returns_feasible_probabilities(self):
-        cc = EnsembleMulticlassCC()
+        cc = EnsembleMulticlassCC(b=100)
         X = self.multiclass_data.data
         y = self.multiclass_data.target
         cc.fit(X, y)

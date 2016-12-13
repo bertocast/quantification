@@ -27,7 +27,7 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
                                              estimator_grid=self.estimator_grid)
             try:
                 qnf.estimator_.fit(X_sample, y_sample)
-            except ValueError: # Positive classes has not enough samples to perform cv
+            except ValueError:  # Positive classes has not enough samples to perform cv
                 continue
             qnf.estimator_ = qnf.estimator_.best_estimator_
             qnf = self._performance(qnf, n, X, y)
@@ -124,6 +124,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         self.qnfs_ = None
 
     def fit(self, X, y, verbose=False):
+        #TODO: Copiar de MulticlassEnsembleHDy el parallel_fit
 
         if len(X) != len(y):
             raise ValueError("X and y has to be the same length.")
@@ -134,20 +135,22 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
 
         for n, (X_sample, y_sample) in enumerate(zip(X, y)):
             if verbose:
-                print "\rProcessing sample {}/{}".format(n+1, len(y))
+                print "\rProcessing sample {}/{}".format(n + 1, len(y))
             qnf = BaseMulticlassClassifyAndCount(estimator_class=self.estimator_class,
                                                  estimator_params=self.estimator_params,
                                                  estimator_grid=self.estimator_grid)
             classes = np.unique(y_sample).tolist()
-            n_classes = len(classes)
             qnf.classes_ = classes
             qnf.estimators_ = dict.fromkeys(classes)
             qnf.confusion_matrix_ = dict.fromkeys(classes)
+            qnf.fpr_ = dict.fromkeys(self.classes_)
+            qnf.tpr_ = dict.fromkeys(self.classes_)
             qnf.tp_pa_ = dict.fromkeys(classes)
             qnf.fp_pa_ = dict.fromkeys(classes)
+            qnf.train_dist_ = dict.fromkeys(classes)
             for pos_class in classes:
                 if verbose:
-                    print "\rFitting classifier for class {}".format(pos_class+1)
+                    print "\rFitting classifier for class {}".format(pos_class + 1)
                 mask = (y_sample == pos_class)
                 y_bin = np.ones(y_sample.shape, dtype=np.int)
                 y_bin[~mask] = 0
@@ -158,6 +161,18 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 clf = clf.best_estimator_
                 qnf.estimators_[pos_class] = clf
                 cls_smp[pos_class].append(n)
+                if self.b:
+                    pos_class = clf.classes_[1]
+                    neg_class = clf.classes_[0]
+                    pos_preds = clf.predict_proba(X_sample[y_bin == pos_class,])[:, 1]
+                    neg_preds = clf.predict_proba(X_sample[y_bin == neg_class,])[:, +1]
+
+                    train_pos_pdf, _ = np.histogram(pos_preds, self.b)
+                    train_neg_pdf, _ = np.histogram(neg_preds, self.b)
+                    qnf.train_dist_[pos_class] = np.full((self.b, 2), np.nan)
+                    for i in range(self.b):
+                        qnf.train_dist_[pos_class][i] = [train_pos_pdf[i] / float(sum(y_bin == pos_class)),
+                                                   train_neg_pdf[i] / float(sum(y_bin == neg_class))]
             self.qnfs_[n] = deepcopy(qnf)
 
         for pos_class in self.classes_:
@@ -177,7 +192,14 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         qnf = self.qnfs_[n]
         qnf.confusion_matrix_[label] = confusion_matrix(y_bin, qnf.estimators_[label].predict(X_val))
 
-
+        qnf.tpr_[label] = qnf.confusion_matrix_[label][1, 1] / float(qnf.confusion_matrix_[label][1, 1]
+                                                                     + qnf.confusion_matrix_[label][0, 1])
+        qnf.fpr_[label] = qnf.confusion_matrix_[label][1, 0] / float(qnf.confusion_matrix_[label][1, 0]
+                                                                     + qnf.confusion_matrix_[label][0, 0])
+        if np.isnan(qnf.tpr_[label]):
+            qnf.tpr_ = 0
+        if np.isnan(qnf.fpr_[label]):
+            qnf.fpr_ = 0
 
         try:
             predictions = qnf.estimators_[label].predict_proba(X_val)
@@ -200,6 +222,8 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             return self._predict_pcc(X)
         elif method == 'pac':
             return self._predict_pac(X)
+        elif method == 'hdy':
+            return self._predict_hdy(X)
         else:
             raise ValueError("Invalid method %s. Choices are `cc`, `ac`, `pcc`, `pac`.", method)
 
@@ -231,18 +255,9 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 pred = clf.predict(X)
                 freq = np.bincount(pred, minlength=2)
                 relative_freq = freq / float(np.sum(freq))
-                # TODO: Pasar esto al training
-                tpr = qnf.confusion_matrix_[cls][1, 1] / float(qnf.confusion_matrix_[cls][1, 1]
-                                                                + qnf.confusion_matrix_[cls][0, 1])
-                fpr = qnf.confusion_matrix_[cls][1, 0] / float(qnf.confusion_matrix_[cls][1, 0]
-                                                                + qnf.confusion_matrix_[cls][0, 0])
-                if np.isnan(tpr):
-                    tpr = 0
-                if np.isnan(fpr):
-                    fpr = 0
 
-                adjusted = (relative_freq[1] - fpr) / float(tpr - fpr)
-                binary_freqs[cls].append(np.clip(adjusted,0,1))
+                adjusted = (relative_freq[1] - qnf.fpr_[cls]) / float(qnf.tpr_[cls] - qnf.fpr_[cls])
+                binary_freqs[cls].append(np.clip(adjusted, 0, 1))
 
         for cls, freqs in binary_freqs.iteritems():
             freqs = np.array(freqs)
@@ -275,7 +290,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 pred = clf.predict_proba(X)
                 relative_freq = np.mean(pred, axis=0)
                 adjusted = (relative_freq[1] - qnf.fp_pa_[cls]) / float(qnf.tp_pa_[cls] - qnf.fp_pa_[cls])
-                binary_freqs[cls].append(np.clip(adjusted,0,1))
+                binary_freqs[cls].append(np.clip(adjusted, 0, 1))
 
         for cls, freqs in binary_freqs.iteritems():
             freqs = np.array(freqs)
@@ -283,4 +298,17 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         probs = np.array(probabilities.values())
         return probs / np.sum(probs)
 
+    def _predict_hdy(self, X):
+        # TODO: Copiar del MulticlassEnsembleHDy el parallel_predict
+        cls_prevalences = {k: [] for k in self.classes_}
+        for n, qnf in enumerate(self.qnfs_):
+            print "\rPredicting by quantifier {}/{}".format(n, len(self.qnfs_)),
+            probs = qnf.predict(X)
+            for m, cls in enumerate(qnf.classes_):
+                cls_prevalences[cls].append(probs[m])
 
+        for cls in cls_prevalences.keys():
+            cls_prevalences[cls] = np.mean(cls_prevalences[cls])
+
+        probs = np.array(cls_prevalences.values())
+        return probs / np.sum(probs)
