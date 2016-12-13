@@ -6,42 +6,24 @@ import functools
 
 import logging
 
-from quantification.distribution_matching.base import BaseDistributionMatchingModel, BinaryHDy, MulticlassHDy
+from quantification.classify_and_count.ensemble import EnsembleMulticlassCC, EnsembleBinaryCC, BaseEnsembleCCModel
+from quantification.distribution_matching.base import BinaryHDy, MulticlassHDy
 
 import numpy as np
 
 from quantification.utils.errors import ClusterException
 
 
-class BaseEnsembleDMModel(BaseDistributionMatchingModel):
+class BinaryEnsembleHDy(EnsembleBinaryCC):
+
+    def predict(self, X, method='hdy'):
+        assert method == "hdy"
+        return self._predict_hdy(X)
+
+
+class MulticlassEnsembleHDy(BaseEnsembleCCModel):
     def __init__(self, b, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
-        super(BaseEnsembleDMModel, self).__init__(estimator_class, estimator_params, estimator_grid)
-        self.b = b
-        self.qnfs_ = []
-
-
-class BinaryEnsembleHDy(BaseEnsembleDMModel):
-    def fit(self, X, y, plot=False):
-        if len(X) != len(y):
-            raise ValueError("X and y has to be the same length.")
-        for n, (X_sample, y_sample) in enumerate(zip(X, y)):
-            qnf = BinaryHDy(self.b, self.estimator_class, self.estimator_params)
-            try:
-                qnf.fit(X_sample, y_sample, plot=plot)
-            except ValueError: # Positive classes has not enough samples to perform cv
-                continue
-            self.qnfs_.append(qnf)
-
-        return self
-
-    def predict(self, X, plot=False):
-        predictions = np.array([qnf.predict(X) for qnf in self.qnfs_])
-        return np.mean(predictions, axis=0)
-
-
-class MulticlassEnsembleHDy(BaseEnsembleDMModel):
-    def __init__(self, b, estimator_class=None, estimator_params=dict()):
-        super(MulticlassEnsembleHDy, self).__init__(b, estimator_class, estimator_params)
+        super(MulticlassEnsembleHDy, self).__init__(b, estimator_class, estimator_params, estimator_grid)
         self.classes_ = None
         self.qnfs_ = None
 
@@ -83,7 +65,7 @@ class MulticlassEnsembleHDy(BaseEnsembleDMModel):
         return probs / np.sum(probs)
 
     def fit_and_get_distributions(self, X_sample, y_sample, verbose):
-        qnf = MulticlassHDy(self.b, self.estimator_class, self.estimator_params)
+        qnf = MulticlassHDy(self.b, self.estimator_class, self.estimator_params, self.estimator_grid)
         classes = np.unique(y_sample).tolist()
         n_classes = len(classes)
         qnf.classes_ = classes
@@ -93,7 +75,7 @@ class MulticlassEnsembleHDy(BaseEnsembleDMModel):
             mask = (y_sample == cls)
             y_bin = np.ones(y_sample.shape, dtype=np.int)
             y_bin[~mask] = 0
-            if np.unique(y_bin) != 2:
+            if len(np.unique(y_bin)) != 2:
                 continue
             clf = qnf._make_estimator()
             if verbose:

@@ -4,6 +4,7 @@ import numpy as np
 import six
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV
+import matplotlib.pyplot as plt
 
 from quantification import BasicModel
 from quantification.metrics import distributed, model_score
@@ -48,7 +49,7 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
 
 
 class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
-    def __init__(self, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
+    def __init__(self, b=None, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
         super(BaseBinaryClassifyAndCount, self).__init__(estimator_class, estimator_params, estimator_grid)
         self.estimator_ = self._make_estimator()
         self.confusion_matrix_ = None
@@ -56,8 +57,10 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
         self.fp_pa_ = np.nan
         self.tn_pa_ = np.nan
         self.fn_pa_ = np.nan
+        self.b = b
+        self.train_dist_ = None
 
-    def fit(self, X, y, local=True):
+    def fit(self, X, y, local=True, plot=False):
         n_classes = len(np.unique(y))
         if n_classes != 2:
             raise ValueError("This solver is meant for binary samples "
@@ -69,10 +72,12 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
 
         self.estimator_.fit(X, y)
         self.estimator_ = self.estimator_.best_estimator_
-        self.compute_performance_(X, y, local=local)
+        self._compute_performance(X, y, local=local)
+        if self.b:
+            self._compute_distribution(X, y, plot=plot)
         return self
 
-    def predict(self, X, method='cc'):
+    def predict(self, X, method='cc', plot=False):
         if method == 'cc':
             return self._predict_cc(X)
         elif method == 'ac':
@@ -81,10 +86,12 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
             return self._predict_pcc(X)
         elif method == 'pac':
             return self._predict_pac(X)
+        elif method=="hdy":
+            return self._predict_hdy(X, plot=plot)
         else:
             raise ValueError("Invalid method %s. Choices are `cc`, `ac`, `pcc`, `pac`.", method)
 
-    def compute_performance_(self, X, y, local):
+    def _compute_performance(self, X, y, local):
         if local:
             self.confusion_matrix_ = np.mean(
                 model_score.cv_confusion_matrix(self.estimator_, X, y, 50), axis=0)
@@ -111,6 +118,31 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
                       np.sum(y == self.estimator_.classes_[1])
         self.fn_pa_ = np.sum(predictions[y == self.estimator_.classes_[0], 1]) / \
                       np.sum(y == self.estimator_.classes_[0])
+
+    def _compute_distribution(self, X, y, plot):
+        pos_class = self.estimator_.classes_[1]
+        neg_class = self.estimator_.classes_[0]
+        pos_preds = self.estimator_.predict_proba(X[y == pos_class,])[:, 1]
+        neg_preds = self.estimator_.predict_proba(X[y == neg_class,])[:, +1]
+
+        train_pos_pdf, _ = np.histogram(pos_preds, self.b)
+        train_neg_pdf, _ = np.histogram(neg_preds, self.b)
+        self.train_dist_ = np.full((self.b, 2), np.nan)
+        for i in range(self.b):
+            self.train_dist_[i] = [train_pos_pdf[i] / float(sum(y == pos_class)),
+                                   train_neg_pdf[i] / float(sum(y == neg_class))]
+
+        if plot:
+            plt.subplot(121)
+            plt.hist(neg_preds, self.b)
+            plt.title('Negative PDF')
+
+            plt.figure(1)
+            plt.subplot(122)
+            plt.hist(pos_preds, self.b)
+            plt.title('Positive PDF')
+
+            plt.show()
 
     def _predict_cc(self, X):
         predictions = self.estimator_.predict(X)
@@ -139,9 +171,36 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
         pos = np.clip((predictions[1] - self.fn_pa_) / float(self.tn_pa_ - self.fn_pa_), 0, 1)
         return np.array([neg, pos])
 
+    def _predict_hdy(self, X, plot):
+        if not self.b:
+            raise ValueError("If HDy predictions are in order, the quantifier must be trained with the parameter `b`")
+        preds = self.estimator_.predict_proba(X)[:, 1]
+        test_pdf, _ = np.histogram(preds, self.b)
+
+        if plot:
+            plt.figure()
+            plt.hist(preds, self.b)
+            plt.title('Test PDF')
+
+            plt.show()
+
+        probas = [p / 100.0 for p in range(0, 100)]
+        hd = np.full(len(probas), np.nan)
+        for p in range(len(probas)):
+            diff = np.full(self.b, np.nan)
+            for i in range(self.b):
+                di = np.sqrt(self.train_dist_[i, 0] * probas[p] + self.train_dist_[i, 1] * (1 - probas[p]))
+                ti = np.sqrt(test_pdf[i] / float(X.shape[0]))
+                diff[i] = np.power(di - ti, 2)
+            hd[p] = np.sqrt(np.sum(diff))
+
+        p_min = np.argmin(hd)
+        prevalence = probas[p_min]
+        return np.array([1 - prevalence, prevalence])
+
 
 class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
-    def __init__(self, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
+    def __init__(self, b=None, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
         super(BaseMulticlassClassifyAndCount, self).__init__(estimator_class, estimator_params, estimator_grid)
         self.classes_ = None
         self.estimators_ = None
@@ -150,6 +209,8 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
         self.tpr_ = None
         self.tp_pa_ = None
         self.fp_pa_ = None
+        self.b = b
+        self.train_dist_ = None
 
     def fit(self, X, y, cv=50, verbose=False, local=True):
         self.classes_ = np.unique(y).tolist()
@@ -157,10 +218,10 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
         self.estimators_ = dict.fromkeys(self.classes_)
         self.confusion_matrix_ = dict.fromkeys(self.classes_)
         self.fpr_ = dict.fromkeys(self.classes_)
-
         self.tpr_ = dict.fromkeys(self.classes_)
         self.tp_pa_ = dict.fromkeys(self.classes_)
         self.fp_pa_ = dict.fromkeys(self.classes_)
+        self.train_dist_ = dict.fromkeys(self.classes_)
 
         if not local:
             self._persist_data(X, y)
@@ -177,11 +238,16 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
             self.estimators_[pos_class] = clf
             if verbose:
                 print "Computing performance for classifier of class {}/{}".format(pos_class + 1, n_classes)
-            self.compute_performance_(X, y_bin, pos_class, folds=cv, local=local, verbose=verbose)
+            self._compute_performance(X, y_bin, pos_class, folds=cv, local=local, verbose=verbose)
+            if self.b:
+                if verbose:
+                    print "Computing distribution for classifier of class {}/{}".format(pos_class + 1, n_classes)
+                self._compute_distribution(clf, X, y_bin, pos_class)
+
 
         return self
 
-    def compute_performance_(self, X, y, pos_class, folds, local, verbose):
+    def _compute_performance(self, X, y, pos_class, folds, local, verbose):
         if local:
             tprs = []
             fprs = []
@@ -218,6 +284,19 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
         self.fp_pa_[pos_class] = np.sum(predictions[y == self.estimators_[pos_class].classes_[0], 1]) / \
                                  np.sum(y == self.estimators_[pos_class].classes_[0])
 
+    def _compute_distribution(self, clf, X, y_bin, cls):
+        pos_class = clf.classes_[1]
+        neg_class = clf.classes_[0]
+        pos_preds = clf.predict_proba(X[y_bin == pos_class,])[:, 1]
+        neg_preds = clf.predict_proba(X[y_bin == neg_class,])[:, +1]
+
+        train_pos_pdf, _ = np.histogram(pos_preds, self.b)
+        train_neg_pdf, _ = np.histogram(neg_preds, self.b)
+        self.train_dist_[cls] = np.full((self.b, 2), np.nan)
+        for i in range(self.b):
+            self.train_dist_[cls][i] = [train_pos_pdf[i] / float(sum(y_bin == pos_class)),
+                                        train_neg_pdf[i] / float(sum(y_bin == neg_class))]
+
     def predict(self, X, method='cc'):
         if method == 'cc':
             return self._predict_cc(X)
@@ -227,6 +306,8 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
             return self._predict_pcc(X)
         elif method == 'pac':
             return self._predict_pac(X)
+        elif method == "hdy":
+            return self._predict_hdy(X)
         else:
             raise ValueError("Invalid method %s. Choices are `cc`, `ac`, `pcc`, `pac`.", method)
 
@@ -280,27 +361,51 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
 
         return probabilities / np.sum(probabilities)
 
+    def _predict_hdy(self, X):
+        if not self.b:
+            raise ValueError("If HDy predictions are in order, the quantifier must be trained with the parameter `b`")
+        n_classes = len(self.classes_)
+        probabilities = np.full(n_classes, np.nan)
+        for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
+            preds = clf.predict_proba(X)[:, 1]
+            test_pdf, _ = np.histogram(preds, self.b)
+            probas = [p / 100.0 for p in range(0, 100)]
+            hd = np.full(len(probas), np.nan)
+            for p in range(len(probas)):
+                diff = np.full(self.b, np.nan)
+                for i in range(self.b):
+                    di = np.sqrt(
+                        self.train_dist_[cls][i, 0] * probas[p] + self.train_dist_[cls][i, 1] * (1 - probas[p]))
+                    ti = np.sqrt(test_pdf[i] / float(X.shape[0]))
+                    diff[i] = np.power(di - ti, 2)
+                hd[p] = np.sqrt(np.sum(diff))
+
+            p_min = np.argmin(hd)
+            probabilities[n] = probas[p_min]
+
+        return probabilities / np.sum(probabilities)
+
 
 class BinaryClassifyAndCount(BaseBinaryClassifyAndCount):
-    def predict(self, X, method='cc'):
+    def predict(self, X, method='cc', plot=False):
         assert method == 'cc'
         return self._predict_cc(X)
 
 
 class BinaryAdjustedCount(BaseBinaryClassifyAndCount):
-    def predict(self, X, method='ac'):
+    def predict(self, X, method='ac', plot=False):
         assert method == 'ac'
         return self._predict_ac(X)
 
 
 class BinaryProbabilisticCC(BaseBinaryClassifyAndCount):
-    def predict(self, X, method='pcc'):
+    def predict(self, X, method='pcc', plot=False):
         assert method == 'pcc'
         return self._predict_pcc(X)
 
 
 class BinaryProbabilisticAC(BaseBinaryClassifyAndCount):
-    def predict(self, X, method='pac'):
+    def predict(self, X, method='pac', plot=False):
         assert method == 'pac'
         return self._predict_pac(X)
 

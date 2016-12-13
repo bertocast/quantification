@@ -27,7 +27,7 @@ class TestBinaryClassifyAndCount(ModelTestCase):
     def test_default_classifier(self):
         cc = BaseBinaryClassifyAndCount()
         assert_is_instance(cc.estimator_.estimator, LogisticRegression)
-        assert_equal(cc.estimator_.param_grid, dict(C=[0.1, 0.5, 1.0]))
+        assert_equal(cc.estimator_.param_grid, dict(C=[0.1, 1, 10]))
 
     def test_non_default_classifier(self):
         cc = BaseBinaryClassifyAndCount(estimator_class=DecisionTreeRegressor(), estimator_params=dict(max_depth=3),

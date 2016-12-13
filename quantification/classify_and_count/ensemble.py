@@ -8,8 +8,9 @@ import numpy as np
 
 
 class BaseEnsembleCCModel(BaseClassifyAndCountModel):
-    def __init__(self, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
+    def __init__(self, b=None, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
         super(BaseEnsembleCCModel, self).__init__(estimator_class, estimator_params, estimator_grid)
+        self.b = b
         self.qnfs_ = []
 
 
@@ -20,7 +21,10 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
         for n, (X_sample, y_sample) in enumerate(zip(X, y)):
             if len(np.unique(y_sample)) != 2:
                 continue
-            qnf = BaseBinaryClassifyAndCount(self.estimator_class, self.estimator_params)
+            qnf = BaseBinaryClassifyAndCount(b=self.b,
+                                             estimator_class=self.estimator_class,
+                                             estimator_params=self.estimator_params,
+                                             estimator_grid=self.estimator_grid)
             try:
                 qnf.estimator_.fit(X_sample, y_sample)
             except ValueError: # Positive classes has not enough samples to perform cv
@@ -67,6 +71,8 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
             return self._predict_pcc(X)
         elif method == 'pac':
             return self._predict_pac(X)
+        elif method == 'hdy':
+            return self._predict_hdy(X)
         else:
             raise ValueError("Invalid method %s. Choices are `cc`, `ac`, `pcc`, `pac`.", method)
 
@@ -104,10 +110,16 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
         predictions = np.clip(np.mean(predictions, axis=0), 0, 1)
         return predictions / np.sum(predictions)
 
+    def _predict_hdy(self, X):
+        if not self.b:
+            raise ValueError("If HDy predictions are in order, the quantifier must be trained with the parameter `b`")
+        predictions = np.array([qnf.predict(X) for qnf in self.qnfs_])
+        return np.mean(predictions, axis=0)
+
 
 class EnsembleMulticlassCC(BaseEnsembleCCModel):
-    def __init__(self, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
-        super(EnsembleMulticlassCC, self).__init__(estimator_class, estimator_params, estimator_grid)
+    def __init__(self, b=None, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
+        super(EnsembleMulticlassCC, self).__init__(b, estimator_class, estimator_params, estimator_grid)
         self.classes_ = None
         self.qnfs_ = None
 
@@ -123,7 +135,9 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         for n, (X_sample, y_sample) in enumerate(zip(X, y)):
             if verbose:
                 print "\rProcessing sample {}/{}".format(n+1, len(y))
-            qnf = BaseMulticlassClassifyAndCount(self.estimator_class, self.estimator_params)
+            qnf = BaseMulticlassClassifyAndCount(estimator_class=self.estimator_class,
+                                                 estimator_params=self.estimator_params,
+                                                 estimator_grid=self.estimator_grid)
             classes = np.unique(y_sample).tolist()
             n_classes = len(classes)
             qnf.classes_ = classes
@@ -137,7 +151,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 mask = (y_sample == pos_class)
                 y_bin = np.ones(y_sample.shape, dtype=np.int)
                 y_bin[~mask] = 0
-                if np.unique(y_bin) != 2:
+                if len(np.unique(y_bin)) != 2:
                     continue
                 clf = qnf._make_estimator()
                 clf = clf.fit(X_sample, y_bin)
@@ -219,8 +233,8 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 relative_freq = freq / float(np.sum(freq))
                 # TODO: Pasar esto al training
                 tpr = qnf.confusion_matrix_[cls][1, 1] / float(qnf.confusion_matrix_[cls][1, 1]
-                                                                + qnf.confusion_matrix_[cls][1, 0])
-                fpr = qnf.confusion_matrix_[cls][0, 1] / float(qnf.confusion_matrix_[cls][0, 1]
+                                                                + qnf.confusion_matrix_[cls][0, 1])
+                fpr = qnf.confusion_matrix_[cls][1, 0] / float(qnf.confusion_matrix_[cls][1, 0]
                                                                 + qnf.confusion_matrix_[cls][0, 0])
                 if np.isnan(tpr):
                     tpr = 0
