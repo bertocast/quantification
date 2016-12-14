@@ -7,4 +7,4 @@ def merge(list1, list2):
 
 
 def mean_of_non_zero(row):
-    return np.mean(row[row!=0])
+    return np.mean(row[row != 0])

@@ -3,8 +3,25 @@
   <component name="ChangeListManager">
     <list default="true" id="3a838331-9b37-4c92-811e-9ad5f39586aa" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/plancton.py" afterPath="$PROJECT_DIR$/examples/plancton.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/__init__.py" afterPath="$PROJECT_DIR$/quantification/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/base.py" afterPath="$PROJECT_DIR$/quantification/base.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/classify_and_count/base.py" afterPath="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/classify_and_count/ensemble.py" afterPath="$PROJECT_DIR$/quantification/classify_and_count/ensemble.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/datasets/base.py" afterPath="$PROJECT_DIR$/quantification/datasets/base.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/distribution_matching/base.py" afterPath="$PROJECT_DIR$/quantification/distribution_matching/base.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/distribution_matching/ensemble.py" afterPath="$PROJECT_DIR$/quantification/distribution_matching/ensemble.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/metrics/distributed.py" afterPath="$PROJECT_DIR$/quantification/metrics/distributed.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/metrics/model_score.py" afterPath="$PROJECT_DIR$/quantification/metrics/model_score.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/metrics/multiclass.py" afterPath="$PROJECT_DIR$/quantification/metrics/multiclass.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/tests/base.py" afterPath="$PROJECT_DIR$/quantification/tests/base.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/tests/classify_and_count/test_base.py" afterPath="$PROJECT_DIR$/quantification/tests/classify_and_count/test_base.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/tests/classify_and_count/test_ensemble.py" afterPath="$PROJECT_DIR$/quantification/tests/classify_and_count/test_ensemble.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/tests/distribution_matching/test_base.py" afterPath="$PROJECT_DIR$/quantification/tests/distribution_matching/test_base.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/tests/distribution_matching/test_ensemble.py" afterPath="$PROJECT_DIR$/quantification/tests/distribution_matching/test_ensemble.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/utils/base.py" afterPath="$PROJECT_DIR$/quantification/utils/base.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/utils/errors.py" afterPath="$PROJECT_DIR$/quantification/utils/errors.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/utils/parallelism.py" afterPath="$PROJECT_DIR$/quantification/utils/parallelism.py" />
     </list>
     <ignored path="quantification.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -26,15 +43,14 @@
     <splitter split-orientation="horizontal" split-proportion="0.5">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="plancton.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="plancton.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/examples/plancton.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="2280">
-                  <caret line="254" column="26" lean-forward="false" selection-start-line="254" selection-start-column="26" selection-end-line="254" selection-end-column="26" />
+                <state relative-caret-position="-15">
+                  <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
                   <folding>
-                    <element signature="e#15#30#0" expanded="true" />
-                    <element signature="e#3815#6615#0" expanded="false" />
-                    <element signature="e#6637#7965#0" expanded="false" />
+                    <element signature="e#3722#6522#0" expanded="false" />
+                    <element signature="e#6544#7872#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -43,11 +59,9 @@
           <file leaf-file-name="base.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/base.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="180">
-                  <caret line="20" column="38" lean-forward="true" selection-start-line="20" selection-start-column="38" selection-end-line="20" selection-end-column="38" />
-                  <folding>
-                    <element signature="e#0#39#0" expanded="true" />
-                  </folding>
+                <state relative-caret-position="135">
+                  <caret line="9" column="38" lean-forward="false" selection-start-line="9" selection-start-column="38" selection-end-line="9" selection-end-column="38" />
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -56,20 +70,18 @@
             <entry file="file://$PROJECT_DIR$/quantification/tests/classify_and_count/test_ensemble.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="514">
-                  <caret line="67" column="39" lean-forward="false" selection-start-line="67" selection-start-column="39" selection-end-line="67" selection-end-column="39" />
+                  <caret line="66" column="39" lean-forward="false" selection-start-line="66" selection-start-column="39" selection-end-line="66" selection-end-column="39" />
                   <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="ensemble.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="ensemble.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/ensemble.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-908">
-                  <caret line="38" column="52" lean-forward="true" selection-start-line="38" selection-start-column="52" selection-end-line="38" selection-end-column="52" />
-                  <folding>
-                    <element signature="e#0#25#0" expanded="true" />
-                  </folding>
+                <state relative-caret-position="180">
+                  <caret line="12" column="35" lean-forward="false" selection-start-line="12" selection-start-column="35" selection-end-line="12" selection-end-column="35" />
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -81,11 +93,9 @@
           <file leaf-file-name="distributed.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/quantification/metrics/distributed.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="555">
-                  <caret line="48" column="16" lean-forward="false" selection-start-line="48" selection-start-column="16" selection-end-line="48" selection-end-column="16" />
-                  <folding>
-                    <element signature="e#0#28#0" expanded="true" />
-                  </folding>
+                <state relative-caret-position="660">
+                  <caret line="45" column="16" lean-forward="false" selection-start-line="45" selection-start-column="16" selection-end-line="45" selection-end-column="16" />
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -93,8 +103,8 @@
           <file leaf-file-name="base.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/quantification/base.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="30">
-                  <caret line="3" column="6" lean-forward="false" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="6" />
+                <state relative-caret-position="60">
+                  <caret line="5" column="6" lean-forward="false" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
                   <folding />
                 </state>
               </provider>
@@ -103,16 +113,25 @@
           <file leaf-file-name="ensemble.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/ensemble.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1980">
-                  <caret line="256" column="58" lean-forward="false" selection-start-line="256" selection-start-column="58" selection-end-line="256" selection-end-column="58" />
+                <state relative-caret-position="360">
+                  <caret line="276" column="38" lean-forward="true" selection-start-line="276" selection-start-column="38" selection-end-line="276" selection-end-column="38" />
                   <folding>
-                    <element signature="e#588#5285#0" expanded="false" />
-                    <element signature="e#4255#4451#0" expanded="false" />
-                    <element signature="e#4492#4996#0" expanded="false" />
-                    <element signature="e#5037#5285#0" expanded="false" />
-                    <element signature="e#10504#11299#0" expanded="false" />
-                    <element signature="e#12110#12700#0" expanded="false" />
-                    <element signature="e#12741#13423#0" expanded="false" />
+                    <element signature="e#0#16#0" expanded="true" />
+                    <element signature="e#719#5416#0" expanded="false" />
+                    <element signature="e#4386#4582#0" expanded="false" />
+                    <element signature="e#4623#5127#0" expanded="false" />
+                    <element signature="e#5168#5416#0" expanded="false" />
+                    <element signature="e#5821#6706#0" expanded="false" />
+                    <element signature="e#6790#8749#0" expanded="false" />
+                    <element signature="e#8803#10391#0" expanded="false" />
+                    <element signature="e#8837#9041#0" expanded="false" />
+                    <element signature="e#9078#9110#0" expanded="false" />
+                    <element signature="e#9153#9271#0" expanded="false" />
+                    <element signature="e#9775#10250#0" expanded="false" />
+                    <element signature="e#10454#11922#0" expanded="false" />
+                    <element signature="e#12457#13252#0" expanded="false" />
+                    <element signature="e#14063#14653#0" expanded="false" />
+                    <element signature="e#14694#15376#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -183,22 +202,22 @@
         <option value="$PROJECT_DIR$/quantification/datasets/data/iris/iris2.csv" />
         <option value="$PROJECT_DIR$/quantification/datasets/data/iris/iris.csv" />
         <option value="$PROJECT_DIR$/quantification/datasets/data/iris/iris3.csv" />
-        <option value="$PROJECT_DIR$/quantification/base.py" />
         <option value="$PROJECT_DIR$/quantification/tests/distribution_matching/test_base.py" />
         <option value="$PROJECT_DIR$/quantification/tests/distribution_matching/test_ensemble.py" />
         <option value="$PROJECT_DIR$/quantification/metrics/model_score.py" />
         <option value="$PROJECT_DIR$/quantification/metrics/multiclass.py" />
-        <option value="$PROJECT_DIR$/quantification/metrics/distributed.py" />
         <option value="$PROJECT_DIR$/examples/cc.txt" />
         <option value="$PROJECT_DIR$/examples/cc_ensemble.txt" />
         <option value="$PROJECT_DIR$/examples/hdy.txt" />
         <option value="$PROJECT_DIR$/examples/hdy_ensemble.txt" />
-        <option value="$PROJECT_DIR$/examples/plancton.py" />
-        <option value="$PROJECT_DIR$/quantification/distribution_matching/base.py" />
         <option value="$PROJECT_DIR$/quantification/tests/classify_and_count/test_base.py" />
         <option value="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
         <option value="$PROJECT_DIR$/quantification/distribution_matching/ensemble.py" />
+        <option value="$PROJECT_DIR$/quantification/base.py" />
+        <option value="$PROJECT_DIR$/quantification/metrics/distributed.py" />
         <option value="$PROJECT_DIR$/quantification/tests/classify_and_count/test_ensemble.py" />
+        <option value="$PROJECT_DIR$/quantification/distribution_matching/base.py" />
+        <option value="$PROJECT_DIR$/examples/plancton.py" />
         <option value="$PROJECT_DIR$/quantification/classify_and_count/ensemble.py" />
       </list>
     </option>
@@ -264,154 +283,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="utils" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tests" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tests" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="distribution_matching" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tests" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="classify_and_count" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="metrics" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="distribution_matching" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="classify_and_count" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="quantification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="examples" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -440,7 +311,7 @@
       <recent name="$PROJECT_DIR$/quantification" />
     </key>
   </component>
-  <component name="RunManager" selected="Python tests.Nosetests in tests (2)">
+  <component name="RunManager" selected="Python tests.Nosetests in tests (3)">
     <configuration default="false" name="Nosetests in tests (2)" type="tests" factoryName="Nosetests" temporary="true" nameIsGenerated="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -456,27 +327,6 @@
       <option name="METHOD_NAME" value="" />
       <option name="FOLDER_NAME" value="$PROJECT_DIR$/quantification/tests" />
       <option name="TEST_TYPE" value="TEST_FOLDER" />
-      <option name="PATTERN" value="" />
-      <option name="USE_PATTERN" value="false" />
-      <option name="PARAMS" value="" />
-      <option name="USE_PARAM" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="Nosetest TestMulticlassEnsembleHDy.test_predict_returns_feasible_probabilities" type="tests" factoryName="Nosetests" temporary="true" nameIsGenerated="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/quantification/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="quantification" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/quantification/tests/distribution_matching/test_ensemble.py" />
-      <option name="CLASS_NAME" value="TestMulticlassEnsembleHDy" />
-      <option name="METHOD_NAME" value="test_predict_returns_feasible_probabilities" />
-      <option name="FOLDER_NAME" value="$PROJECT_DIR$/quantification/tests" />
-      <option name="TEST_TYPE" value="TEST_METHOD" />
       <option name="PATTERN" value="" />
       <option name="USE_PATTERN" value="false" />
       <option name="PARAMS" value="" />
@@ -540,6 +390,27 @@
       <option name="METHOD_NAME" value="" />
       <option name="FOLDER_NAME" value="$PROJECT_DIR$/quantification/tests" />
       <option name="TEST_TYPE" value="TEST_CLASS" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Nosetests in tests (3)" type="tests" factoryName="Nosetests" temporary="true" nameIsGenerated="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/quantification/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="quantification" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="$PROJECT_DIR$/quantification/tests" />
+      <option name="TEST_TYPE" value="TEST_FOLDER" />
       <option name="PATTERN" value="" />
       <option name="USE_PATTERN" value="false" />
       <option name="PARAMS" value="" />
@@ -682,18 +553,18 @@
     </configuration>
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (2)" />
-      <item index="1" class="java.lang.String" itemvalue="Python tests.Nosetest TestMulticlassEnsembleHDy.test_predict_returns_feasible_probabilities" />
-      <item index="2" class="java.lang.String" itemvalue="Python tests.Nosetests in tests" />
-      <item index="3" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (1)" />
-      <item index="4" class="java.lang.String" itemvalue="Python tests.Nosetests in TestEnsembleMulticlassCC" />
+      <item index="1" class="java.lang.String" itemvalue="Python tests.Nosetests in tests" />
+      <item index="2" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (1)" />
+      <item index="3" class="java.lang.String" itemvalue="Python tests.Nosetests in TestEnsembleMulticlassCC" />
+      <item index="4" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (3)" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (2)" />
-        <item index="1" class="java.lang.String" itemvalue="Python tests.Nosetests in TestEnsembleMulticlassCC" />
-        <item index="2" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (1)" />
-        <item index="3" class="java.lang.String" itemvalue="Python tests.Nosetests in tests" />
-        <item index="4" class="java.lang.String" itemvalue="Python tests.Nosetest TestMulticlassEnsembleHDy.test_predict_returns_feasible_probabilities" />
+        <item index="0" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (3)" />
+        <item index="1" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (2)" />
+        <item index="2" class="java.lang.String" itemvalue="Python tests.Nosetests in TestEnsembleMulticlassCC" />
+        <item index="3" class="java.lang.String" itemvalue="Python tests.Nosetests in tests (1)" />
+        <item index="4" class="java.lang.String" itemvalue="Python tests.Nosetests in tests" />
       </list>
     </recent_temporary>
   </component>
@@ -1015,7 +886,14 @@
       <option name="project" value="LOCAL" />
       <updated>1481628089681</updated>
     </task>
-    <option name="localTasksCounter" value="44" />
+    <task id="LOCAL-00044" summary="Even more refactoring">
+      <created>1481633824562</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1481633824562</updated>
+    </task>
+    <option name="localTasksCounter" value="45" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1024,9 +902,6 @@
     </history-entry>
     <history-entry file="Nosetests_in_TestEnsembleMulticlassCC - 2016.12.13 at 13h 46m 33s.xml">
       <configuration name="Nosetests in TestEnsembleMulticlassCC" configurationId="tests" />
-    </history-entry>
-    <history-entry file="Nosetests_in_tests - 2016.12.13 at 12h 11m 14s.xml">
-      <configuration name="Nosetests in tests" configurationId="tests" />
     </history-entry>
     <history-entry file="Nosetests_in_tests_(1) - 2016.12.13 at 13h 37m 32s.xml">
       <configuration name="Nosetests in tests (1)" configurationId="tests" />
@@ -1049,6 +924,9 @@
     <history-entry file="Nosetests_in_tests_(2) - 2016.12.13 at 13h 52m 36s.xml">
       <configuration name="Nosetests in tests (2)" configurationId="tests" />
     </history-entry>
+    <history-entry file="Nosetests_in_tests_(3) - 2016.12.14 at 09h 28m 57s.xml">
+      <configuration name="Nosetests in tests (3)" configurationId="tests" />
+    </history-entry>
   </component>
   <component name="TodoView" selected-index="4">
     <todo-panel id="selected-file">
@@ -1066,6 +944,7 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13863726" sideWeight="0.495671" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32919708" sideWeight="0.49665222" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39854014" sideWeight="0.51083106" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Inspection Results" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329927" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="true" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.32919708" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3248175" sideWeight="0.48838127" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3240876" sideWeight="0.49311295" order="10" side_tool="false" content_ui="tabs" />
@@ -1094,7 +973,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add BinaryAC to init" />
     <MESSAGE value="Finish BinaryAC for multiple input files" />
     <MESSAGE value="Test double cluster" />
     <MESSAGE value="Fail double cluster" />
@@ -1119,30 +997,21 @@
     <MESSAGE value="Correct errors in placton example" />
     <MESSAGE value="Fix a bug in FPR and TPR calculus" />
     <MESSAGE value="Refactored" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactored" />
+    <MESSAGE value="Even more refactoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="Even more refactoring" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/quantification/utils/parallelism.py</url>
-          <line>37</line>
+          <line>33</line>
           <option name="timeStamp" value="385" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/quantification/classify_and_count/ensemble.py</url>
-          <line>23</line>
+          <line>28</line>
           <option name="timeStamp" value="513" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/quantification/distribution_matching/ensemble.py</url>
-          <line>67</line>
-          <option name="timeStamp" value="516" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/quantification/distribution_matching/ensemble.py</url>
-          <line>30</line>
-          <option name="timeStamp" value="517" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -1418,36 +1287,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/examples/plancton.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2280">
-          <caret line="254" column="26" lean-forward="false" selection-start-line="254" selection-start-column="26" selection-end-line="254" selection-end-column="26" />
-          <folding>
-            <element signature="e#15#30#0" expanded="true" />
-            <element signature="e#3815#6615#0" expanded="false" />
-            <element signature="e#6637#7965#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="3" column="6" lean-forward="false" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/metrics/distributed.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="555">
-          <caret line="48" column="16" lean-forward="false" selection-start-line="48" selection-start-column="16" selection-end-line="48" selection-end-column="16" />
-          <folding>
-            <element signature="e#0#28#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/quantification/tests/distribution_matching/test_base.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
@@ -1468,9 +1307,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="319">
           <caret line="29" column="64" lean-forward="false" selection-start-line="29" selection-start-column="64" selection-end-line="29" selection-end-column="64" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1479,54 +1316,85 @@
         <state relative-caret-position="514">
           <caret line="215" column="45" lean-forward="false" selection-start-line="215" selection-start-column="45" selection-end-line="215" selection-end-column="45" />
           <folding>
-            <element signature="e#0#39#0" expanded="true" />
-            <element signature="e#12942#13347#0" expanded="false" />
-            <element signature="e#13940#14516#0" expanded="false" />
-            <element signature="e#14557#15215#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="20" column="38" lean-forward="true" selection-start-line="20" selection-start-column="38" selection-end-line="20" selection-end-column="38" />
-          <folding>
-            <element signature="e#0#39#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/tests/classify_and_count/test_ensemble.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="514">
-          <caret line="67" column="39" lean-forward="false" selection-start-line="67" selection-start-column="39" selection-end-line="67" selection-end-column="39" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/ensemble.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1980">
-          <caret line="256" column="58" lean-forward="false" selection-start-line="256" selection-start-column="58" selection-end-line="256" selection-end-column="58" />
-          <folding>
-            <element signature="e#588#5285#0" expanded="false" />
-            <element signature="e#4255#4451#0" expanded="false" />
-            <element signature="e#4492#4996#0" expanded="false" />
-            <element signature="e#5037#5285#0" expanded="false" />
-            <element signature="e#10504#11299#0" expanded="false" />
-            <element signature="e#12110#12700#0" expanded="false" />
-            <element signature="e#12741#13423#0" expanded="false" />
+            <element signature="e#12943#13348#0" expanded="false" />
+            <element signature="e#13941#14517#0" expanded="false" />
+            <element signature="e#14558#15216#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/ensemble.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-908">
-          <caret line="38" column="52" lean-forward="true" selection-start-line="38" selection-start-column="52" selection-end-line="38" selection-end-column="52" />
+        <state relative-caret-position="180">
+          <caret line="12" column="35" lean-forward="false" selection-start-line="12" selection-start-column="35" selection-end-line="12" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/metrics/distributed.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="660">
+          <caret line="45" column="16" lean-forward="false" selection-start-line="45" selection-start-column="16" selection-end-line="45" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/tests/classify_and_count/test_ensemble.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="514">
+          <caret line="66" column="39" lean-forward="false" selection-start-line="66" selection-start-column="39" selection-end-line="66" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="38" lean-forward="false" selection-start-line="9" selection-start-column="38" selection-end-line="9" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="5" column="6" lean-forward="false" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/ensemble.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="276" column="38" lean-forward="true" selection-start-line="276" selection-start-column="38" selection-end-line="276" selection-end-column="38" />
           <folding>
-            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#0#16#0" expanded="true" />
+            <element signature="e#719#5416#0" expanded="false" />
+            <element signature="e#4386#4582#0" expanded="false" />
+            <element signature="e#4623#5127#0" expanded="false" />
+            <element signature="e#5168#5416#0" expanded="false" />
+            <element signature="e#5821#6706#0" expanded="false" />
+            <element signature="e#6790#8749#0" expanded="false" />
+            <element signature="e#8803#10391#0" expanded="false" />
+            <element signature="e#8837#9041#0" expanded="false" />
+            <element signature="e#9078#9110#0" expanded="false" />
+            <element signature="e#9153#9271#0" expanded="false" />
+            <element signature="e#9775#10250#0" expanded="false" />
+            <element signature="e#10454#11922#0" expanded="false" />
+            <element signature="e#12457#13252#0" expanded="false" />
+            <element signature="e#14063#14653#0" expanded="false" />
+            <element signature="e#14694#15376#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/plancton.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-15">
+          <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding>
+            <element signature="e#3722#6522#0" expanded="false" />
+            <element signature="e#6544#7872#0" expanded="false" />
           </folding>
         </state>
       </provider>

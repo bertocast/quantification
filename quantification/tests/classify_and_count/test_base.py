@@ -7,6 +7,7 @@ from nose.tools import assert_raises, assert_is_instance
 from nose.tools import assert_true
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeRegressor
+
 from quantification.classify_and_count.base import BaseBinaryClassifyAndCount, BaseMulticlassClassifyAndCount
 from quantification.tests.base import ModelTestCase
 
@@ -35,7 +36,6 @@ class TestBinaryClassifyAndCount(ModelTestCase):
         assert_is_instance(cc.estimator_.estimator, DecisionTreeRegressor)
         assert_equal(cc.estimator_.param_grid, dict(min_samples_split=[2, 3, 4]))
         assert_equal(cc.estimator_.estimator.max_depth, 3)
-
 
     def test_tpr_and_fpr_are_not_nan_after_fit(self):
         cc = BaseBinaryClassifyAndCount()
@@ -129,5 +129,3 @@ class TestMulticlassClassifyAndCount(ModelTestCase):
         assert_true(np.all(probabilities <= 1.))
         assert_true(np.all(probabilities >= 0.))
         assert_almost_equal(np.sum(probabilities), 1.0)
-
-

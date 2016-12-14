@@ -1,5 +1,7 @@
 from tempfile import mkstemp
+
 import numpy as np
+
 
 class BasicModel(object):
     def _persist_data(self, X, y):

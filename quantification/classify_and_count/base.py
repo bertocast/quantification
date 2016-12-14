@@ -1,10 +1,10 @@
 from abc import ABCMeta, abstractmethod
 
+import matplotlib.pyplot as plt
 import numpy as np
 import six
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV
-import matplotlib.pyplot as plt
 
 from quantification import BasicModel
 from quantification.metrics import distributed, model_score
@@ -86,7 +86,7 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
             return self._predict_pcc(X)
         elif method == 'pac':
             return self._predict_pac(X)
-        elif method=="hdy":
+        elif method == "hdy":
             return self._predict_hdy(X, plot=plot)
         else:
             raise ValueError("Invalid method %s. Choices are `cc`, `ac`, `pcc`, `pac`.", method)
@@ -243,7 +243,6 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
                 if verbose:
                     print "Computing distribution for classifier of class {}/{}".format(pos_class + 1, n_classes)
                 self._compute_distribution(clf, X, y_bin, pos_class)
-
 
         return self
 

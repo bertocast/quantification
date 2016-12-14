@@ -1,11 +1,7 @@
 # coding=utf-8
 import logging
 
-import dispy
 import numpy as np
-import pandas as pd
-from sklearn.datasets.base import Bunch
-from sklearn.preprocessing import LabelEncoder
 
 from quantification.utils.errors import ClusterException
 
@@ -61,9 +57,6 @@ class ClusterParallel:
             cluster.print_status()
         cluster.close()
         return np.array(results)
-
-
-
 
 
 if __name__ == '__main__':

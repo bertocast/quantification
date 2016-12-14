@@ -1,15 +1,12 @@
+import functools
+import logging
 from os.path import basename
 
 import dispy
-import logging
 import numpy as np
-
-import functools
-
 from sklearn.model_selection import StratifiedKFold
 
 from quantification.utils.errors import ClusterException
-from quantification.utils.validation import split
 
 
 def setup(data_file):

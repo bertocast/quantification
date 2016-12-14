@@ -1,18 +1,17 @@
 # coding=utf-8
 import warnings
 
+import numpy as np
 import pandas as pd
 from sklearn.datasets.base import Bunch
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import LeaveOneOut
 from sklearn.preprocessing import LabelEncoder
 
-import numpy as np
-
-from quantification.classify_and_count.base import BaseMulticlassClassifyAndCount, BaseBinaryClassifyAndCount
-from quantification.classify_and_count.ensemble import EnsembleMulticlassCC, EnsembleBinaryCC
-from quantification.distribution_matching.base import MulticlassHDy, BinaryHDy
-from quantification.distribution_matching.ensemble import MulticlassEnsembleHDy, BinaryEnsembleHDy
+from quantification.classify_and_count.base import BaseBinaryClassifyAndCount
+from quantification.classify_and_count.ensemble import EnsembleBinaryCC
+from quantification.distribution_matching.base import BinaryHDy
+from quantification.distribution_matching.ensemble import BinaryEnsembleHDy
 from quantification.metrics.multiclass import absolute_error, bray_curtis
 
 

@@ -1,11 +1,10 @@
+import numpy as np
 from nose.tools import assert_almost_equal
 from nose.tools import assert_false
 from nose.tools import assert_true
 
 from quantification.distribution_matching.base import BinaryHDy, MulticlassHDy
 from quantification.tests.base import ModelTestCase
-
-import numpy as np
 
 
 class TestBinnaryHdy(ModelTestCase):

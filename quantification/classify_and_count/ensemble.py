@@ -1,10 +1,15 @@
+import functools
+import logging
 from copy import deepcopy
+from os.path import basename
 
+import dispy
+import numpy as np
 from sklearn.metrics import confusion_matrix
 
 from quantification.classify_and_count.base import BaseClassifyAndCountModel, BaseBinaryClassifyAndCount, \
     BaseMulticlassClassifyAndCount
-import numpy as np
+from quantification.utils.errors import ClusterException
 
 
 class BaseEnsembleCCModel(BaseClassifyAndCountModel):
@@ -122,64 +127,118 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         super(EnsembleMulticlassCC, self).__init__(b, estimator_class, estimator_params, estimator_grid)
         self.classes_ = None
         self.qnfs_ = None
+        self.cls_smp_ = None
 
-    def fit(self, X, y, verbose=False):
-        #TODO: Copiar de MulticlassEnsembleHDy el parallel_fit
+    def fit(self, X, y, verbose=False, local=True):
 
         if len(X) != len(y):
             raise ValueError("X and y has to be the same length.")
 
         self.classes_ = np.unique(np.concatenate(y)).tolist()
         self.qnfs_ = [None for _ in y]
-        cls_smp = {k: [] for k in self.classes_}
+        self.cls_smp_ = {k: [] for k in self.classes_}
 
-        for n, (X_sample, y_sample) in enumerate(zip(X, y)):
-            if verbose:
-                print "\rProcessing sample {}/{}".format(n + 1, len(y))
-            qnf = BaseMulticlassClassifyAndCount(estimator_class=self.estimator_class,
-                                                 estimator_params=self.estimator_params,
-                                                 estimator_grid=self.estimator_grid)
-            classes = np.unique(y_sample).tolist()
-            qnf.classes_ = classes
-            qnf.estimators_ = dict.fromkeys(classes)
-            qnf.confusion_matrix_ = dict.fromkeys(classes)
-            qnf.fpr_ = dict.fromkeys(self.classes_)
-            qnf.tpr_ = dict.fromkeys(self.classes_)
-            qnf.tp_pa_ = dict.fromkeys(classes)
-            qnf.fp_pa_ = dict.fromkeys(classes)
-            qnf.train_dist_ = dict.fromkeys(classes)
-            for pos_class in classes:
+        if not local:
+            self._persist_data(X, y)
+            self._parallel_fit(X, y, verbose)
+        else:
+            for n, (X_sample, y_sample) in enumerate(zip(X, y)):
                 if verbose:
-                    print "\rFitting classifier for class {}".format(pos_class + 1)
-                mask = (y_sample == pos_class)
-                y_bin = np.ones(y_sample.shape, dtype=np.int)
-                y_bin[~mask] = 0
-                if len(np.unique(y_bin)) != 2:
-                    continue
-                clf = qnf._make_estimator()
-                clf = clf.fit(X_sample, y_bin)
-                clf = clf.best_estimator_
-                qnf.estimators_[pos_class] = clf
-                cls_smp[pos_class].append(n)
-                if self.b:
-                    pos_class = clf.classes_[1]
-                    neg_class = clf.classes_[0]
-                    pos_preds = clf.predict_proba(X_sample[y_bin == pos_class,])[:, 1]
-                    neg_preds = clf.predict_proba(X_sample[y_bin == neg_class,])[:, +1]
-
-                    train_pos_pdf, _ = np.histogram(pos_preds, self.b)
-                    train_neg_pdf, _ = np.histogram(neg_preds, self.b)
-                    qnf.train_dist_[pos_class] = np.full((self.b, 2), np.nan)
-                    for i in range(self.b):
-                        qnf.train_dist_[pos_class][i] = [train_pos_pdf[i] / float(sum(y_bin == pos_class)),
-                                                   train_neg_pdf[i] / float(sum(y_bin == neg_class))]
-            self.qnfs_[n] = deepcopy(qnf)
+                    print "\rProcessing sample {}/{}".format(n + 1, len(y))
+                qnf = self._fit_and_get_distributions(X_sample, y_sample, verbose, n)
+                self.qnfs_[n] = deepcopy(qnf)
 
         for pos_class in self.classes_:
-            for sample in cls_smp[pos_class]:
-                self.qnfs_[sample] = self._performance(cls_smp[pos_class], sample, pos_class, X, y)
+            for sample in self.cls_smp_[pos_class]:
+                self.qnfs_[sample] = self._performance(self.cls_smp_[pos_class], sample, pos_class, X, y)
 
         return self
+
+    def _fit_and_get_distributions(self, X_sample, y_sample, verbose, n):
+        qnf = BaseMulticlassClassifyAndCount(estimator_class=self.estimator_class,
+                                             estimator_params=self.estimator_params,
+                                             estimator_grid=self.estimator_grid)
+        classes = np.unique(y_sample).tolist()
+        qnf.classes_ = classes
+        qnf.estimators_ = dict.fromkeys(classes)
+        qnf.confusion_matrix_ = dict.fromkeys(classes)
+        qnf.fpr_ = dict.fromkeys(self.classes_)
+        qnf.tpr_ = dict.fromkeys(self.classes_)
+        qnf.tp_pa_ = dict.fromkeys(classes)
+        qnf.fp_pa_ = dict.fromkeys(classes)
+        qnf.train_dist_ = dict.fromkeys(classes)
+        for pos_class in classes:
+            if verbose:
+                print "\rFitting classifier for class {}".format(pos_class + 1)
+            mask = (y_sample == pos_class)
+            y_bin = np.ones(y_sample.shape, dtype=np.int)
+            y_bin[~mask] = 0
+            if len(np.unique(y_bin)) != 2:
+                continue
+            clf = qnf._make_estimator()
+            clf = clf.fit(X_sample, y_bin)
+            clf = clf.best_estimator_
+            qnf.estimators_[pos_class] = clf
+            self.cls_smp_[pos_class].append(n)
+            if self.b:
+                pos_class = clf.classes_[1]
+                neg_class = clf.classes_[0]
+                pos_preds = clf.predict_proba(X_sample[y_bin == pos_class,])[:, 1]
+                neg_preds = clf.predict_proba(X_sample[y_bin == neg_class,])[:, +1]
+
+                train_pos_pdf, _ = np.histogram(pos_preds, self.b)
+                train_neg_pdf, _ = np.histogram(neg_preds, self.b)
+                qnf.train_dist_[pos_class] = np.full((self.b, 2), np.nan)
+                for i in range(self.b):
+                    qnf.train_dist_[pos_class][i] = [train_pos_pdf[i] / float(sum(y_bin == pos_class)),
+                                                     train_neg_pdf[i] / float(sum(y_bin == neg_class))]
+
+        return qnf
+
+    def _parallel_fit(self, X, y, verbose):
+        def setup(data_file):
+            global X, y
+            import numpy as np
+            with open(data_file, 'rb') as fh:
+                data = np.load(fh)
+                X = data['X']
+                y = data['y']
+            return 0
+
+        def cleanup():
+            global X, y
+            del X, y
+
+        def wrapper(qnf, n):
+            X_sample = X[n]
+            y_sample = y[n]
+            return qnf.fit_and_get_distributions(X_sample, y_sample, True)
+
+        cluster = dispy.SharedJobCluster(wrapper,
+                                         depends=[self.X_y_path_],
+                                         reentrant=True,
+                                         setup=functools.partial(setup, basename(self.X_y_path_)),
+                                         cleanup=cleanup,
+                                         scheduler_node='dhcp015.aic.uniovi.es',
+                                         loglevel=logging.ERROR)
+        try:
+            jobs = []
+            for n in range(len(y)):
+                job = cluster.submit(self, n)
+                job.id = n
+                jobs.append(job)
+            for job in jobs:
+                job()
+                if job.exception:
+                    raise ClusterException(job.exception + job.ip_addr)
+                self.qnfs_[job.id] = deepcopy(job.result)
+                if verbose:
+                    print "\rSample {}/{} processed".format(job.id + 1, len(y)),
+        except KeyboardInterrupt:
+            cluster.close()
+        if verbose:
+            cluster.print_status()
+        cluster.close()
 
     def _performance(self, samples, n, label, X, y):
         samples_val = samples[:n] + samples[(n + 1):]
@@ -299,7 +358,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         return probs / np.sum(probs)
 
     def _predict_hdy(self, X):
-        # TODO: Copiar del MulticlassEnsembleHDy el parallel_predict
+
         cls_prevalences = {k: [] for k in self.classes_}
         for n, qnf in enumerate(self.qnfs_):
             print "\rPredicting by quantifier {}/{}".format(n, len(self.qnfs_)),

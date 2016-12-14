@@ -3,7 +3,6 @@ from os import listdir
 from os.path import join
 
 import numpy as np
-
 from sklearn.datasets.base import Bunch
 
 
@@ -28,6 +27,3 @@ def load_folder(path):
 
     return Bunch(data=total_data, target=total_target,
                  target_names=target_names)
-
-
-

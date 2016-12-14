@@ -1,4 +1,5 @@
 from os.path import join, dirname
+
 import numpy as np
 
 from quantification.datasets.base import load_folder
