@@ -95,8 +95,8 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
         for n, qnf in enumerate(self.qnfs_):
             probabilities = qnf._predict_cc(X)
             adjusted = (probabilities[1] - qnf.fpr_) / float(qnf.tpr_ - qnf.fpr_)
-            predictions[n] = np.array([1 - adjusted, adjusted])
-        predictions = np.clip(np.mean(predictions, axis=0), 0, 1)
+            predictions[n] = np.clip(np.array([1 - adjusted, adjusted]), 0, 1)
+        predictions = np.mean(predictions, axis=0)
         return predictions / np.sum(predictions)
 
     def _predict_pcc(self, X):
@@ -111,8 +111,8 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
             probabilities = qnf._predict_cc(X)
             pos = np.clip((probabilities[0] - qnf.fp_pa_) / float(qnf.tp_pa_ - qnf.fp_pa_), 0, 1)
             neg = np.clip((probabilities[1] - qnf.fn_pa_) / float(qnf.tn_pa_ - qnf.fn_pa_), 0, 1)
-            predictions[n] = np.array([pos, neg])
-        predictions = np.clip(np.mean(predictions, axis=0), 0, 1)
+            predictions[n] = np.clip(np.array([pos, neg]), 0, 1)
+        predictions = np.mean(predictions, axis=0)
         return predictions / np.sum(predictions)
 
     def _predict_hdy(self, X):
