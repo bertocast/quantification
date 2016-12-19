@@ -143,12 +143,12 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             self._parallel_fit(X, y, verbose)
         else:
             for n, (X_sample, y_sample) in enumerate(zip(X, y)):
-                if verbose:
-                    print "\rProcessing sample {}/{}".format(n + 1, len(y))
                 qnf = self._fit_and_get_distributions(X_sample, y_sample, verbose, n)
                 self.qnfs_[n] = deepcopy(qnf)
 
         for pos_class in self.classes_:
+            if verbose:
+                print "Computing performance for classifier of class {}".format(pos_class + 1)
             for sample in self.cls_smp_[pos_class]:
                 self.qnfs_[sample] = self._performance(self.cls_smp_[pos_class], sample, pos_class, X, y)
 
@@ -169,11 +169,13 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         qnf.train_dist_ = dict.fromkeys(classes)
         for pos_class in classes:
             if verbose:
-                print "\rFitting classifier for class {}".format(pos_class + 1)
+                print "Fitting classifier for class {}".format(pos_class + 1)
             mask = (y_sample == pos_class)
             y_bin = np.ones(y_sample.shape, dtype=np.int)
             y_bin[~mask] = 0
             if len(np.unique(y_bin)) != 2:
+                continue
+            if np.any(np.bincount(y_bin) < 3):
                 continue
             clf = qnf._make_estimator()
             clf = clf.fit(X_sample, y_bin)
@@ -181,6 +183,8 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             qnf.estimators_[pos_class] = clf
             self.cls_smp_[pos_class].append(n)
             if self.b:
+                if verbose:
+                    print "Computing distribution for classifier of class {}".format(pos_class + 1)
                 pos_class = clf.classes_[1]
                 neg_class = clf.classes_[0]
                 pos_preds = clf.predict_proba(X_sample[y_bin == pos_class,])[:, 1]
