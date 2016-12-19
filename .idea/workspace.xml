@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="3a838331-9b37-4c92-811e-9ad5f39586aa" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/classify_and_count/ensemble.py" afterPath="$PROJECT_DIR$/quantification/classify_and_count/ensemble.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/metrics/distributed.py" afterPath="$PROJECT_DIR$/quantification/metrics/distributed.py" />
     </list>
     <ignored path="quantification.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -28,9 +28,10 @@
           <file leaf-file-name="plancton.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/examples/plancton.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="135">
-                  <caret line="9" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+                <state relative-caret-position="226">
+                  <caret line="221" column="17" lean-forward="false" selection-start-line="221" selection-start-column="17" selection-end-line="221" selection-end-column="17" />
                   <folding>
+                    <element signature="e#15#30#0" expanded="true" />
                     <element signature="e#3722#6522#0" expanded="false" />
                     <element signature="e#6544#7872#0" expanded="false" />
                   </folding>
@@ -71,10 +72,11 @@
           <file leaf-file-name="base.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="15">
-                  <caret line="50" column="6" lean-forward="false" selection-start-line="50" selection-start-column="6" selection-end-line="50" selection-end-column="6" />
+                <state relative-caret-position="-1078">
+                  <caret line="234" column="15" lean-forward="false" selection-start-line="234" selection-start-column="15" selection-end-line="234" selection-end-column="15" />
                   <folding>
-                    <element signature="e#12943#13348#0" expanded="false" />
+                    <element signature="e#1758#7876#0" expanded="false" />
+                    <element signature="e#2900#3357#0" expanded="false" />
                     <element signature="e#13941#14517#0" expanded="false" />
                     <element signature="e#14558#15216#0" expanded="false" />
                   </folding>
@@ -89,8 +91,8 @@
           <file leaf-file-name="distributed.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/quantification/metrics/distributed.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="555">
-                  <caret line="45" column="16" lean-forward="false" selection-start-line="45" selection-start-column="16" selection-end-line="45" selection-end-column="16" />
+                <state relative-caret-position="661">
+                  <caret line="60" column="28" lean-forward="false" selection-start-line="60" selection-start-column="28" selection-end-line="60" selection-end-column="28" />
                   <folding />
                 </state>
               </provider>
@@ -109,18 +111,15 @@
           <file leaf-file-name="ensemble.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/ensemble.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="105">
-                  <caret line="42" column="40" lean-forward="true" selection-start-line="42" selection-start-column="40" selection-end-line="42" selection-end-column="40" />
+                <state relative-caret-position="77">
+                  <caret line="189" column="10" lean-forward="false" selection-start-line="189" selection-start-column="10" selection-end-line="189" selection-end-column="10" />
                   <folding>
                     <element signature="e#0#16#0" expanded="true" />
                     <element signature="e#5168#5416#0" expanded="false" />
-                    <element signature="e#5472#15930#0" expanded="false" />
                     <element signature="e#5821#6706#0" expanded="false" />
-                    <element signature="e#8803#10391#0" expanded="false" />
                     <element signature="e#8837#9041#0" expanded="false" />
                     <element signature="e#9078#9110#0" expanded="false" />
                     <element signature="e#9153#9271#0" expanded="false" />
-                    <element signature="e#9775#10250#0" expanded="false" />
                     <element signature="e#10454#11922#0" expanded="false" />
                     <element signature="e#12457#13252#0" expanded="false" />
                     <element signature="e#14063#14653#0" expanded="false" />
@@ -152,6 +151,7 @@
       <find>Aboslute</find>
       <find>Stratified</find>
       <find>local</find>
+      <find>cluster</find>
     </findStrings>
     <replaceStrings>
       <replace>Absolute</replace>
@@ -207,18 +207,17 @@
         <option value="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
         <option value="$PROJECT_DIR$/quantification/distribution_matching/ensemble.py" />
         <option value="$PROJECT_DIR$/quantification/base.py" />
-        <option value="$PROJECT_DIR$/quantification/metrics/distributed.py" />
         <option value="$PROJECT_DIR$/quantification/tests/classify_and_count/test_ensemble.py" />
         <option value="$PROJECT_DIR$/examples/plancton.py" />
         <option value="$PROJECT_DIR$/quantification/distribution_matching/base.py" />
         <option value="$PROJECT_DIR$/quantification/classify_and_count/ensemble.py" />
+        <option value="$PROJECT_DIR$/quantification/metrics/distributed.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="y" value="52" />
     <option name="width" value="2560" />
-    <option name="height" value="1337" />
+    <option name="height" value="1440" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -264,6 +263,38 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="quantification" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="quantification" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="quantification" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="quantification" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="quantification" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="quantification" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="quantification" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="classify_and_count" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -894,7 +925,14 @@
       <option name="project" value="LOCAL" />
       <updated>1481710023579</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="Possible fix of a bug">
+      <created>1481790989289</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1481790989289</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -939,13 +977,14 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="52" width="2560" height="1337" extended-state="0" />
+    <frame x="0" y="0" width="2560" height="1440" extended-state="0" />
     <editor active="false" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13863726" sideWeight="0.495671" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32919708" sideWeight="0.49665222" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39854014" sideWeight="0.51083106" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32438833" sideWeight="0.48838127" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="true" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.32919708" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3" sideWeight="0.48838127" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3240876" sideWeight="0.49311295" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24970461" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32919708" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -957,7 +996,6 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27956206" sideWeight="0.48523042" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection Results" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329927" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="true" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.32919708" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39489052" sideWeight="0.48916897" order="3" side_tool="false" content_ui="tabs" />
     </layout>
@@ -974,7 +1012,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Test double cluster" />
     <MESSAGE value="Fail double cluster" />
     <MESSAGE value="Plankton example" />
     <MESSAGE value="New version of ensemble AC" />
@@ -999,7 +1036,8 @@
     <MESSAGE value="Refactored" />
     <MESSAGE value="Even more refactoring" />
     <MESSAGE value="PEP 8 reformatting" />
-    <option name="LAST_COMMIT_MESSAGE" value="PEP 8 reformatting" />
+    <MESSAGE value="Possible fix of a bug" />
+    <option name="LAST_COMMIT_MESSAGE" value="Possible fix of a bug" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1283,22 +1321,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="31" lean-forward="false" selection-start-line="3" selection-start-column="31" selection-end-line="3" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/quantification/tests/classify_and_count/test_ensemble.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="885">
           <caret line="66" column="39" lean-forward="false" selection-start-line="66" selection-start-column="39" selection-end-line="66" selection-end-column="39" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/examples/plancton.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
-          <folding>
-            <element signature="e#3722#6522#0" expanded="false" />
-            <element signature="e#6544#7872#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1310,30 +1345,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/base.py">
+    <entry file="file://$PROJECT_DIR$/examples/plancton.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="31" lean-forward="false" selection-start-line="3" selection-start-column="31" selection-end-line="3" selection-end-column="31" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="50" column="6" lean-forward="false" selection-start-line="50" selection-start-column="6" selection-end-line="50" selection-end-column="6" />
+        <state relative-caret-position="226">
+          <caret line="221" column="17" lean-forward="false" selection-start-line="221" selection-start-column="17" selection-end-line="221" selection-end-column="17" />
           <folding>
-            <element signature="e#12943#13348#0" expanded="false" />
-            <element signature="e#13941#14517#0" expanded="false" />
-            <element signature="e#14558#15216#0" expanded="false" />
+            <element signature="e#15#30#0" expanded="true" />
+            <element signature="e#3722#6522#0" expanded="false" />
+            <element signature="e#6544#7872#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/quantification/metrics/distributed.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="555">
-          <caret line="45" column="16" lean-forward="false" selection-start-line="45" selection-start-column="16" selection-end-line="45" selection-end-column="16" />
+        <state relative-caret-position="661">
+          <caret line="60" column="28" lean-forward="false" selection-start-line="60" selection-start-column="28" selection-end-line="60" selection-end-column="28" />
           <folding />
         </state>
       </provider>
@@ -1348,22 +1375,32 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/ensemble.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="42" column="40" lean-forward="true" selection-start-line="42" selection-start-column="40" selection-end-line="42" selection-end-column="40" />
+        <state relative-caret-position="77">
+          <caret line="189" column="10" lean-forward="false" selection-start-line="189" selection-start-column="10" selection-end-line="189" selection-end-column="10" />
           <folding>
             <element signature="e#0#16#0" expanded="true" />
             <element signature="e#5168#5416#0" expanded="false" />
-            <element signature="e#5472#15930#0" expanded="false" />
             <element signature="e#5821#6706#0" expanded="false" />
-            <element signature="e#8803#10391#0" expanded="false" />
             <element signature="e#8837#9041#0" expanded="false" />
             <element signature="e#9078#9110#0" expanded="false" />
             <element signature="e#9153#9271#0" expanded="false" />
-            <element signature="e#9775#10250#0" expanded="false" />
             <element signature="e#10454#11922#0" expanded="false" />
             <element signature="e#12457#13252#0" expanded="false" />
             <element signature="e#14063#14653#0" expanded="false" />
             <element signature="e#14694#15376#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1078">
+          <caret line="234" column="15" lean-forward="false" selection-start-line="234" selection-start-column="15" selection-end-line="234" selection-end-column="15" />
+          <folding>
+            <element signature="e#1758#7876#0" expanded="false" />
+            <element signature="e#2900#3357#0" expanded="false" />
+            <element signature="e#13941#14517#0" expanded="false" />
+            <element signature="e#14558#15216#0" expanded="false" />
           </folding>
         </state>
       </provider>

@@ -59,8 +59,8 @@ def cv_confusion_matrix(clf, X, y, data_file, pos_class=None, folds=50, verbose=
         for train, test in cv_iter:
             job = cluster.submit(clf, train, test, pos_class)
             jobs.append(job)
-        cluster.wait()
         for job in jobs:
+            job()
             if job.exception:
                 raise ClusterException(job.exception + job.ip_addr)
             cms.append(job.result)
