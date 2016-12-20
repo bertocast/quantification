@@ -25,7 +25,7 @@
     <splitter split-orientation="horizontal" split-proportion="0.5">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="plancton.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="plancton.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/examples/plancton.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="358">
@@ -67,11 +67,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="base.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="base.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="362">
-                  <caret line="243" column="57" lean-forward="true" selection-start-line="243" selection-start-column="57" selection-end-line="243" selection-end-column="57" />
+                <state relative-caret-position="567">
+                  <caret line="319" column="40" lean-forward="false" selection-start-line="319" selection-start-column="40" selection-end-line="319" selection-end-column="40" />
                   <folding>
                     <element signature="e#1758#7876#0" expanded="false" />
                     <element signature="e#2900#3357#0" expanded="false" />
@@ -109,16 +109,16 @@
           <file leaf-file-name="ensemble.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/ensemble.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="312">
-                  <caret line="190" column="90" lean-forward="false" selection-start-line="190" selection-start-column="90" selection-end-line="190" selection-end-column="90" />
+                <state relative-caret-position="561">
+                  <caret line="202" column="36" lean-forward="false" selection-start-line="202" selection-start-column="36" selection-end-line="202" selection-end-column="36" />
                   <folding>
                     <element signature="e#0#16#0" expanded="true" />
                     <element signature="e#720#5417#0" expanded="false" />
                     <element signature="e#5169#5417#0" expanded="false" />
-                    <element signature="e#9234#9438#0" expanded="false" />
-                    <element signature="e#9475#9507#0" expanded="false" />
-                    <element signature="e#14452#15042#0" expanded="false" />
-                    <element signature="e#15083#15765#0" expanded="false" />
+                    <element signature="e#9317#9521#0" expanded="false" />
+                    <element signature="e#9558#9590#0" expanded="false" />
+                    <element signature="e#14535#15125#0" expanded="false" />
+                    <element signature="e#15166#15848#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -645,13 +645,6 @@
       <option name="presentableId" value="Default" />
       <updated>1478253182284</updated>
     </task>
-    <task id="LOCAL-00003" summary="Implement AC method">
-      <created>1478522335295</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1478522335295</updated>
-    </task>
     <task id="LOCAL-00004" summary="Reduce dispy verbosity">
       <created>1478522382992</created>
       <option name="number" value="00004" />
@@ -988,7 +981,14 @@
       <option name="project" value="LOCAL" />
       <updated>1482226196225</updated>
     </task>
-    <option name="localTasksCounter" value="52" />
+    <task id="LOCAL-00052" summary="Fix a bug in the parallel fit of an ensemble model.">
+      <created>1482226300864</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1482226300864</updated>
+    </task>
+    <option name="localTasksCounter" value="53" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1108,11 +1108,16 @@
           <line>29</line>
           <option name="timeStamp" value="513" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/quantification/classify_and_count/ensemble.py</url>
+          <line>372</line>
+          <option name="timeStamp" value="533" />
+        </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="533" />
+      <option name="time" value="534" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -1411,19 +1416,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="362">
-          <caret line="243" column="57" lean-forward="true" selection-start-line="243" selection-start-column="57" selection-end-line="243" selection-end-column="57" />
-          <folding>
-            <element signature="e#1758#7876#0" expanded="false" />
-            <element signature="e#2900#3357#0" expanded="false" />
-            <element signature="e#13941#14517#0" expanded="false" />
-            <element signature="e#14558#15216#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///Library/Python/2.7/site-packages/sklearn/utils/validation.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="267">
@@ -1442,18 +1434,31 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="567">
+          <caret line="319" column="40" lean-forward="false" selection-start-line="319" selection-start-column="40" selection-end-line="319" selection-end-column="40" />
+          <folding>
+            <element signature="e#1758#7876#0" expanded="false" />
+            <element signature="e#2900#3357#0" expanded="false" />
+            <element signature="e#13941#14517#0" expanded="false" />
+            <element signature="e#14558#15216#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/ensemble.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="312">
-          <caret line="190" column="90" lean-forward="false" selection-start-line="190" selection-start-column="90" selection-end-line="190" selection-end-column="90" />
+        <state relative-caret-position="561">
+          <caret line="202" column="36" lean-forward="false" selection-start-line="202" selection-start-column="36" selection-end-line="202" selection-end-column="36" />
           <folding>
             <element signature="e#0#16#0" expanded="true" />
             <element signature="e#720#5417#0" expanded="false" />
             <element signature="e#5169#5417#0" expanded="false" />
-            <element signature="e#9234#9438#0" expanded="false" />
-            <element signature="e#9475#9507#0" expanded="false" />
-            <element signature="e#14452#15042#0" expanded="false" />
-            <element signature="e#15083#15765#0" expanded="false" />
+            <element signature="e#9317#9521#0" expanded="false" />
+            <element signature="e#9558#9590#0" expanded="false" />
+            <element signature="e#14535#15125#0" expanded="false" />
+            <element signature="e#15166#15848#0" expanded="false" />
           </folding>
         </state>
       </provider>

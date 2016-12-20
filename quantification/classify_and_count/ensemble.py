@@ -165,7 +165,6 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                                              estimator_grid=self.estimator_grid)
         classes = np.unique(y_sample).tolist()
         not_valid_classes = []
-        qnf.classes_ = classes
         qnf.estimators_ = dict()
         qnf.confusion_matrix_ = dict.fromkeys(classes)
         qnf.fpr_ = dict.fromkeys(self.classes_)
@@ -200,7 +199,8 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 for i in range(self.b):
                     qnf.train_dist_[cls][i] = [train_pos_pdf[i] / float(sum(y_bin == pos_class)),
                                                      train_neg_pdf[i] / float(sum(y_bin == neg_class))]
-
+        valid_classes = filter(lambda x: x not in not_valid_classes, classes)
+        qnf.classes_ = valid_classes
         return qnf, filter(lambda x: x not in not_valid_classes, classes)
 
     def _parallel_fit(self, X, y, verbose):
