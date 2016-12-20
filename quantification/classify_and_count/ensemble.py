@@ -181,14 +181,14 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 not_valid_classes.append(cls)
                 continue
             if verbose:
-                print "\tFitting classifier for class {}".format(pos_class + 1)
+                print "\tFitting classifier for class {}".format(cls + 1)
             clf = qnf._make_estimator()
             clf = clf.fit(X_sample, y_bin)
             clf = clf.best_estimator_
             qnf.estimators_[cls] = clf
             if self.b:
                 if verbose:
-                    print "\tComputing distribution for classifier of class {}".format(pos_class + 1)
+                    print "\tComputing distribution for classifier of class {}".format(cls + 1)
                 pos_class = clf.classes_[1]
                 neg_class = clf.classes_[0]
                 pos_preds = clf.predict_proba(X_sample[y_bin == pos_class,])[:, 1]
