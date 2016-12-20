@@ -143,7 +143,7 @@ def cc_ensemble(X, y):
                                   estimator_class=LogisticRegression(),
                                   estimator_params={'class_weight': 'balanced'},
                                   estimator_grid={'C': [10 ** i for i in xrange(-3, 2)]})
-        cc.fit(X_train, y_train)
+        cc.fit(X_train, y_train, verbose=True, local=True)
         pred_cc = []
         pred_ac = []
         pred_pcc = []

@@ -4,8 +4,9 @@ from copy import deepcopy
 from os.path import basename
 
 import dispy
-import numpy as np
+
 from sklearn.metrics import confusion_matrix
+import numpy as np
 
 from quantification.classify_and_count.base import BaseClassifyAndCountModel, BaseBinaryClassifyAndCount, \
     BaseMulticlassClassifyAndCount
@@ -145,6 +146,8 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             for n, (X_sample, y_sample) in enumerate(zip(X, y)):
                 qnf = self._fit_and_get_distributions(X_sample, y_sample, verbose, n)
                 self.qnfs_[n] = deepcopy(qnf)
+                if verbose:
+                    print "Sample {}/{} processed".format(n + 1, len(y))
 
         for pos_class in self.classes_:
             if verbose:
@@ -160,7 +163,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                                              estimator_grid=self.estimator_grid)
         classes = np.unique(y_sample).tolist()
         qnf.classes_ = classes
-        qnf.estimators_ = dict.fromkeys(classes)
+        qnf.estimators_ = dict()
         qnf.confusion_matrix_ = dict.fromkeys(classes)
         qnf.fpr_ = dict.fromkeys(self.classes_)
         qnf.tpr_ = dict.fromkeys(self.classes_)
@@ -168,8 +171,6 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         qnf.fp_pa_ = dict.fromkeys(classes)
         qnf.train_dist_ = dict.fromkeys(classes)
         for pos_class in classes:
-            if verbose:
-                print "Fitting classifier for class {}".format(pos_class + 1)
             mask = (y_sample == pos_class)
             y_bin = np.ones(y_sample.shape, dtype=np.int)
             y_bin[~mask] = 0
@@ -177,6 +178,8 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 continue
             if np.any(np.bincount(y_bin) < 3):
                 continue
+            if verbose:
+                print "\tFitting classifier for class {}".format(pos_class + 1)
             clf = qnf._make_estimator()
             clf = clf.fit(X_sample, y_bin)
             clf = clf.best_estimator_
@@ -184,7 +187,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             self.cls_smp_[pos_class].append(n)
             if self.b:
                 if verbose:
-                    print "Computing distribution for classifier of class {}".format(pos_class + 1)
+                    print "\tComputing distribution for classifier of class {}".format(pos_class + 1)
                 pos_class = clf.classes_[1]
                 neg_class = clf.classes_[0]
                 pos_preds = clf.predict_proba(X_sample[y_bin == pos_class,])[:, 1]
@@ -214,9 +217,10 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             del X, y
 
         def wrapper(qnf, n):
+
             X_sample = X[n]
             y_sample = y[n]
-            return qnf.fit_and_get_distributions(X_sample, y_sample, True)
+            return qnf._fit_and_get_distributions(X_sample, y_sample, True, n)
 
         cluster = dispy.SharedJobCluster(wrapper,
                                          depends=[self.X_y_path_],
@@ -236,8 +240,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 if job.exception:
                     raise ClusterException(job.exception + job.ip_addr)
                 self.qnfs_[job.id] = deepcopy(job.result)
-                if verbose:
-                    print "\rSample {}/{} processed".format(job.id + 1, len(y)),
+
         except KeyboardInterrupt:
             cluster.close()
         if verbose:
