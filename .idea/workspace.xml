@@ -29,8 +29,8 @@
           <file leaf-file-name="plancton.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/examples/plancton.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="516">
-                  <caret line="145" column="57" lean-forward="false" selection-start-line="145" selection-start-column="57" selection-end-line="145" selection-end-column="57" />
+                <state relative-caret-position="30">
+                  <caret line="145" column="58" lean-forward="false" selection-start-line="145" selection-start-column="58" selection-end-line="145" selection-end-column="58" />
                   <folding>
                     <element signature="e#15#30#0" expanded="true" />
                   </folding>
@@ -110,17 +110,27 @@
           <file leaf-file-name="ensemble.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/ensemble.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="397">
-                  <caret line="189" column="29" lean-forward="false" selection-start-line="189" selection-start-column="29" selection-end-line="189" selection-end-column="29" />
+                <state relative-caret-position="561">
+                  <caret line="248" column="27" lean-forward="true" selection-start-line="248" selection-start-column="27" selection-end-line="248" selection-end-column="27" />
                   <folding>
                     <element signature="e#0#16#0" expanded="true" />
+                    <element signature="e#720#5417#0" expanded="false" />
                     <element signature="e#5169#5417#0" expanded="false" />
-                    <element signature="e#9140#9344#0" expanded="false" />
-                    <element signature="e#9381#9413#0" expanded="false" />
-                    <element signature="e#10654#12122#0" expanded="false" />
-                    <element signature="e#14263#14853#0" expanded="false" />
-                    <element signature="e#14894#15576#0" expanded="false" />
+                    <element signature="e#9282#9486#0" expanded="false" />
+                    <element signature="e#9523#9555#0" expanded="false" />
+                    <element signature="e#14494#15084#0" expanded="false" />
+                    <element signature="e#15125#15807#0" expanded="false" />
                   </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="validation.py" pinned="false" current-in-tab="false">
+            <entry file="file:///Library/Python/2.7/site-packages/sklearn/utils/validation.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="267">
+                  <caret line="180" column="0" lean-forward="false" selection-start-line="180" selection-start-column="0" selection-end-line="180" selection-end-column="0" />
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -972,7 +982,14 @@
       <option name="project" value="LOCAL" />
       <updated>1482151629286</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="Fix a bug in the parallel fit of an ensemble model.">
+      <created>1482221861929</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1482221861929</updated>
+    </task>
+    <option name="localTasksCounter" value="50" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1052,7 +1069,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="New version of ensemble AC" />
     <MESSAGE value="New version of ensemble AC now working" />
     <MESSAGE value="Refactor and start almiost from zero." />
     <MESSAGE value="Refactor and almost complete everything local." />
@@ -1077,7 +1093,8 @@
     <MESSAGE value="Possible fix of a bug" />
     <MESSAGE value="Possible fix of a bug in the distributed calculus of the confusion matrix" />
     <MESSAGE value="Fix a bug when performing grid search with a set with less than 3 samples of the positive class." />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix a bug when performing grid search with a set with less than 3 samples of the positive class." />
+    <MESSAGE value="Fix a bug in the parallel fit of an ensemble model." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix a bug in the parallel fit of an ensemble model." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1092,16 +1109,11 @@
           <line>29</line>
           <option name="timeStamp" value="513" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/quantification/classify_and_count/ensemble.py</url>
-          <line>241</line>
-          <option name="timeStamp" value="524" />
-        </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="527" />
+      <option name="time" value="530" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -1314,13 +1326,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/examples/cc.txt" />
-    <entry file="file:///Library/Python/2.7/site-packages/sklearn/utils/validation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="267">
-          <caret line="381" column="0" lean-forward="false" selection-start-line="381" selection-start-column="0" selection-end-line="381" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///Library/Python/2.7/site-packages/sklearn/linear_model/logistic.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1317">
@@ -1420,10 +1425,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file:///Library/Python/2.7/site-packages/sklearn/utils/validation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="267">
+          <caret line="180" column="0" lean-forward="false" selection-start-line="180" selection-start-column="0" selection-end-line="180" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/examples/plancton.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="516">
-          <caret line="145" column="57" lean-forward="false" selection-start-line="145" selection-start-column="57" selection-end-line="145" selection-end-column="57" />
+        <state relative-caret-position="30">
+          <caret line="145" column="58" lean-forward="false" selection-start-line="145" selection-start-column="58" selection-end-line="145" selection-end-column="58" />
           <folding>
             <element signature="e#15#30#0" expanded="true" />
           </folding>
@@ -1432,16 +1445,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/ensemble.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="397">
-          <caret line="189" column="29" lean-forward="false" selection-start-line="189" selection-start-column="29" selection-end-line="189" selection-end-column="29" />
+        <state relative-caret-position="561">
+          <caret line="248" column="27" lean-forward="true" selection-start-line="248" selection-start-column="27" selection-end-line="248" selection-end-column="27" />
           <folding>
             <element signature="e#0#16#0" expanded="true" />
+            <element signature="e#720#5417#0" expanded="false" />
             <element signature="e#5169#5417#0" expanded="false" />
-            <element signature="e#9140#9344#0" expanded="false" />
-            <element signature="e#9381#9413#0" expanded="false" />
-            <element signature="e#10654#12122#0" expanded="false" />
-            <element signature="e#14263#14853#0" expanded="false" />
-            <element signature="e#14894#15576#0" expanded="false" />
+            <element signature="e#9282#9486#0" expanded="false" />
+            <element signature="e#9523#9555#0" expanded="false" />
+            <element signature="e#14494#15084#0" expanded="false" />
+            <element signature="e#15125#15807#0" expanded="false" />
           </folding>
         </state>
       </provider>

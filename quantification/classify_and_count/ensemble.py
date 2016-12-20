@@ -144,24 +144,27 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             self._parallel_fit(X, y, verbose)
         else:
             for n, (X_sample, y_sample) in enumerate(zip(X, y)):
-                qnf = self._fit_and_get_distributions(X_sample, y_sample, verbose, n)
+                qnf, classes = self._fit_and_get_distributions(X_sample, y_sample, verbose)
+                for cls in classes:
+                    self.cls_smp_[cls].append(n)
                 self.qnfs_[n] = deepcopy(qnf)
                 if verbose:
                     print "Sample {}/{} processed".format(n + 1, len(y))
 
         for pos_class in self.classes_:
             if verbose:
-                print "Computing performance for classifier of class {}".format(pos_class + 1)
+                print "Computing performance for classifiers of class {}".format(pos_class + 1)
             for sample in self.cls_smp_[pos_class]:
                 self.qnfs_[sample] = self._performance(self.cls_smp_[pos_class], sample, pos_class, X, y)
 
         return self
 
-    def _fit_and_get_distributions(self, X_sample, y_sample, verbose, n):
+    def _fit_and_get_distributions(self, X_sample, y_sample, verbose):
         qnf = BaseMulticlassClassifyAndCount(estimator_class=self.estimator_class,
                                              estimator_params=self.estimator_params,
                                              estimator_grid=self.estimator_grid)
         classes = np.unique(y_sample).tolist()
+        not_valid_classes = []
         qnf.classes_ = classes
         qnf.estimators_ = dict()
         qnf.confusion_matrix_ = dict.fromkeys(classes)
@@ -174,9 +177,8 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             mask = (y_sample == pos_class)
             y_bin = np.ones(y_sample.shape, dtype=np.int)
             y_bin[~mask] = 0
-            if len(np.unique(y_bin)) != 2:
-                continue
-            if np.any(np.bincount(y_bin) < 3):
+            if len(np.unique(y_bin)) != 2 or np.any(np.bincount(y_bin) < 3):
+                not_valid_classes.append(pos_class)
                 continue
             if verbose:
                 print "\tFitting classifier for class {}".format(pos_class + 1)
@@ -184,7 +186,6 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             clf = clf.fit(X_sample, y_bin)
             clf = clf.best_estimator_
             qnf.estimators_[pos_class] = clf
-            self.cls_smp_[pos_class].append(n)
             if self.b:
                 if verbose:
                     print "\tComputing distribution for classifier of class {}".format(pos_class + 1)
@@ -200,7 +201,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                     qnf.train_dist_[pos_class][i] = [train_pos_pdf[i] / float(sum(y_bin == pos_class)),
                                                      train_neg_pdf[i] / float(sum(y_bin == neg_class))]
 
-        return qnf
+        return qnf, filter(lambda x: x not in not_valid_classes, classes)
 
     def _parallel_fit(self, X, y, verbose):
         def setup(data_file):
@@ -216,11 +217,11 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             global X, y
             del X, y
 
-        def wrapper(qnf, n):
+        def wrapper(qnf):
 
             X_sample = X[n]
             y_sample = y[n]
-            return qnf._fit_and_get_distributions(X_sample, y_sample, True, n)
+            return qnf._fit_and_get_distributions(X_sample, y_sample, True)
 
         cluster = dispy.SharedJobCluster(wrapper,
                                          depends=[self.X_y_path_],
@@ -232,14 +233,17 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         try:
             jobs = []
             for n in range(len(y)):
-                job = cluster.submit(self, n)
+                job = cluster.submit(self)
                 job.id = n
                 jobs.append(job)
             for job in jobs:
                 job()
                 if job.exception:
                     raise ClusterException(job.exception + job.ip_addr)
-                self.qnfs_[job.id] = deepcopy(job.result)
+                self.qnfs_[job.id], classes = deepcopy(job.result)
+                for cls in classes:
+                    self.cls_smp_[cls].append(job.id)
+
 
         except KeyboardInterrupt:
             cluster.close()
@@ -317,7 +321,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         probabilities = dict.fromkeys(self.classes_)
         binary_freqs = {k: [] for k in self.classes_}
         for qnf in self.qnfs_:
-            for (cls, clf) in qnf.estimators_.iteritems():
+            for cls, clf in qnf.estimators_.iteritems():
                 pred = clf.predict(X)
                 freq = np.bincount(pred, minlength=2)
                 relative_freq = freq / float(np.sum(freq))

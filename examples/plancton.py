@@ -143,7 +143,7 @@ def cc_ensemble(X, y):
                                   estimator_class=LogisticRegression(),
                                   estimator_params={'class_weight': 'balanced'},
                                   estimator_grid={'C': [10 ** i for i in xrange(-3, 2)]})
-        cc.fit(X_train, y_train, verbose=True, local=True)
+        cc.fit(X_train, y_train, verbose=True, local=False)
         pred_cc = []
         pred_ac = []
         pred_pcc = []
@@ -167,7 +167,7 @@ def cc_ensemble(X, y):
 
         true = []
         for y_s in y_test:
-            freq = np.bincount(y_s, minlength=2)
+            freq = np.bincount(y_s, minlength=len(cc.classes_))
             true.append(freq / float(np.sum(freq)))
 
         for (cc_pr, ac_pr, pcc_pr, pac_pr, hdy_pr, tr) in zip(pred_cc, pred_ac, pred_pcc, pred_pac, pred_hdy, true):
