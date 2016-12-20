@@ -173,19 +173,19 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         qnf.tp_pa_ = dict.fromkeys(classes)
         qnf.fp_pa_ = dict.fromkeys(classes)
         qnf.train_dist_ = dict.fromkeys(classes)
-        for pos_class in classes:
-            mask = (y_sample == pos_class)
+        for cls in classes:
+            mask = (y_sample == cls)
             y_bin = np.ones(y_sample.shape, dtype=np.int)
             y_bin[~mask] = 0
             if len(np.unique(y_bin)) != 2 or np.any(np.bincount(y_bin) < 3):
-                not_valid_classes.append(pos_class)
+                not_valid_classes.append(cls)
                 continue
             if verbose:
                 print "\tFitting classifier for class {}".format(pos_class + 1)
             clf = qnf._make_estimator()
             clf = clf.fit(X_sample, y_bin)
             clf = clf.best_estimator_
-            qnf.estimators_[pos_class] = clf
+            qnf.estimators_[cls] = clf
             if self.b:
                 if verbose:
                     print "\tComputing distribution for classifier of class {}".format(pos_class + 1)
@@ -196,9 +196,9 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
 
                 train_pos_pdf, _ = np.histogram(pos_preds, self.b)
                 train_neg_pdf, _ = np.histogram(neg_preds, self.b)
-                qnf.train_dist_[pos_class] = np.full((self.b, 2), np.nan)
+                qnf.train_dist_[cls] = np.full((self.b, 2), np.nan)
                 for i in range(self.b):
-                    qnf.train_dist_[pos_class][i] = [train_pos_pdf[i] / float(sum(y_bin == pos_class)),
+                    qnf.train_dist_[cls][i] = [train_pos_pdf[i] / float(sum(y_bin == pos_class)),
                                                      train_neg_pdf[i] / float(sum(y_bin == neg_class))]
 
         return qnf, filter(lambda x: x not in not_valid_classes, classes)
@@ -217,7 +217,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             global X, y
             del X, y
 
-        def wrapper(qnf):
+        def wrapper(qnf, n):
 
             X_sample = X[n]
             y_sample = y[n]
@@ -233,7 +233,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         try:
             jobs = []
             for n in range(len(y)):
-                job = cluster.submit(self)
+                job = cluster.submit(self, n)
                 job.id = n
                 jobs.append(job)
             for job in jobs:

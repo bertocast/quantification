@@ -135,6 +135,8 @@ def cc_ensemble(X, y):
 
     print_and_write("CC ENSEMBLE")
     for n_fold, (train_index, test_index) in enumerate(loo.split(X)):
+        if n_fold == 1:
+            break
         print "Training fold {}/{}".format(n_fold + 1, 60)
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
@@ -183,7 +185,6 @@ def cc_ensemble(X, y):
             hdy_aes.append(absolute_error(tr, hdy_pr))
 
         print_and_write("Fold {}/{}".format(n_fold + 1, 60))
-        print_and_write("\tRegularization C's = {}".format([qnf.estimator_.C for qnf in cc.qnfs_]))
         print_and_write("\tTrue:            {}".format(true))
         print_and_write("\tPredictions CC:  {}".format(pred_cc))
         print_and_write("\tPredictions AC:  {}".format(pred_ac))
@@ -212,18 +213,18 @@ if __name__ == '__main__':
     X = np.array(plankton.data)
     y = np.array(plankton.target)
     global file
-    file = open('{}.txt'.format('plancton_results.txt'), 'wb')
+    file = open('{}.txt'.format('plancton_results'), 'wb')
     #cc_err, ac_err, pcc_err, pac_err, hdy_err, cc_bc, ac_bc, pcc_bc, pac_bc, hdy_bc = cc(X, y)
     ecc_err, eac_err, epcc_err, epac_err, ehdy_err, ecc_bc, eac_bc, epcc_bc, epac_bc, ehdy_bc = cc_ensemble(X, y)
 
     head = "{:>15}" * 3
     row_format = '{:>15}{:>15.4f}{:>15.4f}'
     print_and_write(head.format("Method", "Error", "Bray-Curtis"))
-    print_and_write(row_format.format("CC", cc_err, cc_bc))
+    """print_and_write(row_format.format("CC", cc_err, cc_bc))
     print_and_write(row_format.format("AC", ac_err, ac_bc))
     print_and_write(row_format.format("PCC", pcc_err, pcc_bc))
     print_and_write(row_format.format("PAC", pac_err, pac_bc))
-    print_and_write(row_format.format("HDy", hdy_err, hdy_bc))
+    print_and_write(row_format.format("HDy", hdy_err, hdy_bc))"""
     print_and_write(row_format.format("Ensemble-CC", ecc_err, ecc_bc))
     print_and_write(row_format.format("Ensemble-AC", eac_err, eac_bc))
     print_and_write(row_format.format("Ensemble-PCC", epcc_err, epcc_bc))
