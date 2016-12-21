@@ -14,9 +14,8 @@ from quantification.utils.errors import ClusterException
 
 
 class BaseEnsembleCCModel(BaseClassifyAndCountModel):
-    def __init__(self, b=None, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
-        super(BaseEnsembleCCModel, self).__init__(estimator_class, estimator_params, estimator_grid)
-        self.b = b
+    def __init__(self, b=None, estimator_class=None, estimator_params=None, estimator_grid=None):
+        super(BaseEnsembleCCModel, self).__init__(b, estimator_class, estimator_params, estimator_grid)
         self.qnfs_ = []
 
 

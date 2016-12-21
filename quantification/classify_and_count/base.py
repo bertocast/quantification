@@ -13,7 +13,12 @@ from quantification.metrics import distributed, model_score
 class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
     """Base class for C&C Models"""
 
-    def __init__(self, estimator_class, estimator_params, estimator_grid):
+    def __init__(self, b, estimator_class, estimator_params, estimator_grid):
+        if estimator_params is None:
+            estimator_params = dict()
+        if estimator_grid is None:
+            estimator_grid = dict()
+        self.b = b
         self.estimator_class = estimator_class
         self.estimator_params = estimator_params
         self.estimator_grid = estimator_grid
@@ -49,18 +54,97 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
 
 
 class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
-    def __init__(self, b=None, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
-        super(BaseBinaryClassifyAndCount, self).__init__(estimator_class, estimator_params, estimator_grid)
+    """
+    Binary Classify And Count method.
+
+    It is meant to be trained once and be able to predict using the following methods:
+        - Classify & Count
+        - Adjusted Count
+        - Probabilistic Classify & Count
+        - Probabilistic Adjusted Count
+        - HDy
+
+    The idea is not to trained the classifiers more than once, due to the computational cost. In the training phase
+    every single performance metric that is needed in predictions are computed, that is, FPR, TPR and so on.
+
+    If you are only going to use one of the methods above, you can use the wrapper classes in this package.
+
+    Parameters
+    ----------
+    b : integer, optional
+        Number of bins to compute the distributions in the HDy method. If you are not going to use that method in the
+        prediction phase, leave it as None. The training phase will be probably faster.
+
+    estimator_class : object, optional
+        An instance of a classifier class. It has to have fit and predict methods. It is highly advised to use one of
+        the implementations in sklearn library. If it is leave as None, Logistic Regression will be used.
+
+    estimator_params : dictionary, optional
+        Additional params to initialize the classifier.
+
+    estimator_grid : dictionary, optional
+        During training phase, grid search is performed. This parameter should provided the parameters of the classifier
+        that will be tested (e.g. estimator_grid={C: [0.1, 1, 10]} for Logistic Regression).
+
+    Attributes
+    ----------
+    estimator_ : object
+        The underlying classifier+
+
+    confusion_matrix_ : numpy array, shape = (2, 2)
+        The confusion matrix estimated by cross-validation of the underlying classifier
+
+    tpr_ : float
+        True Positive Rate of the underlying classifier from the confusion matrix
+
+    fpr_ : float
+        False Positive Rate of the underlying classifier from the confusion matrix
+
+    tp_pa_ : float
+        True Positive Probability Average of the underlying classifier if it is probabilistic.
+
+    fp_pa_ : float
+        False Positive Probability Average of the underlying classifier if it is probabilistic.
+
+    tn_pa_ : float
+        True Negative Probability Average of the underlying classifier if it is probabilistic.
+
+    fn_pa_ : float
+        False Negative Probability Average of the underlying classifier if it is probabilistic.
+
+    train_dist_ : numpy array, shape = (bins, 2)
+        Distribution of the positive and negative samples for each bin in the training data
+
+    """
+
+    def __init__(self, b=None, estimator_class=None, estimator_params=None, estimator_grid=None):
+        super(BaseBinaryClassifyAndCount, self).__init__(b, estimator_class, estimator_params, estimator_grid)
         self.estimator_ = self._make_estimator()
-        self.confusion_matrix_ = None
-        self.tp_pa_ = np.nan
-        self.fp_pa_ = np.nan
-        self.tn_pa_ = np.nan
-        self.fn_pa_ = np.nan
-        self.b = b
-        self.train_dist_ = None
 
     def fit(self, X, y, local=True, plot=False):
+        """
+        Fit C&C model.
+
+        Parameters
+        ----------
+        X : numpy array, shape = (n_samples, n_features)
+            Training data.
+
+        y : numpy_array, shape = (n_samples, 1)
+            Target values.
+
+        local : boolean, optional, default True
+            Whether or not do the fit in local or in a cluster using dispy.
+
+        plot : boolean, optional, default False
+            Whether or not plot the training distributions.
+
+
+        Returns
+        -------
+        self : returns an instance of self.
+
+        """
         n_classes = len(np.unique(y))
         if n_classes != 2:
             raise ValueError("This solver is meant for binary samples "
@@ -78,6 +162,31 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
         return self
 
     def predict(self, X, method='cc', plot=False):
+        """Predict using one of the available methods.
+
+        Parameters
+        ---------
+        X : numpy array, shape = (n_samples, n_features)
+            Samples.
+
+        method : string, optional, default cc
+            Method to use in the prediction. It can be one of:
+                - 'cc' : Classify & Count predictions
+                - 'ac' : Adjusted Count predictions
+                - 'pcc' : Probabilistic Classify & Count predictions
+                - 'pcc' : Probabilistic Adjusted Count predictions
+                - 'hdy' : HDy predictions
+
+        plot : boolean, optional, default False
+            If hdy predictions are in order, testing distributions can be plotted.
+
+
+        Returns
+        -------
+        pred : numpy array, shape = (n_classes)
+            Prevalences of each of the classes. Note that pred[0] = 1 - pred[1]
+
+        """
         if method == 'cc':
             return self._predict_cc(X)
         elif method == 'ac':
@@ -92,6 +201,9 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
             raise ValueError("Invalid method %s. Choices are `cc`, `ac`, `pcc`, `pac`.", method)
 
     def _compute_performance(self, X, y, local):
+        """Compute the performance metrics, that is, confusion matrix, FPR, TPR and the probabilities averages
+        and store them. The calculus of the confusion matrix can be parallelized if 'local' parameter is set to True.
+        """
         if local:
             self.confusion_matrix_ = np.mean(
                 model_score.cv_confusion_matrix(self.estimator_, X, y, 50), axis=0)
@@ -120,6 +232,9 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
                       np.sum(y == self.estimator_.classes_[0])
 
     def _compute_distribution(self, X, y, plot):
+        """Compute the distributions of each of the classes and store them. If plot is set to True, both histograms
+        are plotted.
+        """
         pos_class = self.estimator_.classes_[1]
         neg_class = self.estimator_.classes_[0]
         pos_preds = self.estimator_.predict_proba(X[y == pos_class,])[:, 1]
@@ -200,17 +315,8 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
 
 
 class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
-    def __init__(self, b=None, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
-        super(BaseMulticlassClassifyAndCount, self).__init__(estimator_class, estimator_params, estimator_grid)
-        self.classes_ = None
-        self.estimators_ = None
-        self.confusion_matrix_ = None
-        self.fpr_ = None
-        self.tpr_ = None
-        self.tp_pa_ = None
-        self.fp_pa_ = None
-        self.b = b
-        self.train_dist_ = None
+    def __init__(self, b=None, estimator_class=None, estimator_params=None, estimator_grid=None):
+        super(BaseMulticlassClassifyAndCount, self).__init__(b, estimator_class, estimator_params, estimator_grid)
 
     def fit(self, X, y, cv=50, verbose=False, local=True):
         self.classes_ = np.unique(y).tolist()
