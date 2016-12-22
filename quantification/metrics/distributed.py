@@ -19,7 +19,7 @@ def setup(data_file):
     return 0
 
 
-def wrapper(clf, train, test, pos_class=None, classes=None):
+def wrapper(clf, train, test, pos_class=None):
     from sklearn.metrics import confusion_matrix
     import numpy as np
 
