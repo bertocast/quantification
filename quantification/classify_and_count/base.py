@@ -117,9 +117,10 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
 
     """
 
-    def __init__(self, b=None, estimator_class=None, estimator_params=None, estimator_grid=None):
+    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, b=None, strategy='macro'):
         super(BaseBinaryClassifyAndCount, self).__init__(b, estimator_class, estimator_params, estimator_grid)
         self.estimator_ = self._make_estimator()
+        self.strategy = strategy
 
     def fit(self, X, y, local=True, plot=False):
         """
@@ -205,14 +206,18 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
         and store them. The calculus of the confusion matrix can be parallelized if 'local' parameter is set to True.
         """
         if local:
-            self.confusion_matrix_ = np.mean(
-                model_score.cv_confusion_matrix(self.estimator_, X, y, 50), axis=0)
+            cm = model_score.cv_confusion_matrix(self.estimator_, X, y, 50)
         else:
-            self.confusion_matrix_ = np.mean(
-                distributed.cv_confusion_matrix(self.estimator_, X, y, self.X_y_path_, folds=50), axis=0)
+            cm = distributed.cv_confusion_matrix(self.estimator_, X, y, self.X_y_path_, folds=50)
 
-        self.tpr_ = self.confusion_matrix_[1, 1] / float(self.confusion_matrix_[1, 1] + self.confusion_matrix_[1, 0])
-        self.fpr_ = self.confusion_matrix_[0, 1] / float(self.confusion_matrix_[0, 1] + self.confusion_matrix_[0, 0])
+        if self.strategy == 'micro':
+            self.confusion_matrix_ = np.mean(cm, axis=0)
+            self.tpr_ = self.confusion_matrix_[1, 1] / float(self.confusion_matrix_[1, 1] + self.confusion_matrix_[1, 0])
+            self.fpr_ = self.confusion_matrix_[0, 1] / float(self.confusion_matrix_[0, 1] + self.confusion_matrix_[0, 0])
+        elif self.strategy == 'macro':
+            self.confusion_matrix_ = cm
+            self.tpr_ = np.mean([cm_[1, 1] / float(cm_[1, 1] + cm_[1, 0]) for cm_ in cm])
+            self.fpr_ = np.mean([cm_[0, 1] / float(cm_[0, 1] + cm_[0, 0]) for cm_ in cm])
         if np.isnan(self.tpr_):
             self.tpr_ = 0
         if np.isnan(self.fpr_):
@@ -315,8 +320,9 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
 
 
 class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
-    def __init__(self, b=None, estimator_class=None, estimator_params=None, estimator_grid=None):
+    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, b=None, strategy='macro'):
         super(BaseMulticlassClassifyAndCount, self).__init__(b, estimator_class, estimator_params, estimator_grid)
+        self.strategy = strategy
 
     def fit(self, X, y, cv=50, verbose=False, local=True):
         self.classes_ = np.unique(y).tolist()
@@ -353,31 +359,22 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
         return self
 
     def _compute_performance(self, X, y, pos_class, folds, local, verbose):
+
         if local:
-            tprs = []
-            fprs = []
-            for cm in model_score.cv_confusion_matrix(self.estimators_[pos_class], X, y, folds=folds):
-                tprs.append(cm[1, 1] / float(cm[1, 1] + cm[1, 0]))
-                fprs.append(cm[0, 1] / float(cm[0, 1] + cm[0, 0]))
-            self.fpr_[pos_class] = np.mean(fprs)
-            self.tpr_[pos_class] = np.mean(tprs)
-            if np.isnan(self.tpr_[pos_class]):
-                self.tpr_[pos_class] = 0
-            if np.isnan(self.fpr_[pos_class]):
-                self.fpr_[pos_class] = 0
+            cm = model_score.cv_confusion_matrix(self.estimators_[pos_class], X, y, folds)
         else:
-            tprs = []
-            fprs = []
-            for cm in distributed.cv_confusion_matrix(self.estimators_[pos_class], X, y, self.X_y_path_, pos_class,
-                                                      folds=folds, verbose=verbose):
-                tprs.append(cm[1, 1] / float(cm[1, 1] + cm[1, 0]))
-                fprs.append(cm[0, 1] / float(cm[0, 1] + cm[0, 0]))
-            self.fpr_[pos_class] = np.mean(fprs)
-            self.tpr_[pos_class] = np.mean(tprs)
-            if np.isnan(self.tpr_[pos_class]):
-                self.tpr_[pos_class] = 0
-            if np.isnan(self.fpr_[pos_class]):
-                self.fpr_[pos_class] = 0
+            cm = distributed.cv_confusion_matrix(self.estimators_[pos_class], X, y, self.X_y_path_, folds=folds,
+                                                 verbose=verbose)
+        if self.strategy == 'micro':
+            self.confusion_matrix_[pos_class]= np.mean(cm, axis=0)
+            self.tpr_[pos_class] = self.confusion_matrix_[pos_class][1, 1] / float(
+                self.confusion_matrix_[pos_class][1, 1] + self.confusion_matrix_[pos_class][1, 0])
+            self.fpr_[pos_class] = self.confusion_matrix_[pos_class][0, 1] / float(
+                self.confusion_matrix_[pos_class][0, 1] + self.confusion_matrix_[pos_class][0, 0])
+        elif self.strategy == 'macro':
+            self.confusion_matrix_[pos_class] = cm
+            self.tpr_[pos_class] = np.mean([cm_[1, 1] / float(cm_[1, 1] + cm_[1, 0]) for cm_ in cm])
+            self.fpr_[pos_class] = np.mean([cm_[0, 1] / float(cm_[0, 1] + cm_[0, 0]) for cm_ in cm])
 
         try:
             predictions = self.estimators_[pos_class].predict_proba(X)
