@@ -363,7 +363,7 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
         if local:
             cm = model_score.cv_confusion_matrix(self.estimators_[pos_class], X, y, folds)
         else:
-            cm = distributed.cv_confusion_matrix(self.estimators_[pos_class], X, y, self.X_y_path_, folds=folds,
+            cm = distributed.cv_confusion_matrix(self.estimators_[pos_class], pos_class, X, y, self.X_y_path_, folds=folds,
                                                  verbose=verbose)
         if self.strategy == 'micro':
             self.confusion_matrix_[pos_class]= np.mean(cm, axis=0)

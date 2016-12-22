@@ -1,20 +1,17 @@
 # coding=utf-8
-import warnings
 import sys
 import time
+import warnings
 
+import numpy as np
 import pandas as pd
 from sklearn.datasets.base import Bunch
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import LeaveOneOut
 from sklearn.preprocessing import LabelEncoder
 
-import numpy as np
-
-from quantification.classify_and_count.base import BaseMulticlassClassifyAndCount, BaseBinaryClassifyAndCount
-from quantification.classify_and_count.ensemble import EnsembleMulticlassCC, EnsembleBinaryCC
-from quantification.distribution_matching.base import MulticlassHDy, BinaryHDy
-from quantification.distribution_matching.ensemble import MulticlassEnsembleHDy, BinaryEnsembleHDy
+from quantification.classify_and_count.base import BaseMulticlassClassifyAndCount
+from quantification.classify_and_count.ensemble import EnsembleMulticlassCC
 from quantification.metrics.multiclass import absolute_error, bray_curtis
 
 
@@ -51,8 +48,6 @@ def cc(X, y):
 
     print_and_write("CC MONOCLASE")
     for n_fold, (train_index, test_index) in enumerate(loo.split(X)):
-        if n_fold == 1:
-            break
         print "Training fold {}/{}".format(n_fold + 1, 60)
         time_init = time.time()
         X_train, X_test = X[train_index], X[test_index]
@@ -61,8 +56,8 @@ def cc(X, y):
         cc = BaseMulticlassClassifyAndCount(b=100,
                                             estimator_class=LogisticRegression(),
                                             estimator_params={'class_weight': 'balanced'},
-                                            estimator_grid={'C': [10 ** i for i in xrange(-3, 2)]})
-        cc.fit(np.concatenate(X_train), np.concatenate(y_train), local=False, verbose=True)
+                                            estimator_grid={'C': [10 ** i for i in xrange(-3, 2)]}, strategy='micro')
+        cc.fit(np.concatenate(X_train), np.concatenate(y_train), local=True, verbose=True)
 
         predictions = cc.predict(X_test[0], method='cc')
         pred_cc = predictions
@@ -135,8 +130,6 @@ def cc_ensemble(X, y):
 
     print_and_write("CC ENSEMBLE")
     for n_fold, (train_index, test_index) in enumerate(loo.split(X)):
-        if n_fold == 1:
-            break
         print "Training fold {}/{}".format(n_fold + 1, 60)
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
@@ -144,7 +137,7 @@ def cc_ensemble(X, y):
         cc = EnsembleMulticlassCC(b=100,
                                   estimator_class=LogisticRegression(),
                                   estimator_params={'class_weight': 'balanced'},
-                                  estimator_grid={'C': [10 ** i for i in xrange(-3, 2)]})
+                                  estimator_grid={'C': [10 ** i for i in xrange(-3, 2)]}, strategy='micro')
         cc.fit(X_train, y_train, verbose=True, local=False)
         pred_cc = []
         pred_ac = []
@@ -213,18 +206,18 @@ if __name__ == '__main__':
     X = np.array(plankton.data)
     y = np.array(plankton.target)
     global file
-    file = open('{}.txt'.format('plancton_results'), 'wb')
-    #cc_err, ac_err, pcc_err, pac_err, hdy_err, cc_bc, ac_bc, pcc_bc, pac_bc, hdy_bc = cc(X, y)
+    file = open('{}.txt'.format('plancton_results_micro_avg'), 'wb')
+    cc_err, ac_err, pcc_err, pac_err, hdy_err, cc_bc, ac_bc, pcc_bc, pac_bc, hdy_bc = cc(X, y)
     ecc_err, eac_err, epcc_err, epac_err, ehdy_err, ecc_bc, eac_bc, epcc_bc, epac_bc, ehdy_bc = cc_ensemble(X, y)
 
     head = "{:>15}" * 3
     row_format = '{:>15}{:>15.4f}{:>15.4f}'
     print_and_write(head.format("Method", "Error", "Bray-Curtis"))
-    """print_and_write(row_format.format("CC", cc_err, cc_bc))
+    print_and_write(row_format.format("CC", cc_err, cc_bc))
     print_and_write(row_format.format("AC", ac_err, ac_bc))
     print_and_write(row_format.format("PCC", pcc_err, pcc_bc))
     print_and_write(row_format.format("PAC", pac_err, pac_bc))
-    print_and_write(row_format.format("HDy", hdy_err, hdy_bc))"""
+    print_and_write(row_format.format("HDy", hdy_err, hdy_bc))
     print_and_write(row_format.format("Ensemble-CC", ecc_err, ecc_bc))
     print_and_write(row_format.format("Ensemble-AC", eac_err, eac_bc))
     print_and_write(row_format.format("Ensemble-PCC", epcc_err, epcc_bc))

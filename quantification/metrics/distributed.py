@@ -19,11 +19,12 @@ def setup(data_file):
     return 0
 
 
-def wrapper(clf, train, test, pos_class=None):
+def wrapper(clf, train, test, pos_class=None, classes=None):
     from sklearn.metrics import confusion_matrix
     import numpy as np
 
     if not pos_class:
+        clf.fit(X[train], y[train])
         return confusion_matrix(y[test], clf.predict(X[test]))
 
     mask = (y[train] == pos_class)
