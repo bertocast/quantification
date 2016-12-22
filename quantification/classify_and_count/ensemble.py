@@ -262,8 +262,8 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         qnf.confusion_matrix_[label] = confusion_matrix(y_bin, qnf.estimators_[label].predict(X_val))
 
         qnf.tpr_[label] = qnf.confusion_matrix_[label][1, 1] / float(qnf.confusion_matrix_[label][1, 1]
-                                                                     + qnf.confusion_matrix_[label][0, 1])
-        qnf.fpr_[label] = qnf.confusion_matrix_[label][1, 0] / float(qnf.confusion_matrix_[label][1, 0]
+                                                                     + qnf.confusion_matrix_[label][1, 0])
+        qnf.fpr_[label] = qnf.confusion_matrix_[label][0, 1] / float(qnf.confusion_matrix_[label][0, 1]
                                                                      + qnf.confusion_matrix_[label][0, 0])
         if np.isnan(qnf.tpr_[label]):
             qnf.tpr_ = 0
