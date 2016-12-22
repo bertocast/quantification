@@ -3,7 +3,7 @@ from nose.tools import assert_almost_equal
 from nose.tools import assert_true
 
 from quantification.distribution_matching.ensemble import BinaryEnsembleHDy, MulticlassEnsembleHDy
-from quantification.tests.base import ModelTestCase
+from tests.base import ModelTestCase
 
 
 class TestBinaryEnsembleHDy(ModelTestCase):

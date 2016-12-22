@@ -9,7 +9,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeRegressor
 
 from quantification.classify_and_count.base import BaseBinaryClassifyAndCount, BaseMulticlassClassifyAndCount
-from quantification.tests.base import ModelTestCase
+from tests.base import ModelTestCase
 
 
 class TestBinaryClassifyAndCount(ModelTestCase):

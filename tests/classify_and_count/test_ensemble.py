@@ -5,7 +5,7 @@ from nose.tools import assert_raises
 from nose.tools import assert_true
 
 from quantification.classify_and_count.ensemble import EnsembleBinaryCC, EnsembleMulticlassCC
-from quantification.tests.base import ModelTestCase
+from tests.base import ModelTestCase
 
 
 class TestEnsembleBinaryCC(ModelTestCase):

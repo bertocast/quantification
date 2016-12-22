@@ -14,13 +14,19 @@ from quantification.utils.errors import ClusterException
 
 
 class BaseEnsembleCCModel(BaseClassifyAndCountModel):
-    def __init__(self, b=None, estimator_class=None, estimator_params=None, estimator_grid=None):
+    def __init__(self, estimator_class, estimator_params, estimator_grid, b, strategy='macro'):
         super(BaseEnsembleCCModel, self).__init__(b, estimator_class, estimator_params, estimator_grid)
-        self.qnfs_ = []
+        self.strategy = strategy
 
 
 class EnsembleBinaryCC(BaseEnsembleCCModel):
+    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, b=None, strategy='macro'):
+        super(EnsembleBinaryCC, self).__init__(estimator_class, estimator_params, estimator_grid, b, strategy)
+
     def fit(self, X, y):
+
+        self.qnfs_ = []
+
         if len(X) != len(y):
             raise ValueError("X and y has to be the same length.")
         for n, (X_sample, y_sample) in enumerate(zip(X, y)):
@@ -41,30 +47,44 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
         return self
 
     def _performance(self, qnf, n, X, y):
-        X_val = np.concatenate(np.concatenate([X[:n], X[(n + 1):]]))
-        y_val = np.concatenate(np.concatenate([y[:n], y[(n + 1):]]))
-        qnf.confusion_matrix_ = confusion_matrix(y_val, qnf.estimator_.predict(X_val))
+        X_val = np.concatenate([X[:n], X[(n + 1):]])
+        y_val = np.concatenate([y[:n], y[(n + 1):]])
+        cm = []
+        for X_, y_ in zip(X_val, y_val):
+            cm.append(confusion_matrix(y_, qnf.estimator_.predict(X_)))
 
-        qnf.tpr_ = qnf.confusion_matrix_[1, 1] / float(qnf.confusion_matrix_[1, 1] + qnf.confusion_matrix_[1, 0])
-        qnf.fpr_ = qnf.confusion_matrix_[0, 1] / float(qnf.confusion_matrix_[0, 1] + qnf.confusion_matrix_[0, 0])
+        if self.strategy == 'micro':
+            qnf.confusion_matrix_ = np.mean(cm, axis=0)
+            qnf.tpr_ = qnf.confusion_matrix_[1, 1] / float(qnf.confusion_matrix_[1, 1] + qnf.confusion_matrix_[1, 0])
+            qnf.fpr_ = qnf.confusion_matrix_[0, 1] / float(qnf.confusion_matrix_[0, 1] + qnf.confusion_matrix_[0, 0])
+        elif self.strategy == 'macro':
+            qnf.confusion_matrix_ = cm
+            qnf.tpr_ = np.mean([cm_[1, 1] / float(cm_[1, 1] + cm_[1, 0]) for cm_ in cm])
+            qnf.fpr_ = np.mean([cm_[0, 1] / float(cm_[0, 1] + cm_[0, 0]) for cm_ in cm])
 
         if np.isnan(qnf.tpr_):
             qnf.tpr_ = 0
         if np.isnan(qnf.fpr_):
             qnf.fpr_ = 0
 
-        try:
-            predictions = qnf.estimator_.predict_proba(X_val)
-        except AttributeError:
-            return
-        qnf.tp_pa_ = np.sum(predictions[y_val == qnf.estimator_.classes_[0], 0]) / \
-                     np.sum(y_val == qnf.estimator_.classes_[0])
-        qnf.fp_pa_ = np.sum(predictions[y_val == qnf.estimator_.classes_[1], 0]) / \
-                     np.sum(y_val == qnf.estimator_.classes_[1])
-        qnf.tn_pa_ = np.sum(predictions[y_val == qnf.estimator_.classes_[1], 1]) / \
-                     np.sum(y_val == qnf.estimator_.classes_[1])
-        qnf.fn_pa_ = np.sum(predictions[y_val == qnf.estimator_.classes_[0], 1]) / \
-                     np.sum(y_val == qnf.estimator_.classes_[0])
+        tp_pa, fp_pa, tn_pa, fn_pa = [], [], [], []
+        for X_, y_ in zip(X_val, y_val):
+            try:
+                predictions = qnf.estimator_.predict_proba(X_)
+            except AttributeError:
+                return
+            tp_pa.append(np.sum(predictions[y_ == qnf.estimator_.classes_[0], 0]) / \
+                         np.sum(y_ == qnf.estimator_.classes_[0]))
+            fp_pa.append(np.sum(predictions[y_ == qnf.estimator_.classes_[1], 0]) / \
+                         np.sum(y_ == qnf.estimator_.classes_[1]))
+            tn_pa.append(np.sum(predictions[y_ == qnf.estimator_.classes_[1], 1]) / \
+                         np.sum(y_ == qnf.estimator_.classes_[1]))
+            fn_pa.append(np.sum(predictions[y_ == qnf.estimator_.classes_[0], 1]) / \
+                         np.sum(y_ == qnf.estimator_.classes_[0]))
+        qnf.tp_pa_ = np.mean(tp_pa)
+        qnf.fp_pa_ = np.mean(fp_pa)
+        qnf.tn_pa_ = np.mean(tn_pa)
+        qnf.fn_pa_ = np.mean(fn_pa)
         return qnf
 
     def predict(self, X, method='cc'):
@@ -123,8 +143,8 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
 
 
 class EnsembleMulticlassCC(BaseEnsembleCCModel):
-    def __init__(self, b=None, estimator_class=None, estimator_params=dict(), estimator_grid=dict()):
-        super(EnsembleMulticlassCC, self).__init__(b, estimator_class, estimator_params, estimator_grid)
+    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, b=None, strategy='macro'):
+        super(EnsembleMulticlassCC, self).__init__(estimator_class, estimator_params, estimator_grid, b, strategy)
         self.classes_ = None
         self.qnfs_ = None
         self.cls_smp_ = None
@@ -252,33 +272,43 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
 
     def _performance(self, samples, n, label, X, y):
         samples_val = samples[:n] + samples[(n + 1):]
-        X_val = np.concatenate([X[i] for i in samples_val])
-        y_val = np.concatenate([y[i] for i in samples_val])
-        mask = (y_val == label)
-        y_bin = np.ones(y_val.shape, dtype=np.int)
-        y_bin[~mask] = 0
-
+        X_val = [X[i] for i in samples_val]
+        y_val = [y[i] for i in samples_val]
         qnf = self.qnfs_[n]
-        qnf.confusion_matrix_[label] = confusion_matrix(y_bin, qnf.estimators_[label].predict(X_val))
 
-        qnf.tpr_[label] = qnf.confusion_matrix_[label][1, 1] / float(qnf.confusion_matrix_[label][1, 1]
+        cm = []
+        for X_, y_ in zip(X_val, y_val):
+            mask = (y_ == label)
+            y_bin = np.ones(y_.shape, dtype=np.int)
+            y_bin[~mask] = 0
+            cm.append(confusion_matrix(y_bin, qnf.estimators_[label].predict(X_)))
+
+            try:
+                predictions = qnf.estimators_[label].predict_proba(X_)
+            except AttributeError:
+                return
+
+            qnf.tp_pa_[label] = np.sum(predictions[y_bin == qnf.estimators_[label].classes_[1], 1]) / \
+                                np.sum(y_bin == qnf.estimators_[label].classes_[1])
+            qnf.fp_pa_[label] = np.sum(predictions[y_bin == qnf.estimators_[label].classes_[0], 1]) / \
+                                np.sum(y_bin == qnf.estimators_[label].classes_[0])
+
+        if self.strategy == 'micro':
+            qnf.confusion_matrix_[label] = np.mean(cm, axis=0)
+
+            qnf.tpr_[label] = qnf.confusion_matrix_[label][1, 1] / float(qnf.confusion_matrix_[label][1, 1]
                                                                      + qnf.confusion_matrix_[label][1, 0])
-        qnf.fpr_[label] = qnf.confusion_matrix_[label][0, 1] / float(qnf.confusion_matrix_[label][0, 1]
+            qnf.fpr_[label] = qnf.confusion_matrix_[label][0, 1] / float(qnf.confusion_matrix_[label][0, 1]
                                                                      + qnf.confusion_matrix_[label][0, 0])
+        elif self.strategy == 'macro':
+            qnf.confusion_matrix_[label] = cm
+            qnf.tpr_[label] = np.mean([cm_[1, 1] / float(cm_[1, 1] + cm_[1, 0]) for cm_ in cm])
+            qnf.fpr_[label] = np.mean([cm_[0, 1] / float(cm_[0, 1] + cm_[0, 0]) for cm_ in cm])
+
         if np.isnan(qnf.tpr_[label]):
-            qnf.tpr_ = 0
+            qnf.tpr_[label] = 0
         if np.isnan(qnf.fpr_[label]):
-            qnf.fpr_ = 0
-
-        try:
-            predictions = qnf.estimators_[label].predict_proba(X_val)
-        except AttributeError:
-            return
-
-        qnf.tp_pa_[label] = np.sum(predictions[y_bin == qnf.estimators_[label].classes_[1], 1]) / \
-                            np.sum(y_bin == qnf.estimators_[label].classes_[1])
-        qnf.fp_pa_[label] = np.sum(predictions[y_bin == qnf.estimators_[label].classes_[0], 1]) / \
-                            np.sum(y_bin == qnf.estimators_[label].classes_[0])
+            qnf.fpr_[label] = 0
 
         return qnf
 
