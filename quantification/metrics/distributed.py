@@ -23,7 +23,7 @@ def wrapper(clf, train, test, pos_class=None):
     from sklearn.metrics import confusion_matrix
     import numpy as np
 
-    if not pos_class:
+    if pos_class == 0:
         clf.fit(X[train], y[train])
         return confusion_matrix(y[test], clf.predict(X[test]))
 
