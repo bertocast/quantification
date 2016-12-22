@@ -57,7 +57,7 @@ def cc(X, y):
                                             estimator_class=LogisticRegression(),
                                             estimator_params={'class_weight': 'balanced'},
                                             estimator_grid={'C': [10 ** i for i in xrange(-3, 2)]}, strategy='micro')
-        cc.fit(np.concatenate(X_train), np.concatenate(y_train), local=False, verbose=True)
+        cc.fit(np.concatenate(X_train), np.concatenate(y_train), local=False, verbose=True, cv=3)
 
         predictions = cc.predict(X_test[0], method='cc')
         pred_cc = predictions
