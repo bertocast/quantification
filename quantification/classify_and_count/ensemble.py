@@ -30,7 +30,7 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
         if len(X) != len(y):
             raise ValueError("X and y has to be the same length.")
         for n, (X_sample, y_sample) in enumerate(zip(X, y)):
-            if len(np.unique(y_sample)) != 2:
+            if len(np.unique(y_sample)) < 2:
                 continue
             qnf = BaseBinaryClassifyAndCount(b=self.b,
                                              estimator_class=self.estimator_class,
@@ -145,9 +145,6 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
 class EnsembleMulticlassCC(BaseEnsembleCCModel):
     def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, b=None, strategy='macro'):
         super(EnsembleMulticlassCC, self).__init__(estimator_class, estimator_params, estimator_grid, b, strategy)
-        self.classes_ = None
-        self.qnfs_ = None
-        self.cls_smp_ = None
 
     def fit(self, X, y, verbose=False, local=True):
 
@@ -179,11 +176,12 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         return self
 
     def _fit_and_get_distributions(self, X_sample, y_sample, verbose):
+        # TODO: Refactor this to a dicts of classes and binary quantifiers
         qnf = BaseMulticlassClassifyAndCount(estimator_class=self.estimator_class,
                                              estimator_params=self.estimator_params,
                                              estimator_grid=self.estimator_grid)
         classes = np.unique(y_sample).tolist()
-        not_valid_classes = []
+        invalid_classes = []
         qnf.estimators_ = dict()
         qnf.confusion_matrix_ = dict.fromkeys(classes)
         qnf.fpr_ = dict.fromkeys(self.classes_)
@@ -196,7 +194,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             y_bin = np.ones(y_sample.shape, dtype=np.int)
             y_bin[~mask] = 0
             if len(np.unique(y_bin)) != 2 or np.any(np.bincount(y_bin) < 3):
-                not_valid_classes.append(cls)
+                invalid_classes.append(cls)
                 continue
             if verbose:
                 print "\tFitting classifier for class {}".format(cls + 1)
@@ -218,9 +216,9 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 for i in range(self.b):
                     qnf.train_dist_[cls][i] = [train_pos_pdf[i] / float(sum(y_bin == pos_class)),
                                                      train_neg_pdf[i] / float(sum(y_bin == neg_class))]
-        valid_classes = filter(lambda x: x not in not_valid_classes, classes)
+        valid_classes = filter(lambda x: x not in invalid_classes, classes)
         qnf.classes_ = valid_classes
-        return qnf, filter(lambda x: x not in not_valid_classes, classes)
+        return qnf, filter(lambda x: x not in invalid_classes, classes)
 
     def _parallel_fit(self, X, y, verbose):
         def setup(data_file):

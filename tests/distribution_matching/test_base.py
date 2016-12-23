@@ -48,5 +48,6 @@ class TestBinaryEM(ModelTestCase):
         y = np.concatenate(self.binary_data.target)
         em = BinaryEM()
 
-        em.fit(X,y)
+        em.fit(X, y)
+        em.predict(X)
 

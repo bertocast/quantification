@@ -29,7 +29,8 @@ setup(name='quantification',
           'numpy>=1.8',
           'sklearn',
           'pandas>=0.19',
-          'dispy', 'six'
+          'dispy', 'six',
+          'scipy'
       ],
       tests_require=[
           'nose',

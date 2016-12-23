@@ -13,7 +13,7 @@ from quantification.metrics import distributed, model_score
 class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
     """Base class for C&C Models"""
 
-    def __init__(self, b, estimator_class, estimator_params, estimator_grid):
+    def __init__(self, estimator_class, estimator_params, estimator_grid, b):
         if estimator_params is None:
             estimator_params = dict()
         if estimator_grid is None:
@@ -28,7 +28,7 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
         """Fit a sample or a set of samples and combine them"""
 
     @abstractmethod
-    def predict(self, X, method):
+    def predict(self, X):
         """Predict the prevalence"""
 
     def _validate_estimator(self, default, default_params, default_grid):
@@ -342,7 +342,7 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
 
         for pos_class in self.classes_:
             if verbose:
-                print "Fiting classifier for class {}/{}".format(pos_class + 1, n_classes)
+                print "Fitting classifier for class {}/{}".format(pos_class + 1, n_classes)
             mask = (y == pos_class)
             y_bin = np.ones(y.shape, dtype=np.int)
             y_bin[~mask] = 0
