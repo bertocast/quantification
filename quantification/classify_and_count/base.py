@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 
-import matplotlib.pyplot as plt
+
 import numpy as np
 import six
 from sklearn.linear_model import LogisticRegression
@@ -253,6 +253,7 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
                                    train_neg_pdf[i] / float(sum(y == neg_class))]
 
         if plot:
+            import matplotlib.pyplot as plt
             plt.subplot(121)
             plt.hist(neg_preds, self.b)
             plt.title('Negative PDF')
@@ -298,6 +299,7 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
         test_pdf, _ = np.histogram(preds, self.b)
 
         if plot:
+            import matplotlib.pyplot as plt
             plt.figure()
             plt.hist(preds, self.b)
             plt.title('Test PDF')
