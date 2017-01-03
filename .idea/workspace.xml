@@ -107,8 +107,8 @@
           <file leaf-file-name="base.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="430">
-                  <caret line="42" column="89" lean-forward="false" selection-start-line="42" selection-start-column="89" selection-end-line="42" selection-end-column="89" />
+                <state relative-caret-position="106">
+                  <caret line="326" column="32" lean-forward="true" selection-start-line="326" selection-start-column="32" selection-end-line="326" selection-end-column="32" />
                   <folding>
                     <element signature="e#0#39#0" expanded="true" />
                     <element signature="e#11577#12586#0" expanded="false" />
@@ -703,13 +703,6 @@
       <option name="presentableId" value="Default" />
       <updated>1478253182284</updated>
     </task>
-    <task id="LOCAL-00015" summary="Test double cluster">
-      <created>1478707448825</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1478707448825</updated>
-    </task>
     <task id="LOCAL-00016" summary="Fail double cluster">
       <created>1478708327444</created>
       <option name="number" value="00016" />
@@ -1046,7 +1039,14 @@
       <option name="project" value="LOCAL" />
       <updated>1482497676256</updated>
     </task>
-    <option name="localTasksCounter" value="64" />
+    <task id="LOCAL-00064" summary="Enable verbosity of GS to debug">
+      <created>1483431266913</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1483431266914</updated>
+    </task>
+    <option name="localTasksCounter" value="65" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1126,7 +1126,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Parallel CV using files" />
     <MESSAGE value="Minor change on parallelism" />
     <MESSAGE value="Implement matching distribution models and fix some problems" />
     <MESSAGE value="Hdy paralell fit" />
@@ -1151,7 +1150,8 @@
     <MESSAGE value="Fix minor bugs" />
     <MESSAGE value="Change the import of matplotlib due to problems with the cluster" />
     <MESSAGE value="Implement EM method&#10;" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implement EM method&#10;" />
+    <MESSAGE value="Enable verbosity of GS to debug" />
+    <option name="LAST_COMMIT_MESSAGE" value="Enable verbosity of GS to debug" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1478,8 +1478,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="430">
-          <caret line="42" column="89" lean-forward="false" selection-start-line="42" selection-start-column="89" selection-end-line="42" selection-end-column="89" />
+        <state relative-caret-position="106">
+          <caret line="326" column="32" lean-forward="true" selection-start-line="326" selection-start-column="32" selection-end-line="326" selection-end-column="32" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
             <element signature="e#11577#12586#0" expanded="false" />

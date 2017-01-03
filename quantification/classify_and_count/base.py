@@ -323,7 +323,7 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
 
 class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
     def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, b=None, strategy='macro'):
-        super(BaseMulticlassClassifyAndCount, self).__init__(b, estimator_class, estimator_params, estimator_grid)
+        super(BaseMulticlassClassifyAndCount, self).__init__(estimator_class, estimator_params, estimator_grid, b)
         self.strategy = strategy
 
     def fit(self, X, y, cv=50, verbose=False, local=True):
