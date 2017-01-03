@@ -88,13 +88,13 @@
             <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="3960">
-                  <caret line="330" column="32" lean-forward="false" selection-start-line="330" selection-start-column="32" selection-end-line="330" selection-end-column="32" />
+                  <caret line="333" column="32" lean-forward="false" selection-start-line="333" selection-start-column="32" selection-end-line="333" selection-end-column="32" />
                   <folding>
-                    <element signature="e#0#39#0" expanded="true" />
-                    <element signature="e#352#1847#0" expanded="false" />
-                    <element signature="e#11577#12586#0" expanded="false" />
-                    <element signature="e#18295#18871#0" expanded="false" />
-                    <element signature="e#18912#19570#0" expanded="false" />
+                    <element signature="e#23#62#0" expanded="true" />
+                    <element signature="e#375#2016#0" expanded="false" />
+                    <element signature="e#11746#12755#0" expanded="false" />
+                    <element signature="e#18464#19040#0" expanded="false" />
+                    <element signature="e#19081#19739#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -107,13 +107,13 @@
           <file leaf-file-name="base.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="106">
-                  <caret line="326" column="32" lean-forward="true" selection-start-line="326" selection-start-column="32" selection-end-line="326" selection-end-column="32" />
+                <state relative-caret-position="690">
+                  <caret line="47" column="29" lean-forward="true" selection-start-line="47" selection-start-column="29" selection-end-line="47" selection-end-column="29" />
                   <folding>
-                    <element signature="e#0#39#0" expanded="true" />
-                    <element signature="e#11577#12586#0" expanded="false" />
-                    <element signature="e#18295#18871#0" expanded="false" />
-                    <element signature="e#18912#19570#0" expanded="false" />
+                    <element signature="e#0#22#0" expanded="true" />
+                    <element signature="e#11746#12755#0" expanded="false" />
+                    <element signature="e#18464#19040#0" expanded="false" />
+                    <element signature="e#19081#19739#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -703,13 +703,6 @@
       <option name="presentableId" value="Default" />
       <updated>1478253182284</updated>
     </task>
-    <task id="LOCAL-00016" summary="Fail double cluster">
-      <created>1478708327444</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1478708327444</updated>
-    </task>
     <task id="LOCAL-00017" summary="Fail double cluster">
       <created>1478766852760</created>
       <option name="number" value="00017" />
@@ -1046,7 +1039,14 @@
       <option name="project" value="LOCAL" />
       <updated>1483431266914</updated>
     </task>
-    <option name="localTasksCounter" value="65" />
+    <task id="LOCAL-00065" summary="Fix a bug">
+      <created>1483431461324</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1483431461325</updated>
+    </task>
+    <option name="localTasksCounter" value="66" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1114,6 +1114,24 @@
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39489052" sideWeight="0.48759353" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="RECENTLY_FILTERED_USER_GROUPS">
+                <collection />
+              </option>
+              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+                <collection />
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="Vcs.Log.UiProperties">
     <option name="RECENTLY_FILTERED_USER_GROUPS">
       <collection />
@@ -1129,7 +1147,6 @@
     <MESSAGE value="Minor change on parallelism" />
     <MESSAGE value="Implement matching distribution models and fix some problems" />
     <MESSAGE value="Hdy paralell fit" />
-    <MESSAGE value="Fix a bug" />
     <MESSAGE value="Change from KFold to StratifiedKFold in the confusion matrix computation." />
     <MESSAGE value="Change the calculation of the TPR and FPR" />
     <MESSAGE value="Some improvements dealing with samples that cannot be stratified due to not enough samples of the positive class" />
@@ -1151,7 +1168,8 @@
     <MESSAGE value="Change the import of matplotlib due to problems with the cluster" />
     <MESSAGE value="Implement EM method&#10;" />
     <MESSAGE value="Enable verbosity of GS to debug" />
-    <option name="LAST_COMMIT_MESSAGE" value="Enable verbosity of GS to debug" />
+    <MESSAGE value="Fix a bug" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix a bug" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1478,13 +1496,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="106">
-          <caret line="326" column="32" lean-forward="true" selection-start-line="326" selection-start-column="32" selection-end-line="326" selection-end-column="32" />
+        <state relative-caret-position="690">
+          <caret line="47" column="29" lean-forward="true" selection-start-line="47" selection-start-column="29" selection-end-line="47" selection-end-column="29" />
           <folding>
-            <element signature="e#0#39#0" expanded="true" />
-            <element signature="e#11577#12586#0" expanded="false" />
-            <element signature="e#18295#18871#0" expanded="false" />
-            <element signature="e#18912#19570#0" expanded="false" />
+            <element signature="e#0#22#0" expanded="true" />
+            <element signature="e#11746#12755#0" expanded="false" />
+            <element signature="e#18464#19040#0" expanded="false" />
+            <element signature="e#19081#19739#0" expanded="false" />
           </folding>
         </state>
       </provider>
