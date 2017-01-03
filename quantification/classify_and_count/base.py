@@ -36,11 +36,11 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
         if self.estimator_class is not None:
             clf = self.estimator_class
             clf.set_params(**self.estimator_params)
-            estimator = GridSearchCV(estimator=self.estimator_class, param_grid=self.estimator_grid)
+            estimator = GridSearchCV(estimator=self.estimator_class, param_grid=self.estimator_grid, verbose=True)
         else:
             clf = default
             clf.set_params(**default_params)
-            estimator = GridSearchCV(estimator=clf, param_grid=default_grid)
+            estimator = GridSearchCV(estimator=clf, param_grid=default_grid, verbose=True)
 
         if estimator is None:
             raise ValueError('estimator cannot be None')
