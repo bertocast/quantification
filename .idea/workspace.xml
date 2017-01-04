@@ -78,7 +78,7 @@
             <entry file="file://$PROJECT_DIR$/quantification/utils/models.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="45">
-                  <caret line="3" column="38" lean-forward="false" selection-start-line="3" selection-start-column="38" selection-end-line="3" selection-end-column="38" />
+                  <caret line="3" column="55" lean-forward="false" selection-start-line="3" selection-start-column="55" selection-end-line="3" selection-end-column="55" />
                   <folding>
                     <element signature="e#0#32#0" expanded="true" />
                   </folding>
@@ -622,13 +622,6 @@
       <option name="presentableId" value="Default" />
       <updated>1478253182284</updated>
     </task>
-    <task id="LOCAL-00019" summary="Plankton example">
-      <created>1479128341997</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1479128341997</updated>
-    </task>
     <task id="LOCAL-00020" summary="New version of ensemble AC">
       <created>1479297955586</created>
       <option name="number" value="00020" />
@@ -965,7 +958,14 @@
       <option name="project" value="LOCAL" />
       <updated>1483516952068</updated>
     </task>
-    <option name="localTasksCounter" value="68" />
+    <task id="LOCAL-00068" summary="Make KLR extends from sklearn BaseEstimator">
+      <created>1483517310940</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1483517310941</updated>
+    </task>
+    <option name="localTasksCounter" value="69" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1063,7 +1063,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Hdy paralell fit" />
     <MESSAGE value="Change from KFold to StratifiedKFold in the confusion matrix computation." />
     <MESSAGE value="Change the calculation of the TPR and FPR" />
     <MESSAGE value="Some improvements dealing with samples that cannot be stratified due to not enough samples of the positive class" />
@@ -1088,7 +1087,8 @@
     <MESSAGE value="Fix a bug" />
     <MESSAGE value="Enable local parallel fitting" />
     <MESSAGE value="Implement KLR model" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implement KLR model" />
+    <MESSAGE value="Make KLR extends from sklearn BaseEstimator" />
+    <option name="LAST_COMMIT_MESSAGE" value="Make KLR extends from sklearn BaseEstimator" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1412,7 +1412,7 @@
     <entry file="file://$PROJECT_DIR$/quantification/utils/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
-          <caret line="3" column="38" lean-forward="false" selection-start-line="3" selection-start-column="38" selection-end-line="3" selection-end-column="38" />
+          <caret line="3" column="55" lean-forward="false" selection-start-line="3" selection-start-column="55" selection-end-line="3" selection-end-column="55" />
           <folding>
             <element signature="e#0#32#0" expanded="true" />
           </folding>
