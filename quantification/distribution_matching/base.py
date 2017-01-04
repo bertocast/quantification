@@ -1,3 +1,5 @@
+from sklearn.model_selection import GridSearchCV
+
 from quantification.classify_and_count.base import BaseMulticlassClassifyAndCount, BaseBinaryClassifyAndCount, \
     BaseClassifyAndCountModel
 import numpy as np
@@ -23,7 +25,8 @@ class BinaryEM(BaseClassifyAndCountModel):
     def fit(self, X, y):
         self.estimator_ = self._make_estimator()
         self.estimator_.fit(X, y)
-        self.estimator_ = self.estimator_.best_estimator_
+        if isinstance(self.estimator_, GridSearchCV):
+            self.estimator_ = self.estimator_.best_estimator_
         self.prob_tr_ = (np.bincount(y, minlength=2) / float(len(y)))[1]
         return self
 

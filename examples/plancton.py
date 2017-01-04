@@ -13,6 +13,7 @@ from sklearn.preprocessing import LabelEncoder
 from quantification.classify_and_count.base import BaseMulticlassClassifyAndCount
 from quantification.classify_and_count.ensemble import EnsembleMulticlassCC
 from quantification.metrics.multiclass import absolute_error, bray_curtis
+from quantification.utils.models import KLR
 
 
 def load_plankton_file(path, sample_col="Sample", target_col="class"):
@@ -54,10 +55,12 @@ def cc(X, y):
         y_train, y_test = y[train_index], y[test_index]
 
         cc = BaseMulticlassClassifyAndCount(b=100,
-                                            estimator_class=LogisticRegression(),
-                                            estimator_params={'class_weight': 'balanced'},
-                                            estimator_grid={'C': [10 ** i for i in xrange(-3, 2)]}, strategy='micro')
-        cc.fit(np.concatenate(X_train), np.concatenate(y_train), local=False, verbose=True, cv=3)
+                                            estimator_class=KLR(),
+                                            #estimator_params={'class_weight': 'balanced'},
+                                            estimator_params=dict(),
+                                            estimator_grid=dict(), strategy='macro')
+                                            #estimator_grid={'C': [10 ** i for i in xrange(-3, 2)]}, strategy='micro')
+        cc.fit(np.concatenate(X_train), np.concatenate(y_train), local=True, verbose=True, cv=3)
 
         predictions = cc.predict(X_test[0], method='cc')
         pred_cc = predictions

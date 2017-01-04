@@ -1,7 +1,6 @@
 import multiprocessing
 from abc import ABCMeta, abstractmethod
 
-
 import numpy as np
 import six
 from sklearn.linear_model import LogisticRegression
@@ -37,13 +36,19 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
         if self.estimator_class is not None:
             clf = self.estimator_class
             clf.set_params(**self.estimator_params)
-            estimator = GridSearchCV(estimator=self.estimator_class, param_grid=self.estimator_grid, verbose=True,
-                                     n_jobs=multiprocessing.cpu_count())
+            if not self.estimator_grid:
+                estimator = clf
+            else:
+                estimator = GridSearchCV(estimator=self.estimator_class, param_grid=self.estimator_grid, verbose=100,
+                                         n_jobs=multiprocessing.cpu_count())
         else:
             clf = default
             clf.set_params(**default_params)
-            estimator = GridSearchCV(estimator=clf, param_grid=default_grid, verbose=True,
-                                     n_jobs=multiprocessing.cpu_count())
+            if not self.estimator_grid:
+                estimator = clf
+            else:
+                estimator = GridSearchCV(estimator=clf, param_grid=default_grid, verbose=100,
+                                         n_jobs=multiprocessing.cpu_count())
 
         if estimator is None:
             raise ValueError('estimator cannot be None')
@@ -159,7 +164,8 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
             self._persist_data(X, y)
 
         self.estimator_.fit(X, y)
-        self.estimator_ = self.estimator_.best_estimator_
+        if isinstance(self.estimator_, GridSearchCV):
+            self.estimator_ = self.estimator_.best_estimator_
         self._compute_performance(X, y, local=local)
         if self.b:
             self._compute_distribution(X, y, plot=plot)
@@ -215,8 +221,10 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
 
         if self.strategy == 'micro':
             self.confusion_matrix_ = np.mean(cm, axis=0)
-            self.tpr_ = self.confusion_matrix_[1, 1] / float(self.confusion_matrix_[1, 1] + self.confusion_matrix_[1, 0])
-            self.fpr_ = self.confusion_matrix_[0, 1] / float(self.confusion_matrix_[0, 1] + self.confusion_matrix_[0, 0])
+            self.tpr_ = self.confusion_matrix_[1, 1] / float(
+                self.confusion_matrix_[1, 1] + self.confusion_matrix_[1, 0])
+            self.fpr_ = self.confusion_matrix_[0, 1] / float(
+                self.confusion_matrix_[0, 1] + self.confusion_matrix_[0, 0])
         elif self.strategy == 'macro':
             self.confusion_matrix_ = cm
             self.tpr_ = np.mean([cm_[1, 1] / float(cm_[1, 1] + cm_[1, 0]) for cm_ in cm])
@@ -351,7 +359,8 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
             y_bin[~mask] = 0
             clf = self._make_estimator()
             clf = clf.fit(X, y_bin)
-            clf = clf.best_estimator_
+            if isinstance(clf, GridSearchCV):
+                clf = clf.best_estimator_
             self.estimators_[pos_class] = clf
             if verbose:
                 print "Computing performance for classifier of class {}/{}".format(pos_class + 1, n_classes)
@@ -368,11 +377,12 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
         if local:
             cm = model_score.cv_confusion_matrix(self.estimators_[pos_class], X, y, folds)
         else:
-            cm = distributed.cv_confusion_matrix(self.estimators_[pos_class], X, y, self.X_y_path_, pos_class=pos_class, folds=folds,
+            cm = distributed.cv_confusion_matrix(self.estimators_[pos_class], X, y, self.X_y_path_, pos_class=pos_class,
+                                                 folds=folds,
                                                  verbose=verbose)
 
         if self.strategy == 'micro':
-            self.confusion_matrix_[pos_class]= np.mean(cm, axis=0)
+            self.confusion_matrix_[pos_class] = np.mean(cm, axis=0)
             self.tpr_[pos_class] = self.confusion_matrix_[pos_class][1, 1] / float(
                 self.confusion_matrix_[pos_class][1, 1] + self.confusion_matrix_[pos_class][1, 0])
             self.fpr_[pos_class] = self.confusion_matrix_[pos_class][0, 1] / float(

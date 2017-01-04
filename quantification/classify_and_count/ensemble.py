@@ -7,6 +7,7 @@ import dispy
 
 from sklearn.metrics import confusion_matrix
 import numpy as np
+from sklearn.model_selection import GridSearchCV
 
 from quantification.classify_and_count.base import BaseClassifyAndCountModel, BaseBinaryClassifyAndCount, \
     BaseMulticlassClassifyAndCount
@@ -40,7 +41,8 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
                 qnf.estimator_.fit(X_sample, y_sample)
             except ValueError:  # Positive classes has not enough samples to perform cv
                 continue
-            qnf.estimator_ = qnf.estimator_.best_estimator_
+            if isinstance(qnf.estimator_, GridSearchCV):
+                qnf.estimator_ = qnf.estimator_.best_estimator_
             qnf = self._performance(qnf, n, X, y)
             self.qnfs_.append(qnf)
 
@@ -200,7 +202,8 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 print "\tFitting classifier for class {}".format(cls + 1)
             clf = qnf._make_estimator()
             clf = clf.fit(X_sample, y_bin)
-            clf = clf.best_estimator_
+            if isinstance(clf, GridSearchCV):
+                clf = clf.best_estimator_
             qnf.estimators_[cls] = clf
             if self.b:
                 if verbose:
