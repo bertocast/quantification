@@ -5,6 +5,15 @@ from sklearn.base import BaseEstimator, ClassifierMixin
 
 
 class KLR(KernelLogisticRegression, BaseEstimator, ClassifierMixin):
+
+    def __init__(self, eta=0.15, lambda_p=0.0001, gamma=1, C=0.1):
+
+        super(KLR, self).__init__()
+        self.step_eta = eta
+        self.lambda_p = lambda_p
+        self.gamma = gamma
+        self.C = C
+
     def fit(self, X, y):
 
         self.train_X = X
