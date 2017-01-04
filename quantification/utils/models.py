@@ -1,71 +1,87 @@
-import FukuML.Utility as utility
 import numpy as np
-from FukuML.KernelLogisticRegression import KernelLogisticRegression
 from sklearn.base import BaseEstimator, ClassifierMixin
 
 
-class KLR(KernelLogisticRegression, BaseEstimator, ClassifierMixin):
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
 
-    def __init__(self, eta=0.15, lambda_p=0.0001, gamma=1, C=0.1):
 
-        super(KLR, self).__init__()
-        self.step_eta = eta
-        self.lambda_p = lambda_p
+class KLR(BaseEstimator, ClassifierMixin):
+    def __init__(self, p=5, gamma=1, kernel='rbf'):
+        self.p = p
         self.gamma = gamma
-        self.C = C
+        self.kernel = kernel
 
     def fit(self, X, y):
-
-        self.train_X = X
-        self.train_Y = y
-        self.status = 'load_train_data'
-        self.init_W()
-        self.train()
+        n_samples, n_features = X.shape
+        self.weights, self.bias = self._get_weights(n_features)
+        Q = self._get_kernel(X)
+        s = 4.0 / self.gamma
+        f = np.dot(4.0 * Q.T, y - 0.5)
+        B = np.sum(Q, axis=0)
+        V = np.dot(Q.T, Q)
+        C = np.dot(Q, np.linalg.pinv(V))
+        C = np.sum(C, axis=0)
+        V[np.diag_indices_from(V)] += s
+        V_inv = np.linalg.pinv(V)
+        Z = np.dot(V_inv, f)
+        S_i = 1 / np.dot(np.dot(C, V_inv).T, B)
+        self.b = np.dot(S_i * C, Z)
+        self.beta = Z - np.dot(V_inv, B) * self.b
         return self
 
     def predict_proba(self, X):
-        preds = []
-        for i in range(X.shape[0]):
-            input_data_x = utility.DatasetLoader.feature_transform(
-                X[i,].reshape(1, -1),
-                self.feature_transform_mode,
-                self.feature_transform_degree
-            )
-            input_data_x = np.ravel(input_data_x)
-            preds.append(self.score_function(input_data_x, self.W))
-        return np.array(preds)
+        Q = self._get_kernel(X)
+        p = np.dot(Q, self.beta) + self.b
+        prob = sigmoid(p)
+        return prob
 
     def predict(self, X):
-        probs = self.predict_proba(X)
-        preds = (probs > 0.5).astype(int)
-        return preds
+        prob = self.predict_proba(X)
+        return (prob > 0.5).astype(int)
 
-    def calculate_gradient(self, X, Y, beta):
+    def _get_weights(self, n_feat):
+        if self.kernel in ['sigmoid', 'HypTan', 'Fourier', 'HardLimit']:
+            w = np.random.uniform(-1 / np.sqrt(n_feat), 1 / np.sqrt(n_feat), (self.p, n_feat))
+            b = np.apply_along_axis(lambda x: np.random.uniform(min(x), abs(max(x))), 1, w)
+        elif self.kernel in ['rbf', 'MultiQuad', 'hybrid']:
+            w = np.random.uniform(-1, 1, (self.p, n_feat))
+            b = np.random.uniform(-1, 1, self.p)
 
-        if type(Y) is np.ndarray:
-            data_num = len(Y)
-            original_X = X[:, :]
-            K = utility.Kernel.kernel_matrix(self, original_X)
-        else:
-            data_num = 1
-            original_x = X[1:]
-            original_X = self.train_X[:, 1:]
-            K = utility.Kernel.kernel_matrix_xX(self, original_x, original_X)
+        return w, b
 
-        gradient_average = ((2 * self.lambda_p) / data_num) * np.dot(beta, K) + \
-                           np.dot(self.theta((-1) * Y * np.dot(beta, K)) * ((-1) * Y), K) / data_num
+    def _get_kernel(self, X):
 
-        return gradient_average
+        if self.kernel == 'sigmoid':
+            W = np.column_stack((self.weights, self.bias))
+            X_ = np.column_stack((X, np.ones(X.shape[0])))
+            Q = np.dot(X_, W.T)
+            Q = sigmoid(Q)
+            return Q
 
-    def score_function(self, x, W):
-
-        x = x[1:]
-        original_X = self.train_X[:, :]
-
-        score = np.sum(self.beta * utility.Kernel.kernel_matrix_xX(self, x, original_X))
-        score = self.theta(score)
-
-        return score
+        elif self.kernel == 'rbf':
+            Q = np.empty((X.shape[0], self.p))
+            for i in range(self.p):
+                Q[:, i] = np.apply_along_axis(lambda x: self.bias[i] * sum((x - self.weights[i,]) ** 2), 1, X)
+            return Q
 
 
+if __name__ == '__main__':
+    X = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+         [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+         [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+         [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+         [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+         [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+         [5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]]
+    X = np.array(X)
+    y = np.array([1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1])
 
+    klr = KLR(3, 1, 'rbf')
+    klr.fit(X, y)
+    print klr.predict_proba(X)

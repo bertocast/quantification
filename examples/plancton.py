@@ -57,9 +57,9 @@ def cc(X, y):
         cc = BaseMulticlassClassifyAndCount(b=100,
                                             estimator_class=KLR(),
                                             #estimator_params={'class_weight': 'balanced'},
-                                            estimator_params=dict(),
-                                            estimator_grid=dict(), strategy='macro')
-                                            #estimator_grid={'C': [10 ** i for i in xrange(-3, 2)]}, strategy='micro')
+                                            estimator_params=dict(kernel='rbf', p=60),
+                                            #estimator_grid=dict(), strategy='macro')
+                                            estimator_grid={'gamma': [10 ** i for i in xrange(-6, 0)]}, strategy='micro')
         cc.fit(np.concatenate(X_train), np.concatenate(y_train), local=True, verbose=True, cv=3)
 
         predictions = cc.predict(X_test[0], method='cc')
