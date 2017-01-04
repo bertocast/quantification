@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3a838331-9b37-4c92-811e-9ad5f39586aa" name="Default" comment="Enable local parallel fitting">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/quantification/utils/models.py" />
+    <list default="true" id="3a838331-9b37-4c92-811e-9ad5f39586aa" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/setup.py" afterPath="$PROJECT_DIR$/setup.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/utils/models.py" afterPath="$PROJECT_DIR$/quantification/utils/models.py" />
     </list>
     <ignored path="quantification.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -78,8 +77,8 @@
           <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/quantification/utils/models.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="274">
-                  <caret line="29" column="41" lean-forward="true" selection-start-line="29" selection-start-column="41" selection-end-line="29" selection-end-column="41" />
+                <state relative-caret-position="45">
+                  <caret line="3" column="38" lean-forward="false" selection-start-line="3" selection-start-column="38" selection-end-line="3" selection-end-column="38" />
                   <folding>
                     <element signature="e#0#32#0" expanded="true" />
                   </folding>
@@ -173,6 +172,7 @@
       <find>Please load</find>
       <find>calculate gra</find>
       <find>calculate g</find>
+      <find>set_params</find>
     </findStrings>
     <replaceStrings>
       <replace>Absolute</replace>
@@ -622,13 +622,6 @@
       <option name="presentableId" value="Default" />
       <updated>1478253182284</updated>
     </task>
-    <task id="LOCAL-00018" summary="Plankton example">
-      <created>1479120815108</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1479120815108</updated>
-    </task>
     <task id="LOCAL-00019" summary="Plankton example">
       <created>1479128341997</created>
       <option name="number" value="00019" />
@@ -965,7 +958,14 @@
       <option name="project" value="LOCAL" />
       <updated>1483432108190</updated>
     </task>
-    <option name="localTasksCounter" value="67" />
+    <task id="LOCAL-00067" summary="Implement KLR model">
+      <created>1483516952067</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1483516952068</updated>
+    </task>
+    <option name="localTasksCounter" value="68" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1063,7 +1063,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Implement matching distribution models and fix some problems" />
     <MESSAGE value="Hdy paralell fit" />
     <MESSAGE value="Change from KFold to StratifiedKFold in the confusion matrix computation." />
     <MESSAGE value="Change the calculation of the TPR and FPR" />
@@ -1088,7 +1087,8 @@
     <MESSAGE value="Enable verbosity of GS to debug" />
     <MESSAGE value="Fix a bug" />
     <MESSAGE value="Enable local parallel fitting" />
-    <option name="LAST_COMMIT_MESSAGE" value="Enable local parallel fitting" />
+    <MESSAGE value="Implement KLR model" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implement KLR model" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1122,7 +1122,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file:///Library/Python/2.7/site-packages/sklearn/linear_model/logistic.py" />
     <entry file="file:///Library/Python/2.7/site-packages/sklearn/model_selection/_validation.py" />
     <entry file="file://$PROJECT_DIR$/examples/cc_ensemble.txt" />
     <entry file="file://$PROJECT_DIR$/examples/hdy.txt" />
@@ -1402,10 +1401,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file:///usr/local/lib/python2.7/site-packages/sklearn/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1427">
+          <caret line="235" column="18" lean-forward="false" selection-start-line="235" selection-start-column="8" selection-end-line="235" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/quantification/utils/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="274">
-          <caret line="29" column="41" lean-forward="true" selection-start-line="29" selection-start-column="41" selection-end-line="29" selection-end-column="41" />
+        <state relative-caret-position="45">
+          <caret line="3" column="38" lean-forward="false" selection-start-line="3" selection-start-column="38" selection-end-line="3" selection-end-column="38" />
           <folding>
             <element signature="e#0#32#0" expanded="true" />
           </folding>

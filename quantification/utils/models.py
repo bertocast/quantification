@@ -1,9 +1,10 @@
 import FukuML.Utility as utility
 import numpy as np
 from FukuML.KernelLogisticRegression import KernelLogisticRegression
+from sklearn.base import BaseEstimator
 
 
-class KLR(KernelLogisticRegression):
+class KLR(KernelLogisticRegression, BaseEstimator):
     def fit(self, X, y):
 
         self.train_X = X
