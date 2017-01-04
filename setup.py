@@ -30,7 +30,7 @@ setup(name='quantification',
           'sklearn',
           'pandas>=0.19',
           'dispy', 'six',
-          'scipy'
+          'scipy', 'FukuML'
       ],
       tests_require=[
           'nose',
