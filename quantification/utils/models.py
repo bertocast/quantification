@@ -38,7 +38,7 @@ class KLR(BaseEstimator, ClassifierMixin):
         Q = self._get_kernel(X)
         p = np.dot(Q, self.beta) + self.b
         prob = sigmoid(p)
-        return np.array([1 - prob, prob])
+        return np.column_stack((1 - prob, prob))
 
     def predict(self, X):
         prob = self.predict_proba(X)
