@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.model_selection import cross_val_score
 from sklearn.utils import check_X_y
 
 
@@ -20,7 +21,25 @@ class KLR(BaseEstimator, ClassifierMixin):
         n_samples, n_features = X.shape
         self.weights, self.bias = self._get_weights(n_features)
         Q = self._get_kernel(X)
-        s = 4.0 / self.gamma
+
+        if isinstance(self.gamma, list):
+            best_score = 0
+            for g in self.gamma:
+                self.beta, self.b = self.kernel_trick(Q, g, y)
+                self.gamma = g
+                score = np.mean(cross_val_score(self, X, y))
+                if score > best_score:
+                    best_score = score
+                    best_beta = self.beta
+                    best_b = self.b
+            self.b = best_b
+            self.beta = best_beta
+        else:
+            self.beta, self.b = self.kernel_trick(Q, self.gamma, y)
+        return self
+
+    def kernel_trick(self, Q, g, y):
+        s = 4.0 / g
         f = np.dot(4.0 * Q.T, y - 0.5)
         B = np.sum(Q, axis=0)
         V = np.dot(Q.T, Q)
@@ -30,9 +49,10 @@ class KLR(BaseEstimator, ClassifierMixin):
         V_inv = np.linalg.pinv(V)
         Z = np.dot(V_inv, f)
         S_i = 1 / np.dot(np.dot(C, V_inv).T, B)
-        self.b = np.dot(S_i * C, Z)
-        self.beta = Z - np.dot(V_inv, B) * self.b
-        return self
+        b = np.dot(S_i * C, Z)
+        beta = Z - np.dot(V_inv, B) * b
+
+        return beta, b
 
     def predict_proba(self, X):
         Q = self._get_kernel(X)
@@ -82,10 +102,24 @@ if __name__ == '__main__':
          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
          [5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]]
+         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+         [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+         [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+         [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+         [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+         [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+         [5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+         ]
     X = np.array(X)
-    y = np.array([1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1])
+    y = np.array([1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1])
 
-    klr = KLR(3, 1, 'rbf')
+    klr = KLR(3, [10 ** i for i in range(-6,10)], 'rbf')
     klr.fit(X, y)
+    print klr.gamma
     print klr.predict_proba(X)
