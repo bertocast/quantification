@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.model_selection import cross_val_score
 from sklearn.utils import check_X_y
+import multiprocessing
 
 
 def sigmoid(z):
@@ -27,7 +28,7 @@ class KLR(BaseEstimator, ClassifierMixin):
             for g in self.gamma:
                 self.beta, self.b = self.kernel_trick(Q, g, y)
                 self.gamma = g
-                score = np.mean(cross_val_score(self, X, y))
+                score = np.mean(cross_val_score(self, X, y, n_jobs=multiprocessing.cpu_count() - 1))
                 if score > best_score:
                     best_score = score
                     best_beta = self.beta
