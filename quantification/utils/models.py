@@ -23,20 +23,7 @@ class KLR(BaseEstimator, ClassifierMixin):
         self.weights, self.bias = self._get_weights(n_features)
         Q = self._get_kernel(X)
 
-        if isinstance(self.gamma, list):
-            best_score = 0
-            for g in self.gamma:
-                self.beta, self.b = self.kernel_trick(Q, g, y)
-                self.gamma = g
-                score = np.mean(cross_val_score(self, X, y, n_jobs=multiprocessing.cpu_count() - 1))
-                if score > best_score:
-                    best_score = score
-                    best_beta = self.beta
-                    best_b = self.b
-            self.b = best_b
-            self.beta = best_beta
-        else:
-            self.beta, self.b = self.kernel_trick(Q, self.gamma, y)
+        self.beta, self.b = self.kernel_trick(Q, self.gamma, y)
         return self
 
     def kernel_trick(self, Q, g, y):

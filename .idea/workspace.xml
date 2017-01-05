@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="3a838331-9b37-4c92-811e-9ad5f39586aa" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/classify_and_count/base.py" afterPath="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/utils/models.py" afterPath="$PROJECT_DIR$/quantification/utils/models.py" />
     </list>
     <ignored path="quantification.iws" />
@@ -57,21 +58,11 @@
           <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/quantification/utils/models.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="450">
-                  <caret line="30" column="98" lean-forward="false" selection-start-line="30" selection-start-column="98" selection-end-line="30" selection-end-column="98" />
+                <state relative-caret-position="375">
+                  <caret line="25" column="8" lean-forward="false" selection-start-line="25" selection-start-column="8" selection-end-line="25" selection-end-column="8" />
                   <folding>
                     <element signature="e#0#18#0" expanded="true" />
                   </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="_split.py" pinned="false" current-in-tab="false">
-            <entry file="file:///usr/local/lib/python2.7/site-packages/sklearn/model_selection/_split.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="162">
-                  <caret line="609" column="0" lean-forward="false" selection-start-line="609" selection-start-column="0" selection-end-line="609" selection-end-column="0" />
-                  <folding />
                 </state>
               </provider>
             </entry>
@@ -89,13 +80,13 @@
           <file leaf-file-name="base.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="4725">
-                  <caret line="341" column="32" lean-forward="false" selection-start-line="341" selection-start-column="32" selection-end-line="341" selection-end-column="32" />
+                <state relative-caret-position="4695">
+                  <caret line="339" column="32" lean-forward="false" selection-start-line="339" selection-start-column="32" selection-end-line="339" selection-end-column="32" />
                   <folding>
                     <element signature="e#0#22#0" expanded="true" />
-                    <element signature="e#12037#13046#0" expanded="false" />
-                    <element signature="e#18855#19431#0" expanded="false" />
-                    <element signature="e#19472#20130#0" expanded="false" />
+                    <element signature="e#11875#12884#0" expanded="false" />
+                    <element signature="e#18693#19269#0" expanded="false" />
+                    <element signature="e#19310#19968#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -108,13 +99,13 @@
           <file leaf-file-name="base.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="630">
-                  <caret line="42" column="63" lean-forward="false" selection-start-line="42" selection-start-column="48" selection-end-line="42" selection-end-column="63" />
+                <state relative-caret-position="720">
+                  <caret line="48" column="91" lean-forward="false" selection-start-line="48" selection-start-column="91" selection-end-line="48" selection-end-column="91" />
                   <folding>
                     <element signature="e#0#22#0" expanded="true" />
-                    <element signature="e#12037#13046#0" expanded="false" />
-                    <element signature="e#18855#19431#0" expanded="false" />
-                    <element signature="e#19472#20130#0" expanded="false" />
+                    <element signature="e#11875#12884#0" expanded="false" />
+                    <element signature="e#18693#19269#0" expanded="false" />
+                    <element signature="e#19310#19968#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -635,13 +626,6 @@
       <option name="presentableId" value="Default" />
       <updated>1478253182284</updated>
     </task>
-    <task id="LOCAL-00032" summary="Implement matching distribution models and fix some problems">
-      <created>1480413915442</created>
-      <option name="number" value="00032" />
-      <option name="presentableId" value="LOCAL-00032" />
-      <option name="project" value="LOCAL" />
-      <updated>1480413915442</updated>
-    </task>
     <task id="LOCAL-00033" summary="Hdy paralell fit">
       <created>1480420003506</created>
       <option name="number" value="00033" />
@@ -978,7 +962,14 @@
       <option name="project" value="LOCAL" />
       <updated>1483610426794</updated>
     </task>
-    <option name="localTasksCounter" value="81" />
+    <task id="LOCAL-00081" summary="Parallelize (locally) hyperparametrization of KLR">
+      <created>1483611370329</created>
+      <option name="number" value="00081" />
+      <option name="presentableId" value="LOCAL-00081" />
+      <option name="project" value="LOCAL" />
+      <updated>1483611370329</updated>
+    </task>
+    <option name="localTasksCounter" value="82" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1076,7 +1067,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fix a bug when performing grid search with a set with less than 3 samples of the positive class." />
     <MESSAGE value="Fix a bug in the parallel fit of an ensemble model." />
     <MESSAGE value="Start writting some docs" />
     <MESSAGE value="Fix again a bug with the tpr and fpr" />
@@ -1101,7 +1091,8 @@
     <MESSAGE value="Reduce the number of CPUs used by GridSearch" />
     <MESSAGE value="Minor change" />
     <MESSAGE value="sklearn GridSearch seem not to be working with KLR, implement manually gamma selection if it is a list" />
-    <option name="LAST_COMMIT_MESSAGE" value="sklearn GridSearch seem not to be working with KLR, implement manually gamma selection if it is a list" />
+    <MESSAGE value="Parallelize (locally) hyperparametrization of KLR" />
+    <option name="LAST_COMMIT_MESSAGE" value="Parallelize (locally) hyperparametrization of KLR" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1449,14 +1440,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file:///usr/local/lib/python2.7/site-packages/sklearn/model_selection/_split.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="609" column="0" lean-forward="false" selection-start-line="609" selection-start-column="0" selection-end-line="609" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/local/lib/python2.7/site-packages/sklearn/model_selection/_validation.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
@@ -1465,23 +1448,31 @@
         </state>
       </provider>
     </entry>
+    <entry file="file:///usr/local/lib/python2.7/site-packages/sklearn/model_selection/_split.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="609" column="0" lean-forward="false" selection-start-line="609" selection-start-column="0" selection-end-line="609" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4725">
-          <caret line="341" column="32" lean-forward="false" selection-start-line="341" selection-start-column="32" selection-end-line="341" selection-end-column="32" />
+        <state relative-caret-position="4695">
+          <caret line="339" column="32" lean-forward="false" selection-start-line="339" selection-start-column="32" selection-end-line="339" selection-end-column="32" />
           <folding>
             <element signature="e#0#22#0" expanded="true" />
-            <element signature="e#12037#13046#0" expanded="false" />
-            <element signature="e#18855#19431#0" expanded="false" />
-            <element signature="e#19472#20130#0" expanded="false" />
+            <element signature="e#11875#12884#0" expanded="false" />
+            <element signature="e#18693#19269#0" expanded="false" />
+            <element signature="e#19310#19968#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/quantification/utils/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="30" column="98" lean-forward="false" selection-start-line="30" selection-start-column="98" selection-end-line="30" selection-end-column="98" />
+        <state relative-caret-position="375">
+          <caret line="25" column="8" lean-forward="false" selection-start-line="25" selection-start-column="8" selection-end-line="25" selection-end-column="8" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
