@@ -206,8 +206,17 @@ if __name__ == '__main__':
     warnings.filterwarnings('ignore')
     plankton, le = load_plankton_file('plancton.csv')
 
+    time_init = time.time()
+
     X = np.array(plankton.data)
     y = np.array(plankton.target)
+
+    klr = KLR(kernel='rbf', p=60)
+    klr.fit(np.concatenate(X), np.concatenate(y))
+    print time.time() - time_init
+
+    raise Exception
+
     global file
     file = open('{}.txt'.format('plancton_results_micro_avg'), 'wb')
     cc_err, ac_err, pcc_err, pac_err, hdy_err, cc_bc, ac_bc, pcc_bc, pac_bc, hdy_bc = cc(X, y)

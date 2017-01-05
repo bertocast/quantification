@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.utils import check_X_y
 
 
 def sigmoid(z):
@@ -13,6 +14,9 @@ class KLR(BaseEstimator, ClassifierMixin):
         self.kernel = kernel
 
     def fit(self, X, y):
+        X, y = check_X_y(X, y, accept_sparse='csr', dtype=np.float64,
+                         order="C")
+        self.classes_ = np.unique(y)
         n_samples, n_features = X.shape
         self.weights, self.bias = self._get_weights(n_features)
         Q = self._get_kernel(X)
@@ -34,7 +38,7 @@ class KLR(BaseEstimator, ClassifierMixin):
         Q = self._get_kernel(X)
         p = np.dot(Q, self.beta) + self.b
         prob = sigmoid(p)
-        return prob
+        return np.array([1 - prob, prob])
 
     def predict(self, X):
         prob = self.predict_proba(X)
