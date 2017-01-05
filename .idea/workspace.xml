@@ -113,9 +113,9 @@
                   <caret line="341" column="32" lean-forward="false" selection-start-line="341" selection-start-column="32" selection-end-line="341" selection-end-column="32" />
                   <folding>
                     <element signature="e#0#22#0" expanded="true" />
-                    <element signature="e#12033#13042#0" expanded="false" />
-                    <element signature="e#18851#19427#0" expanded="false" />
-                    <element signature="e#19468#20126#0" expanded="false" />
+                    <element signature="e#12041#13050#0" expanded="false" />
+                    <element signature="e#18859#19435#0" expanded="false" />
+                    <element signature="e#19476#20134#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -128,13 +128,13 @@
           <file leaf-file-name="base.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="735">
-                  <caret line="49" column="93" lean-forward="false" selection-start-line="49" selection-start-column="93" selection-end-line="49" selection-end-column="93" />
+                <state relative-caret-position="750">
+                  <caret line="50" column="79" lean-forward="false" selection-start-line="50" selection-start-column="79" selection-end-line="50" selection-end-column="79" />
                   <folding>
                     <element signature="e#0#22#0" expanded="true" />
-                    <element signature="e#12033#13042#0" expanded="false" />
-                    <element signature="e#18851#19427#0" expanded="false" />
-                    <element signature="e#19468#20126#0" expanded="false" />
+                    <element signature="e#12041#13050#0" expanded="false" />
+                    <element signature="e#18859#19435#0" expanded="false" />
+                    <element signature="e#19476#20134#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -655,13 +655,6 @@
       <option name="presentableId" value="Default" />
       <updated>1478253182284</updated>
     </task>
-    <task id="LOCAL-00028" summary="First version of distribute MulticlassCC">
-      <created>1479813016139</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
-      <option name="project" value="LOCAL" />
-      <updated>1479813016139</updated>
-    </task>
     <task id="LOCAL-00029" summary="First test of a parallel CV">
       <created>1479889887941</created>
       <option name="number" value="00029" />
@@ -998,7 +991,14 @@
       <option name="project" value="LOCAL" />
       <updated>1483604126591</updated>
     </task>
-    <option name="localTasksCounter" value="77" />
+    <task id="LOCAL-00077" summary="Reduce the verbosity level of GS">
+      <created>1483604501282</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1483604501282</updated>
+    </task>
+    <option name="localTasksCounter" value="78" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1096,7 +1096,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Even more refactoring" />
     <MESSAGE value="PEP 8 reformatting" />
     <MESSAGE value="Possible fix of a bug" />
     <MESSAGE value="Possible fix of a bug in the distributed calculus of the confusion matrix" />
@@ -1121,7 +1120,8 @@
     <MESSAGE value="Reimplemented KLR" />
     <MESSAGE value="Add classes attribute to KLR" />
     <MESSAGE value="Fix a bug&#10;" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix a bug&#10;" />
+    <MESSAGE value="Reduce the verbosity level of GS" />
+    <option name="LAST_COMMIT_MESSAGE" value="Reduce the verbosity level of GS" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1464,13 +1464,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="735">
-          <caret line="49" column="93" lean-forward="false" selection-start-line="49" selection-start-column="93" selection-end-line="49" selection-end-column="93" />
+        <state relative-caret-position="750">
+          <caret line="50" column="79" lean-forward="false" selection-start-line="50" selection-start-column="79" selection-end-line="50" selection-end-column="79" />
           <folding>
             <element signature="e#0#22#0" expanded="true" />
-            <element signature="e#12033#13042#0" expanded="false" />
-            <element signature="e#18851#19427#0" expanded="false" />
-            <element signature="e#19468#20126#0" expanded="false" />
+            <element signature="e#12041#13050#0" expanded="false" />
+            <element signature="e#18859#19435#0" expanded="false" />
+            <element signature="e#19476#20134#0" expanded="false" />
           </folding>
         </state>
       </provider>
