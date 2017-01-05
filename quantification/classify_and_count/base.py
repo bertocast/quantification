@@ -39,7 +39,7 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
             if not self.estimator_grid:
                 estimator = clf
             else:
-                estimator = GridSearchCV(estimator=self.estimator_class, param_grid=self.estimator_grid, verbose=11,
+                estimator = GridSearchCV(estimator=self.estimator_class, param_grid=self.estimator_grid, verbose=True,
                                          n_jobs=multiprocessing.cpu_count())
         else:
             clf = default
@@ -47,7 +47,7 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
             if not self.estimator_grid:
                 estimator = clf
             else:
-                estimator = GridSearchCV(estimator=clf, param_grid=default_grid, verbose=11,
+                estimator = GridSearchCV(estimator=clf, param_grid=default_grid, verbose=True,
                                          n_jobs=multiprocessing.cpu_count())
 
         if estimator is None:
