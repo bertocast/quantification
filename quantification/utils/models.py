@@ -42,7 +42,7 @@ class KLR(BaseEstimator, ClassifierMixin):
 
     def predict(self, X):
         prob = self.predict_proba(X)
-        return (prob > 0.5).astype(int)
+        return (prob[1] > 0.5).astype(int)
 
     def _get_weights(self, n_feat):
         if self.kernel in ['sigmoid', 'HypTan', 'Fourier', 'HardLimit']:
