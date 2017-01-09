@@ -4,6 +4,8 @@ from sklearn.model_selection import cross_val_score
 from sklearn.utils import check_X_y
 import multiprocessing
 
+from quantification.classify_and_count.base import BaseMulticlassClassifyAndCount
+
 
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
@@ -107,7 +109,8 @@ if __name__ == '__main__':
     X = np.array(X)
     y = np.array([1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1])
 
-    klr = KLR(3, [10 ** i for i in range(-6,10)], 'rbf')
+    klr = KLR(3, 1, 'rbf')
     klr.fit(X, y)
     print klr.gamma
-    print klr.predict_proba(X)
+    a =  klr.predict(X)
+    print a

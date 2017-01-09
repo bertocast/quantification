@@ -435,6 +435,8 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
             freq = np.bincount(predictions, minlength=2)
             relative_freq = freq / float(np.sum(freq))
             probabilities[n] = relative_freq[1]
+        if np.sum(probabilities) == 0:
+            return probabilities
         return probabilities / np.sum(probabilities)
 
     def _predict_ac(self, X):
@@ -446,6 +448,8 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
             relative_freq = freq / float(np.sum(freq))
             adjusted = (relative_freq - self.fpr_[cls]) / float(self.tpr_[cls] - self.fpr_[cls])
             probabilities[n] = np.clip(adjusted[1], 0, 1)
+        if np.sum(probabilities) == 0:
+            return probabilities
         return probabilities / np.sum(probabilities)
 
     def _predict_pcc(self, X):
@@ -460,6 +464,8 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
 
             p = np.mean(predictions, axis=0)
             probabilities[n] = p[1]
+        if np.sum(probabilities) == 0:
+            return probabilities
         return probabilities / np.sum(probabilities)
 
     def _predict_pac(self, X):
@@ -475,6 +481,8 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
             p = np.mean(predictions, axis=0)
             probabilities[n] = np.clip((p[1] - self.fp_pa_[cls]) / float(self.tp_pa_[cls] - self.fp_pa_[cls]), 0, 1)
 
+        if np.sum(probabilities) == 0:
+            return probabilities
         return probabilities / np.sum(probabilities)
 
     def _predict_hdy(self, X):
@@ -498,7 +506,8 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
 
             p_min = np.argmin(hd)
             probabilities[n] = probas[p_min]
-
+        if np.sum(probabilities) == 0:
+            return probabilities
         return probabilities / np.sum(probabilities)
 
 

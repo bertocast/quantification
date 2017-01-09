@@ -54,12 +54,17 @@ def cc(X, y):
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
 
+        X_train = X_train[:50]
+        y_train = y_train[:50]
+        X_test = X_test[:50]
+        y_test = y_test[:50]
+
         cc = BaseMulticlassClassifyAndCount(b=100,
                                             estimator_class=KLR(),
                                             #estimator_params={'class_weight': 'balanced'},
-                                            estimator_params=dict(kernel='rbf', p=60),
+                                            estimator_params=dict(kernel='rbf', p=10, gamma=1),
                                             #estimator_grid=dict(), strategy='macro')
-                                            estimator_grid={'gamma': [10 ** i for i in xrange(-6, 0)]}, strategy='micro')
+                                            estimator_grid=dict(), strategy='micro')
         cc.fit(np.concatenate(X_train), np.concatenate(y_train), local=True, verbose=True, cv=3)
 
         predictions = cc.predict(X_test[0], method='cc')
