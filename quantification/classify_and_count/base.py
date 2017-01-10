@@ -445,7 +445,9 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
             predictions = clf.predict(X)
             freq = np.bincount(predictions, minlength=2)
             relative_freq = freq / float(np.sum(freq))
+            print "TPR: {}, FRP: {}".format(self.fpr_[cls], self.fpr_[cls])
             adjusted = (relative_freq - self.fpr_[cls]) / float(self.tpr_[cls] - self.fpr_[cls])
+            adjusted = np.nan_to_num(adjusted)
             probabilities[n] = np.clip(adjusted[1], 0, 1)
         if np.sum(probabilities) == 0:
             return probabilities
