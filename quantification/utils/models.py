@@ -94,6 +94,13 @@ class KLR(BaseEstimator, ClassifierMixin):
                 Q[:, i] = np.apply_along_axis(lambda x: self.bias[i] * sum((x - self.weights[i,]) ** 2), 1, X)
             return Q
 
+    def score(self, X, y, sample_weight=None):
+        from sklearn.metrics import roc_curve
+
+        fpr, tpr, _ = roc_curve(y, self.predict(X), sample_weight=sample_weight)
+
+        return np.sqrt(fpr[1] * tpr[1])
+
 
 if __name__ == '__main__':
     from sklearn.datasets import load_breast_cancer
