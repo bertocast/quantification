@@ -97,8 +97,9 @@ class KLR(BaseEstimator, ClassifierMixin):
     def score(self, X, y, sample_weight=None):
         from sklearn.metrics import roc_curve
 
-        fpr, tpr, _ = roc_curve(y, self.predict(X), sample_weight=sample_weight)
-
+        fpr, tpr, _ = roc_curve(y, self.predict(X), sample_weight=sample_weight, pos_label=1)
+        if len(fpr) == 2:
+            return 0.0
         return np.sqrt(fpr[1] * tpr[1])
 
 
