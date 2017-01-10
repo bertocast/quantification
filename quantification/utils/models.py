@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.model_selection import cross_val_score
@@ -12,20 +14,30 @@ def sigmoid(z):
 
 
 class KLR(BaseEstimator, ClassifierMixin):
-    def __init__(self, p=5, gamma=1, kernel='rbf'):
+    def __init__(self, p=5, gamma=1, kernel='rbf', pos_class_weight='balanced'):
         self.p = p
         self.gamma = gamma
         self.kernel = kernel
+        self.pos_class_weight = pos_class_weight
 
     def fit(self, X, y):
         X, y = check_X_y(X, y, accept_sparse='csr', dtype=np.float64,
                          order="C")
         self.classes_ = np.unique(y)
         n_samples, n_features = X.shape
+
         self.weights, self.bias = self._get_weights(n_features)
         Q = self._get_kernel(X)
 
-        self.beta, self.b = self.kernel_trick(Q, self.gamma, y)
+        pos_class_weight = self.pos_class_weight
+        if pos_class_weight == 'balanced':
+            counts = np.bincount(y)
+            pos_class_weight = counts[0] / float(counts[1])
+
+        y_ = deepcopy(y)
+        y_[y_==self.classes_[1]] = y_[y_==self.classes_[1]] * pos_class_weight
+
+        self.beta, self.b = self.kernel_trick(Q, self.gamma, y_)
         return self
 
     def kernel_trick(self, Q, g, y):
@@ -52,7 +64,10 @@ class KLR(BaseEstimator, ClassifierMixin):
 
     def predict(self, X):
         prob = self.predict_proba(X)
-        return (prob[:, 1] > 0.5).astype(int)
+        preds = (prob[:, 1] > 0.5).astype(int)
+        preds[preds==0] = self.classes_[0]
+        preds[preds==1] = self.classes_[1]
+        return preds
 
     def _get_weights(self, n_feat):
         if self.kernel in ['sigmoid', 'HypTan', 'Fourier', 'HardLimit']:
@@ -81,36 +96,17 @@ class KLR(BaseEstimator, ClassifierMixin):
 
 
 if __name__ == '__main__':
-    X = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-         [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-         [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-         [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-         [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-         [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-         [5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
-         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-         [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-         [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-         [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-         [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-         [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-         [5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
-         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-         ]
-    X = np.array(X)
-    y = np.array([1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1])
+    from sklearn.datasets import load_breast_cancer
+    from sklearn.metrics import confusion_matrix
 
-    klr = KLR(3, 1, 'rbf')
+    X, y = load_breast_cancer(return_X_y=True)
+    pos_ind = np.where(y==1)[0]
+    neg_ind = np.where(y==0)[0]
+    pos_ind = pos_ind[:20]
+    ind = np.concatenate((pos_ind, neg_ind))
+    X = X[ind, :]
+    y = y[ind]
+
+    klr = KLR(p=30)
     klr.fit(X, y)
-    print klr.gamma
-    a =  klr.predict(X)
-    print a
+    print confusion_matrix(y_true=y, y_pred=klr.predict(X))
