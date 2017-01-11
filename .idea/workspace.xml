@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3a838331-9b37-4c92-811e-9ad5f39586aa" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/quantification.iml" afterPath="$PROJECT_DIR$/.idea/quantification.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/classify_and_count/base.py" afterPath="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/utils/models.py" afterPath="$PROJECT_DIR$/quantification/utils/models.py" />
     </list>
     <ignored path="quantification.iws" />
@@ -60,7 +59,7 @@
             <entry file="file://$PROJECT_DIR$/quantification/utils/models.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="500">
-                  <caret line="102" column="33" lean-forward="false" selection-start-line="102" selection-start-column="33" selection-end-line="102" selection-end-column="33" />
+                  <caret line="102" column="28" lean-forward="false" selection-start-line="102" selection-start-column="28" selection-end-line="102" selection-end-column="28" />
                   <folding>
                     <element signature="e#0#25#0" expanded="true" />
                   </folding>
@@ -108,8 +107,8 @@
           <file leaf-file-name="base.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="255">
-                  <caret line="460" column="50" lean-forward="false" selection-start-line="460" selection-start-column="50" selection-end-line="460" selection-end-column="50" />
+                <state relative-caret-position="375">
+                  <caret line="463" column="40" lean-forward="true" selection-start-line="463" selection-start-column="40" selection-end-line="463" selection-end-column="40" />
                   <folding>
                     <element signature="e#0#39#0" expanded="true" />
                     <element signature="e#11852#12861#0" expanded="false" />
@@ -223,8 +222,8 @@
         <option value="$PROJECT_DIR$/setup.py" />
         <option value="$PROJECT_DIR$/quantification/utils/base.py" />
         <option value="$PROJECT_DIR$/examples/plancton.py" />
-        <option value="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
         <option value="$PROJECT_DIR$/quantification/utils/models.py" />
+        <option value="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
       </list>
     </option>
   </component>
@@ -600,13 +599,6 @@
       <option name="presentableId" value="Default" />
       <updated>1478253182284</updated>
     </task>
-    <task id="LOCAL-00037" summary="Change from KFold to StratifiedKFold in the confusion matrix computation.">
-      <created>1480595778019</created>
-      <option name="number" value="00037" />
-      <option name="presentableId" value="LOCAL-00037" />
-      <option name="project" value="LOCAL" />
-      <updated>1480595778019</updated>
-    </task>
     <task id="LOCAL-00038" summary="Change the calculation of the TPR and FPR">
       <created>1480684573500</created>
       <option name="number" value="00038" />
@@ -943,7 +935,14 @@
       <option name="project" value="LOCAL" />
       <updated>1484045015492</updated>
     </task>
-    <option name="localTasksCounter" value="86" />
+    <task id="LOCAL-00086" summary="Fix a bug in the score of KLR">
+      <created>1484122048852</created>
+      <option name="number" value="00086" />
+      <option name="presentableId" value="LOCAL-00086" />
+      <option name="project" value="LOCAL" />
+      <updated>1484122048854</updated>
+    </task>
+    <option name="localTasksCounter" value="87" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1041,7 +1040,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Implement micro and macro averaging options with the ensemble models" />
     <MESSAGE value="Implement micro and macro averaging options with the base models" />
     <MESSAGE value="Correcting a bug in the computation of a confusion matrix in parallel" />
     <MESSAGE value="Fix minor bugs" />
@@ -1066,7 +1064,8 @@
     <MESSAGE value="Fix a bug" />
     <MESSAGE value="Implement class balance in KLR" />
     <MESSAGE value="Change the score of KLR to G-Mean" />
-    <option name="LAST_COMMIT_MESSAGE" value="Change the score of KLR to G-Mean" />
+    <MESSAGE value="Fix a bug in the score of KLR" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix a bug in the score of KLR" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1401,23 +1400,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
+    <entry file="file://$PROJECT_DIR$/quantification/utils/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5880">
-          <caret line="418" column="0" lean-forward="false" selection-start-line="418" selection-start-column="0" selection-end-line="418" selection-end-column="0" />
+        <state relative-caret-position="500">
+          <caret line="102" column="28" lean-forward="false" selection-start-line="102" selection-start-column="28" selection-end-line="102" selection-end-column="28" />
           <folding>
-            <element signature="e#0#39#0" expanded="true" />
-            <element signature="e#11852#12861#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/utils/models.py">
+    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="500">
-          <caret line="102" column="33" lean-forward="false" selection-start-line="102" selection-start-column="33" selection-end-line="102" selection-end-column="33" />
+        <state relative-caret-position="375">
+          <caret line="463" column="40" lean-forward="true" selection-start-line="463" selection-start-column="40" selection-end-line="463" selection-end-column="40" />
           <folding>
-            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#0#39#0" expanded="true" />
+            <element signature="e#11852#12861#0" expanded="false" />
           </folding>
         </state>
       </provider>
