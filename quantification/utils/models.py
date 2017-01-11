@@ -100,7 +100,7 @@ class KLR(BaseEstimator, ClassifierMixin):
         fpr, tpr, _ = roc_curve(y, self.predict(X), sample_weight=sample_weight, pos_label=1)
         if len(fpr) == 2:
             return 0.0
-        return np.sqrt(fpr[1] * tpr[1])
+        return np.sqrt((1-fpr[1]) * tpr[1])
 
 
 if __name__ == '__main__':
