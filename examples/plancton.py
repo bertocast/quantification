@@ -210,6 +210,28 @@ if __name__ == '__main__':
     X = np.array(plankton.data)
     y = np.array(plankton.target)
 
+
+    y = np.concatenate(y)
+    X = np.concatenate(X)
+
+
+    count = np.bincount(y) / float(len(y)) * 100
+
+    for c in xrange(8):
+        mask = (y == c)
+        y_bin = np.ones(y.shape, dtype=np.int)
+        y_bin[~mask] = 0
+
+        print "Clase: {0}. Distribution: {1:.2f}%".format(c, count[c])
+
+        for i in xrange(1, 7):
+            klr = KLR(p=60, gamma=1, pos_class_weight=i)
+            klr.fit(X, y_bin)
+
+            print "G-mean [{}]: {}".format(i, klr.score(X, y_bin))
+
+    raise Exception
+
     global file
     file = open('{}.txt'.format('plancton_results_micro_avg'), 'wb')
     cc_err, ac_err, pcc_err, pac_err, hdy_err, cc_bc, ac_bc, pcc_bc, pac_bc, hdy_bc = cc(X, y)

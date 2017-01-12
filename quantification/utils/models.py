@@ -14,7 +14,7 @@ def sigmoid(z):
 
 
 class KLR(BaseEstimator, ClassifierMixin):
-    def __init__(self, p=5, gamma=1, kernel='rbf', pos_class_weight='balanced'):
+    def __init__(self, p=5, gamma=1, kernel='rbf', pos_class_weight=None):
         self.p = p
         self.gamma = gamma
         self.kernel = kernel
@@ -25,6 +25,9 @@ class KLR(BaseEstimator, ClassifierMixin):
                          order="C")
         self.classes_ = np.unique(y)
         n_samples, n_features = X.shape
+
+        counts = np.bincount(y)
+        self.prior_ = counts[1] / float(len(y))
 
         self.weights, self.bias = self._get_weights(n_features)
         Q = self._get_kernel(X)
@@ -37,11 +40,11 @@ class KLR(BaseEstimator, ClassifierMixin):
         y_ = deepcopy(y)
         y_[y_==self.classes_[1]] = y_[y_==self.classes_[1]] * pos_class_weight
 
-        self.beta, self.b = self.kernel_trick(Q, self.gamma, y_)
+        self.beta, self.b = self.kernel_trick(Q, y_)
         return self
 
-    def kernel_trick(self, Q, g, y):
-        s = 4.0 / g
+    def kernel_trick(self, Q, y):
+        s = 4.0 / self.gamma
         f = np.dot(4.0 * Q.T, y - 0.5)
         B = np.sum(Q, axis=0)
         V = np.dot(Q.T, Q)
@@ -64,7 +67,7 @@ class KLR(BaseEstimator, ClassifierMixin):
 
     def predict(self, X):
         prob = self.predict_proba(X)
-        preds = (prob[:, 1] > 0.5).astype(int)
+        preds = (prob[:, 1] > self.prior_).astype(int)
         preds[preds==0] = self.classes_[0]
         preds[preds==1] = self.classes_[1]
         return preds
@@ -95,19 +98,38 @@ class KLR(BaseEstimator, ClassifierMixin):
             return Q
 
     def score(self, X, y, sample_weight=None):
-        from sklearn.metrics import roc_curve
+        from sklearn.metrics import confusion_matrix
 
-        fpr, tpr, _ = roc_curve(y, self.predict(X), sample_weight=sample_weight, pos_label=1)
-        if len(fpr) == 2:
-            return 0.0
-        return np.sqrt((1 - fpr[1]) * tpr[1])
+        cm = confusion_matrix(y, self.predict(X), sample_weight=sample_weight)
+
+        fpr = cm[0, 1] / float(cm[0, 1] + cm[0, 0])
+        tpr = cm[1, 1] / float(cm[1, 1] + cm[1, 0])
+
+        return np.sqrt((1 - fpr) * tpr)
 
 
 if __name__ == '__main__':
+    import pandas as pd
+    from sklearn.preprocessing import LabelEncoder
+    from sklearn.datasets.base import Bunch
+    def load_plankton_file(path, sample_col="Sample", target_col="class"):
+        data_file = pd.read_csv(path, delimiter=' ')
+        le = LabelEncoder()
+        data_file[target_col] = le.fit_transform(data_file[target_col])
+        data = data_file.groupby(sample_col)
+        target = [sample[1].values for sample in data[target_col]]
+        features = [sample[1].drop([sample_col, target_col], axis=1, inplace=False).values for sample in data]
+        return Bunch(data=features, target=target,
+                     target_names=le.classes_), le
+
     from sklearn.datasets import load_breast_cancer
     from sklearn.metrics import confusion_matrix
 
-    X, y = load_breast_cancer(return_X_y=True)
+    pl, le = load_plankton_file('../../examples/plancton.csv')
+    X = np.concatenate(pl.data)
+    y = np.concatenate(pl.target)
+
+
     pos_ind = np.where(y==1)[0]
     neg_ind = np.where(y==0)[0]
     pos_ind = pos_ind[:20]
