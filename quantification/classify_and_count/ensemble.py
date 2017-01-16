@@ -15,14 +15,14 @@ from quantification.utils.errors import ClusterException
 
 
 class BaseEnsembleCCModel(BaseClassifyAndCountModel):
-    def __init__(self, estimator_class, estimator_params, estimator_grid, b, strategy='macro'):
-        super(BaseEnsembleCCModel, self).__init__(b, estimator_class, estimator_params, estimator_grid)
+    def __init__(self, estimator_class, estimator_params, estimator_grid, grid_params, b, strategy='macro'):
+        super(BaseEnsembleCCModel, self).__init__(b, estimator_class, estimator_params, grid_params, estimator_grid)
         self.strategy = strategy
 
 
 class EnsembleBinaryCC(BaseEnsembleCCModel):
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, b=None, strategy='macro'):
-        super(EnsembleBinaryCC, self).__init__(estimator_class, estimator_params, estimator_grid, b, strategy)
+    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=None, strategy='macro'):
+        super(EnsembleBinaryCC, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b, strategy)
 
     def fit(self, X, y):
 
@@ -145,8 +145,8 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
 
 
 class EnsembleMulticlassCC(BaseEnsembleCCModel):
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, b=None, strategy='macro'):
-        super(EnsembleMulticlassCC, self).__init__(estimator_class, estimator_params, estimator_grid, b, strategy)
+    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=None, strategy='macro'):
+        super(EnsembleMulticlassCC, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b, strategy)
 
     def fit(self, X, y, verbose=False, local=True):
 

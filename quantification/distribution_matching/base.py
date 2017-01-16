@@ -18,8 +18,8 @@ class MulticlassHDy(BaseMulticlassClassifyAndCount):
 
 
 class BinaryEM(BaseClassifyAndCountModel):
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, tol=1e-9):
-        super(BinaryEM, self).__init__(estimator_class, estimator_params, estimator_grid, b=None)
+    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, tol=1e-9):
+        super(BinaryEM, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b=None)
         self.tol = tol
 
     def fit(self, X, y):
@@ -53,8 +53,8 @@ class BinaryEM(BaseClassifyAndCountModel):
 
 
 class MulticlassEM(BaseClassifyAndCountModel):
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, tol=1e-9):
-        super(MulticlassEM, self).__init__(estimator_class, estimator_params, estimator_grid, b=None)
+    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, tol=1e-9):
+        super(MulticlassEM, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b=None)
         self.tol = tol
 
     def fit(self, X, y, verbose=False):

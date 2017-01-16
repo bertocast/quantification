@@ -125,8 +125,8 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
 
     """
 
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, b=None, strategy='macro'):
-        super(BaseBinaryClassifyAndCount, self).__init__(b, estimator_class, estimator_params, estimator_grid)
+    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=None, strategy='macro'):
+        super(BaseBinaryClassifyAndCount, self).__init__(b, estimator_class, estimator_params, estimator_grid, grid_params)
         self.estimator_ = self._make_estimator()
         self.strategy = strategy
 
@@ -333,8 +333,8 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
 
 
 class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, b=None, strategy='macro'):
-        super(BaseMulticlassClassifyAndCount, self).__init__(estimator_class, estimator_params, estimator_grid, b)
+    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=None, strategy='macro'):
+        super(BaseMulticlassClassifyAndCount, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b)
         self.strategy = strategy
 
     def fit(self, X, y, cv=50, verbose=False, local=True):

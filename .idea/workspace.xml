@@ -2,12 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3a838331-9b37-4c92-811e-9ad5f39586aa" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/examples/lspc_demo.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/plancton.py" afterPath="$PROJECT_DIR$/examples/plancton.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/classify_and_count/base.py" afterPath="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/utils/models.py" afterPath="$PROJECT_DIR$/quantification/utils/models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/base.py" afterPath="$PROJECT_DIR$/tests/base.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/classify_and_count/ensemble.py" afterPath="$PROJECT_DIR$/quantification/classify_and_count/ensemble.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/distribution_matching/base.py" afterPath="$PROJECT_DIR$/quantification/distribution_matching/base.py" />
     </list>
     <ignored path="quantification.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -41,18 +39,18 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="ensemble.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="ensemble.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/ensemble.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="15">
-                  <caret line="191" column="1" lean-forward="false" selection-start-line="191" selection-start-column="1" selection-end-line="191" selection-end-column="1" />
+                <state relative-caret-position="-2665">
+                  <caret line="148" column="115" lean-forward="false" selection-start-line="148" selection-start-column="115" selection-end-line="148" selection-end-column="115" />
                   <folding>
                     <element signature="e#0#16#0" expanded="true" />
-                    <element signature="e#6148#6396#0" expanded="false" />
-                    <element signature="e#10353#10557#0" expanded="false" />
-                    <element signature="e#10594#10626#0" expanded="false" />
-                    <element signature="e#16013#16603#0" expanded="false" />
-                    <element signature="e#16644#17326#0" expanded="false" />
+                    <element signature="e#6205#6453#0" expanded="false" />
+                    <element signature="e#10441#10645#0" expanded="false" />
+                    <element signature="e#10682#10714#0" expanded="false" />
+                    <element signature="e#16101#16691#0" expanded="false" />
+                    <element signature="e#16732#17414#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -70,7 +68,7 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="lspc_demo.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="lspc_demo.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/examples/lspc_demo.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="615">
@@ -119,8 +117,8 @@
                   <caret line="421" column="0" lean-forward="false" selection-start-line="421" selection-start-column="0" selection-end-line="421" selection-end-column="0" />
                   <folding>
                     <element signature="e#0#39#0" expanded="true" />
-                    <element signature="e#11977#12986#0" expanded="false" />
-                    <marker date="1484560283000" expanded="true" signature="474:845" ph="..." />
+                    <element signature="e#12008#13017#0" expanded="false" />
+                    <marker date="1484560715000" expanded="true" signature="474:845" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -130,14 +128,14 @@
       </split-first>
       <split-second>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="base.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="base.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-660">
-                  <caret line="43" column="102" lean-forward="false" selection-start-line="43" selection-start-column="102" selection-end-line="43" selection-end-column="102" />
+                <state relative-caret-position="-1870">
+                  <caret line="336" column="125" lean-forward="false" selection-start-line="336" selection-start-column="125" selection-end-line="336" selection-end-column="125" />
                   <folding>
                     <element signature="e#0#39#0" expanded="true" />
-                    <element signature="e#11977#12986#0" expanded="false" />
+                    <element signature="e#12008#13017#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -155,11 +153,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="base.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="base.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/base.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="435">
-                  <caret line="36" column="31" lean-forward="false" selection-start-line="36" selection-start-column="31" selection-end-line="36" selection-end-column="31" />
+                <state relative-caret-position="735">
+                  <caret line="56" column="107" lean-forward="false" selection-start-line="56" selection-start-column="107" selection-end-line="56" selection-end-column="107" />
                   <folding>
                     <element signature="e#263#388#0" expanded="false" />
                   </folding>
@@ -252,16 +250,16 @@
         <option value="$PROJECT_DIR$/tests/distribution_matching/test_base.py" />
         <option value="$PROJECT_DIR$/quantification/distribution_matching/ensemble.py" />
         <option value="$PROJECT_DIR$/examples/testbench.py" />
-        <option value="$PROJECT_DIR$/quantification/classify_and_count/ensemble.py" />
-        <option value="$PROJECT_DIR$/quantification/distribution_matching/base.py" />
         <option value="$PROJECT_DIR$/setup.py" />
         <option value="$PROJECT_DIR$/quantification/utils/base.py" />
         <option value="$PROJECT_DIR$/examples/klr.py" />
         <option value="$PROJECT_DIR$/quantification/utils/models.py" />
         <option value="$PROJECT_DIR$/examples/lspc_demo.py" />
         <option value="$PROJECT_DIR$/examples/plancton.py" />
-        <option value="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
         <option value="$PROJECT_DIR$/tests/base.py" />
+        <option value="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
+        <option value="$PROJECT_DIR$/quantification/distribution_matching/base.py" />
+        <option value="$PROJECT_DIR$/quantification/classify_and_count/ensemble.py" />
       </list>
     </option>
   </component>
@@ -348,6 +346,24 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="utils" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="quantification" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="quantification" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="quantification" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="classify_and_count" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -644,13 +660,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1478253182284</updated>
-    </task>
-    <task id="LOCAL-00041" summary="Fix a bug in FPR and TPR calculus">
-      <created>1481288120443</created>
-      <option name="number" value="00041" />
-      <option name="presentableId" value="LOCAL-00041" />
-      <option name="project" value="LOCAL" />
-      <updated>1481288120443</updated>
     </task>
     <task id="LOCAL-00042" summary="Fix a bug in FPR and TPR calculus">
       <created>1481533353312</created>
@@ -988,7 +997,14 @@
       <option name="project" value="LOCAL" />
       <updated>1484555814768</updated>
     </task>
-    <option name="localTasksCounter" value="90" />
+    <task id="LOCAL-00090" summary="Add GridSearch options">
+      <created>1484560575006</created>
+      <option name="number" value="00090" />
+      <option name="presentableId" value="LOCAL-00090" />
+      <option name="project" value="LOCAL" />
+      <updated>1484560575006</updated>
+    </task>
+    <option name="localTasksCounter" value="91" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1087,7 +1103,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Change the import of matplotlib due to problems with the cluster" />
     <MESSAGE value="Implement EM method&#10;" />
     <MESSAGE value="Enable verbosity of GS to debug" />
     <MESSAGE value="Enable local parallel fitting" />
@@ -1112,7 +1127,8 @@
     <MESSAGE value="Minor change&#10;" />
     <MESSAGE value="Implemented threshold on predictions depending on class probability of training set" />
     <MESSAGE value="Change the implementation of KLR&#10;" />
-    <option name="LAST_COMMIT_MESSAGE" value="Change the implementation of KLR&#10;" />
+    <MESSAGE value="Add GridSearch options" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add GridSearch options" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1194,11 +1210,11 @@
           <caret line="191" column="1" lean-forward="false" selection-start-line="191" selection-start-column="1" selection-end-line="191" selection-end-column="1" />
           <folding>
             <element signature="e#0#16#0" expanded="true" />
-            <element signature="e#6148#6396#0" expanded="false" />
-            <element signature="e#10353#10557#0" expanded="false" />
-            <element signature="e#10594#10626#0" expanded="false" />
-            <element signature="e#16013#16603#0" expanded="false" />
-            <element signature="e#16644#17326#0" expanded="false" />
+            <element signature="e#6205#6453#0" expanded="false" />
+            <element signature="e#10441#10645#0" expanded="false" />
+            <element signature="e#10682#10714#0" expanded="false" />
+            <element signature="e#16101#16691#0" expanded="false" />
+            <element signature="e#16732#17414#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1219,11 +1235,11 @@
           <caret line="191" column="1" lean-forward="false" selection-start-line="191" selection-start-column="1" selection-end-line="191" selection-end-column="1" />
           <folding>
             <element signature="e#0#16#0" expanded="true" />
-            <element signature="e#6148#6396#0" expanded="false" />
-            <element signature="e#10353#10557#0" expanded="false" />
-            <element signature="e#10594#10626#0" expanded="false" />
-            <element signature="e#16013#16603#0" expanded="false" />
-            <element signature="e#16644#17326#0" expanded="false" />
+            <element signature="e#6205#6453#0" expanded="false" />
+            <element signature="e#10441#10645#0" expanded="false" />
+            <element signature="e#10682#10714#0" expanded="false" />
+            <element signature="e#16101#16691#0" expanded="false" />
+            <element signature="e#16732#17414#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1260,7 +1276,8 @@
           <caret line="418" column="0" lean-forward="false" selection-start-line="418" selection-start-column="0" selection-end-line="418" selection-end-column="0" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
-            <element signature="e#11977#12986#0" expanded="false" />
+            <element signature="e#12008#13017#0" expanded="false" />
+            <marker date="1484560715000" expanded="true" signature="474:845" ph="..." />
           </folding>
         </state>
       </provider>
@@ -1291,11 +1308,11 @@
           <caret line="191" column="1" lean-forward="false" selection-start-line="191" selection-start-column="1" selection-end-line="191" selection-end-column="1" />
           <folding>
             <element signature="e#0#16#0" expanded="true" />
-            <element signature="e#6148#6396#0" expanded="false" />
-            <element signature="e#10353#10557#0" expanded="false" />
-            <element signature="e#10594#10626#0" expanded="false" />
-            <element signature="e#16013#16603#0" expanded="false" />
-            <element signature="e#16644#17326#0" expanded="false" />
+            <element signature="e#6205#6453#0" expanded="false" />
+            <element signature="e#10441#10645#0" expanded="false" />
+            <element signature="e#10682#10714#0" expanded="false" />
+            <element signature="e#16101#16691#0" expanded="false" />
+            <element signature="e#16732#17414#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1332,7 +1349,8 @@
           <caret line="418" column="0" lean-forward="false" selection-start-line="418" selection-start-column="0" selection-end-line="418" selection-end-column="0" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
-            <element signature="e#11977#12986#0" expanded="false" />
+            <element signature="e#12008#13017#0" expanded="false" />
+            <marker date="1484560715000" expanded="true" signature="474:845" ph="..." />
           </folding>
         </state>
       </provider>
@@ -1363,11 +1381,11 @@
           <caret line="191" column="1" lean-forward="false" selection-start-line="191" selection-start-column="1" selection-end-line="191" selection-end-column="1" />
           <folding>
             <element signature="e#0#16#0" expanded="true" />
-            <element signature="e#6148#6396#0" expanded="false" />
-            <element signature="e#10353#10557#0" expanded="false" />
-            <element signature="e#10594#10626#0" expanded="false" />
-            <element signature="e#16013#16603#0" expanded="false" />
-            <element signature="e#16644#17326#0" expanded="false" />
+            <element signature="e#6205#6453#0" expanded="false" />
+            <element signature="e#10441#10645#0" expanded="false" />
+            <element signature="e#10682#10714#0" expanded="false" />
+            <element signature="e#16101#16691#0" expanded="false" />
+            <element signature="e#16732#17414#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1404,7 +1422,8 @@
           <caret line="418" column="0" lean-forward="false" selection-start-line="418" selection-start-column="0" selection-end-line="418" selection-end-column="0" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
-            <element signature="e#11977#12986#0" expanded="false" />
+            <element signature="e#12008#13017#0" expanded="false" />
+            <marker date="1484560715000" expanded="true" signature="474:845" ph="..." />
           </folding>
         </state>
       </provider>
@@ -1435,11 +1454,11 @@
           <caret line="191" column="1" lean-forward="false" selection-start-line="191" selection-start-column="1" selection-end-line="191" selection-end-column="1" />
           <folding>
             <element signature="e#0#16#0" expanded="true" />
-            <element signature="e#6148#6396#0" expanded="false" />
-            <element signature="e#10353#10557#0" expanded="false" />
-            <element signature="e#10594#10626#0" expanded="false" />
-            <element signature="e#16013#16603#0" expanded="false" />
-            <element signature="e#16644#17326#0" expanded="false" />
+            <element signature="e#6205#6453#0" expanded="false" />
+            <element signature="e#10441#10645#0" expanded="false" />
+            <element signature="e#10682#10714#0" expanded="false" />
+            <element signature="e#16101#16691#0" expanded="false" />
+            <element signature="e#16732#17414#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1483,7 +1502,8 @@
           <caret line="418" column="0" lean-forward="false" selection-start-line="418" selection-start-column="0" selection-end-line="418" selection-end-column="0" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
-            <element signature="e#11977#12986#0" expanded="false" />
+            <element signature="e#12008#13017#0" expanded="false" />
+            <marker date="1484560715000" expanded="true" signature="474:845" ph="..." />
           </folding>
         </state>
       </provider>
@@ -1583,21 +1603,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/ensemble.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="191" column="1" lean-forward="false" selection-start-line="191" selection-start-column="1" selection-end-line="191" selection-end-column="1" />
-          <folding>
-            <element signature="e#0#16#0" expanded="true" />
-            <element signature="e#6148#6396#0" expanded="false" />
-            <element signature="e#10353#10557#0" expanded="false" />
-            <element signature="e#10594#10626#0" expanded="false" />
-            <element signature="e#16013#16603#0" expanded="false" />
-            <element signature="e#16644#17326#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/local/lib/python2.7/site-packages/sklearn/model_selection/_search.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3335">
@@ -1634,22 +1639,34 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="36" column="31" lean-forward="false" selection-start-line="36" selection-start-column="31" selection-end-line="36" selection-end-column="31" />
-          <folding>
-            <element signature="e#263#388#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/quantification/utils/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="725">
           <caret line="259" column="0" lean-forward="false" selection-start-line="259" selection-start-column="0" selection-end-line="259" selection-end-column="0" />
           <folding>
             <element signature="e#413#457#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="815">
+          <caret line="421" column="0" lean-forward="false" selection-start-line="421" selection-start-column="0" selection-end-line="421" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
+            <element signature="e#12008#13017#0" expanded="false" />
+            <marker date="1484560715000" expanded="true" signature="474:845" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/distribution_matching/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="735">
+          <caret line="56" column="107" lean-forward="false" selection-start-line="56" selection-start-column="107" selection-end-line="56" selection-end-column="107" />
+          <folding>
+            <element signature="e#263#388#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1664,13 +1681,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
+    <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/ensemble.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-660">
-          <caret line="43" column="102" lean-forward="false" selection-start-line="43" selection-start-column="102" selection-end-line="43" selection-end-column="102" />
+        <state relative-caret-position="-2665">
+          <caret line="148" column="115" lean-forward="false" selection-start-line="148" selection-start-column="115" selection-end-line="148" selection-end-column="115" />
           <folding>
-            <element signature="e#0#39#0" expanded="true" />
-            <element signature="e#11977#12986#0" expanded="false" />
+            <element signature="e#0#16#0" expanded="true" />
+            <element signature="e#6205#6453#0" expanded="false" />
+            <element signature="e#10441#10645#0" expanded="false" />
+            <element signature="e#10682#10714#0" expanded="false" />
+            <element signature="e#16101#16691#0" expanded="false" />
+            <element signature="e#16732#17414#0" expanded="false" />
           </folding>
         </state>
       </provider>
