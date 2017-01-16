@@ -12,15 +12,18 @@ from quantification.metrics import distributed, model_score
 class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
     """Base class for C&C Models"""
 
-    def __init__(self, estimator_class, estimator_params, estimator_grid, b):
+    def __init__(self, estimator_class, estimator_params, estimator_grid, grid_params, b):
         if estimator_params is None:
             estimator_params = dict()
         if estimator_grid is None:
             estimator_grid = dict()
+        if grid_params is None:
+            grid_params = dict()
         self.b = b
         self.estimator_class = estimator_class
         self.estimator_params = estimator_params
         self.estimator_grid = estimator_grid
+        self.grid_params = grid_params
 
     @abstractmethod
     def fit(self, X, y):
@@ -38,7 +41,7 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
             if not self.estimator_grid:
                 estimator = clf
             else:
-                estimator = GridSearchCV(estimator=self.estimator_class, param_grid=self.estimator_grid, verbose=11)
+                estimator = GridSearchCV(estimator=self.estimator_class, param_grid=self.estimator_grid, **self.grid_params)
         else:
             clf = default
             clf.set_params(**default_params)

@@ -255,4 +255,5 @@ class LSPC(base.BaseEstimator):
                                         Phi[i, kidx]))
             post = post / sum(post)
             predictions[i, :] = post
-        return predictions      
+        return predictions
+

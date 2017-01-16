@@ -13,7 +13,7 @@ from sklearn.preprocessing import LabelEncoder
 from quantification.classify_and_count.base import BaseMulticlassClassifyAndCount
 from quantification.classify_and_count.ensemble import EnsembleMulticlassCC
 from quantification.metrics.multiclass import absolute_error, bray_curtis
-from quantification.utils.models import KLR
+from quantification.utils.models import LSPC
 
 
 def load_plankton_file(path, sample_col="Sample", target_col="class"):
@@ -56,7 +56,7 @@ def cc(X, y):
 
 
         cc = BaseMulticlassClassifyAndCount(b=100,
-                                            estimator_class=KLR(),
+                                            estimator_class=LSPC(),
                                             #estimator_params={'class_weight': 'balanced'},
                                             estimator_params=dict(kernel='rbf', p=60, gamma=1, pos_class_weight=2),
                                             #estimator_grid=dict(), strategy='macro')
@@ -210,27 +210,6 @@ if __name__ == '__main__':
     X = np.array(plankton.data)
     y = np.array(plankton.target)
 
-
-    y = np.concatenate(y)
-    X = np.concatenate(X)
-
-
-    count = np.bincount(y) / float(len(y)) * 100
-
-    for c in xrange(8):
-        mask = (y == c)
-        y_bin = np.ones(y.shape, dtype=np.int)
-        y_bin[~mask] = 0
-
-        print "Clase: {0}. Distribution: {1:.2f}%".format(c, count[c])
-
-        for i in xrange(1, 7):
-            klr = KLR(p=60, gamma=1, pos_class_weight=i)
-            klr.fit(X, y_bin)
-
-            print "G-mean [{}]: {}".format(i, klr.score(X, y_bin))
-
-    raise Exception
 
     global file
     file = open('{}.txt'.format('plancton_results_micro_avg'), 'wb')
