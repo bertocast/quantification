@@ -143,9 +143,9 @@ class LSPC(base.BaseEstimator):
             Regularization parameter.
         """
 
-        self.classes = np.unique(y)
-        self.classes.sort()
-        self.n_classes = len(self.classes)
+        self.classes_ = np.unique(y)
+        self.classes_.sort()
+        self.n_classes = len(self.classes_)
 
         N = X.shape[0]
 
@@ -196,7 +196,7 @@ class LSPC(base.BaseEstimator):
             inv_part = np.linalg.inv(np.dot(Phi.T, Phi)
                                      + self.rho * np.eye(B))
 
-        for c in self.classes:
+        for c in self.classes_:
             m = (y == c).astype(int)
             if self.basis_set == 'full':
                 kidx = np.ones(Phi.shape[1]).astype('bool')
@@ -225,7 +225,7 @@ class LSPC(base.BaseEstimator):
         predictions_proba = self.predict_proba(X)
         predictions = []
         for i in range(X.shape[0]):
-            predictions.append(self.classes[predictions_proba[i, :].argmax()])
+            predictions.append(self.classes_[predictions_proba[i, :].argmax()])
         return predictions
 
     def predict_proba(self, X):
@@ -250,8 +250,8 @@ class LSPC(base.BaseEstimator):
                 if self.basis_set == 'full':
                     kidx = np.ones(Phi.shape[1]).astype('bool')
                 else:
-                    kidx = self.basis_classes == self.classes[c]
-                post[c] = max(0, np.dot(self.theta[self.classes[c]].T,
+                    kidx = self.basis_classes == self.classes_[c]
+                post[c] = max(0, np.dot(self.theta[self.classes_[c]].T,
                                         Phi[i, kidx]))
             post = post / sum(post)
             predictions[i, :] = post

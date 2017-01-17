@@ -3,9 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="3a838331-9b37-4c92-811e-9ad5f39586aa" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/lspc_demo.py" afterPath="$PROJECT_DIR$/examples/lspc_demo.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/classify_and_count/base.py" afterPath="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/metrics/distributed.py" afterPath="$PROJECT_DIR$/quantification/metrics/distributed.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/quantification/utils/models.py" afterPath="$PROJECT_DIR$/quantification/utils/models.py" />
     </list>
     <ignored path="quantification.iws" />
@@ -57,11 +54,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/quantification/utils/models.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="210">
-                  <caret line="123" column="30" lean-forward="false" selection-start-line="123" selection-start-column="30" selection-end-line="123" selection-end-column="30" />
+                <state relative-caret-position="-982">
+                  <caret line="145" column="16" lean-forward="false" selection-start-line="145" selection-start-column="16" selection-end-line="145" selection-end-column="16" />
                   <folding>
                     <element signature="e#413#457#0" expanded="true" />
                   </folding>
@@ -124,11 +121,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="distributed.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="distributed.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/quantification/metrics/distributed.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="915">
-                  <caret line="61" column="43" lean-forward="false" selection-start-line="61" selection-start-column="43" selection-end-line="61" selection-end-column="43" />
+                <state relative-caret-position="95">
+                  <caret line="30" column="34" lean-forward="true" selection-start-line="30" selection-start-column="34" selection-end-line="30" selection-end-column="34" />
                   <folding>
                     <element signature="e#0#16#0" expanded="true" />
                   </folding>
@@ -279,9 +276,9 @@
         <option value="$PROJECT_DIR$/examples/plancton.py" />
         <option value="$PROJECT_DIR$/quantification/metrics/model_score.py" />
         <option value="$PROJECT_DIR$/examples/lspc_demo.py" />
-        <option value="$PROJECT_DIR$/quantification/utils/models.py" />
         <option value="$PROJECT_DIR$/quantification/classify_and_count/base.py" />
         <option value="$PROJECT_DIR$/quantification/metrics/distributed.py" />
+        <option value="$PROJECT_DIR$/quantification/utils/models.py" />
       </list>
     </option>
   </component>
@@ -701,13 +698,6 @@
       <option name="presentableId" value="Default" />
       <updated>1478253182284</updated>
     </task>
-    <task id="LOCAL-00044" summary="Even more refactoring">
-      <created>1481633824562</created>
-      <option name="number" value="00044" />
-      <option name="presentableId" value="LOCAL-00044" />
-      <option name="project" value="LOCAL" />
-      <updated>1481633824562</updated>
-    </task>
     <task id="LOCAL-00045" summary="PEP 8 reformatting">
       <created>1481710023579</created>
       <option name="number" value="00045" />
@@ -1044,7 +1034,14 @@
       <option name="project" value="LOCAL" />
       <updated>1484641089430</updated>
     </task>
-    <option name="localTasksCounter" value="93" />
+    <task id="LOCAL-00093" summary="Change LSPC to be clonable. Clone the clf that is distributed in the CV-Confusion matrix computation.">
+      <created>1484652191839</created>
+      <option name="number" value="00093" />
+      <option name="presentableId" value="LOCAL-00093" />
+      <option name="project" value="LOCAL" />
+      <updated>1484652191840</updated>
+    </task>
+    <option name="localTasksCounter" value="94" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1143,7 +1140,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Enable local parallel fitting" />
     <MESSAGE value="Implement KLR model" />
     <MESSAGE value="Make KLR extends from sklearn BaseEstimator" />
     <MESSAGE value="Make KLR extends from sklearn ClassifierMixin" />
@@ -1168,7 +1164,8 @@
     <MESSAGE value="Add GridSearch options" />
     <MESSAGE value="Minor changes" />
     <MESSAGE value="Correct some bugs&#10;" />
-    <option name="LAST_COMMIT_MESSAGE" value="Correct some bugs&#10;" />
+    <MESSAGE value="Change LSPC to be clonable. Clone the clf that is distributed in the CV-Confusion matrix computation." />
+    <option name="LAST_COMMIT_MESSAGE" value="Change LSPC to be clonable. Clone the clf that is distributed in the CV-Confusion matrix computation." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1657,16 +1654,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/quantification/utils/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="123" column="30" lean-forward="false" selection-start-line="123" selection-start-column="30" selection-end-line="123" selection-end-column="30" />
-          <folding>
-            <element signature="e#413#457#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/quantification/classify_and_count/base.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="281">
@@ -1690,10 +1677,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/quantification/metrics/distributed.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="915">
-          <caret line="61" column="43" lean-forward="false" selection-start-line="61" selection-start-column="43" selection-end-line="61" selection-end-column="43" />
+        <state relative-caret-position="95">
+          <caret line="30" column="34" lean-forward="true" selection-start-line="30" selection-start-column="34" selection-end-line="30" selection-end-column="34" />
           <folding>
             <element signature="e#0#16#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/quantification/utils/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-982">
+          <caret line="145" column="16" lean-forward="false" selection-start-line="145" selection-start-column="16" selection-end-line="145" selection-end-column="16" />
+          <folding>
+            <element signature="e#413#457#0" expanded="true" />
           </folding>
         </state>
       </provider>
