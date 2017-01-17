@@ -5,6 +5,7 @@ import six
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV
 
+
 from quantification import BasicModel
 from quantification.metrics import distributed, model_score
 

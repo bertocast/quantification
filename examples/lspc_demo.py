@@ -44,6 +44,11 @@ classifier.fit(X, y)
 
 print classifier.best_score_
 
+clf = classifier.best_estimator_
+
+from sklearn.base import clone
+clf2 = clone(clf)
+
 probs = classifier.predict_proba(X)
 
 

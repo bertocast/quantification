@@ -5,6 +5,7 @@ from os.path import basename
 import dispy
 import numpy as np
 from sklearn.model_selection import StratifiedKFold
+from sklearn.base import clone
 
 from quantification.utils.errors import ClusterException
 
@@ -58,7 +59,7 @@ def cv_confusion_matrix(clf, X, y, data_file, pos_class=None, folds=50, verbose=
     try:
         jobs = []
         for train, test in cv_iter:
-            job = cluster.submit(clf, train, test, pos_class)
+            job = cluster.submit(clone(clf), train, test, pos_class)
             jobs.append(job)
         for job in jobs:
             job()

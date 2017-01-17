@@ -112,16 +112,16 @@ class LSPC(base.BaseEstimator):
     ...     predictions[test_index] = clf.predict(X[test_index])
     """
 
-    def __init__(self, n_kernels_max=7000, kernel_pos=None,
+    def __init__(self, n_kernels_max=7000,
                  basis_set='classwise', sigma=None, gamma=None, rho=None):
         self.n_kernels_max = n_kernels_max
-        self.kernel_pos = kernel_pos
-        self.rho = None
+        self.rho = rho
         self.theta = None
         self.basis_classes = None
         self.basis_set = basis_set
-        self.sigma = None
-        self.gamma = None
+        self.sigma = sigma
+        self.gamma = gamma
+        self.kernel_pos = None
 
     def fit(self, X, y, rho=.01, sigma=None, gamma=None):
         """Fit the LSPC model according to the given training data.
@@ -143,9 +143,9 @@ class LSPC(base.BaseEstimator):
             Regularization parameter.
         """
 
-        self.classes_ = np.unique(y)
-        self.classes_.sort()
-        self.n_classes = len(self.classes_)
+        self.classes = np.unique(y)
+        self.classes.sort()
+        self.n_classes = len(self.classes)
 
         N = X.shape[0]
 
@@ -196,7 +196,7 @@ class LSPC(base.BaseEstimator):
             inv_part = np.linalg.inv(np.dot(Phi.T, Phi)
                                      + self.rho * np.eye(B))
 
-        for c in self.classes_:
+        for c in self.classes:
             m = (y == c).astype(int)
             if self.basis_set == 'full':
                 kidx = np.ones(Phi.shape[1]).astype('bool')
@@ -225,7 +225,7 @@ class LSPC(base.BaseEstimator):
         predictions_proba = self.predict_proba(X)
         predictions = []
         for i in range(X.shape[0]):
-            predictions.append(self.classes_[predictions_proba[i, :].argmax()])
+            predictions.append(self.classes[predictions_proba[i, :].argmax()])
         return predictions
 
     def predict_proba(self, X):
@@ -250,8 +250,8 @@ class LSPC(base.BaseEstimator):
                 if self.basis_set == 'full':
                     kidx = np.ones(Phi.shape[1]).astype('bool')
                 else:
-                    kidx = self.basis_classes == self.classes_[c]
-                post[c] = max(0, np.dot(self.theta[self.classes_[c]].T,
+                    kidx = self.basis_classes == self.classes[c]
+                post[c] = max(0, np.dot(self.theta[self.classes[c]].T,
                                         Phi[i, kidx]))
             post = post / sum(post)
             predictions[i, :] = post
