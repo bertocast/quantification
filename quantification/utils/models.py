@@ -91,21 +91,21 @@ class LSPC(base.BaseEstimator):
     Example
     -------
 
-    >>> import lspc
-    >>> from sklearn import datasets, cross_validation, metrics, grid_search 
+    >>> from quantification.utils.models import LSPC, pair_distance_centiles
+    >>> from sklearn import datasets, model_selection, metrics
     >>> iris = datasets.load_iris()
     >>> X = iris.data
     >>> y = iris.target
-    >>> sigma_candidates = lspc.pair_distance_centiles(X, 
+    >>> sigma_candidates = pair_distance_centiles(X,
                             centiles=[10, 50, 90]) 
     >>> rho_candidates = [.01, .1, .5, 1.]    
     >>> param_grid = {'sigma':sigma_candidates, 'rho':rho_candidates}
     >>> cv_folds = 5
-    >>> clf = grid_search.GridSearchCV(lspc.LSPC(),
+    >>> clf = model_selection.GridSearchCV(LSPC(),
     ...                                param_grid, cv=cv_folds,
     ...                                score_func=metrics.accuracy_score,
     ...                                n_jobs=-1)  
-    >>> kf = cross_validation.KFold(n=X.shape[0], n_folds=3, shuffle=True)
+    >>> kf = model_selection.KFold(n=X.shape[0], n_folds=3, shuffle=True)
     >>> predictions= np.zeros(X.shape[0])
     >>> for train_index, test_index in kf:
     ...     clf.fit(X[train_index,:], y[train_index])
@@ -143,9 +143,9 @@ class LSPC(base.BaseEstimator):
             Regularization parameter.
         """
 
-        self.classes = np.unique(y)
-        self.classes.sort()
-        self.n_classes = len(self.classes)
+        self.classes_ = np.unique(y)
+        self.classes_.sort()
+        self.n_classes = len(self.classes_)
 
         N = X.shape[0]
 
@@ -196,7 +196,7 @@ class LSPC(base.BaseEstimator):
             inv_part = np.linalg.inv(np.dot(Phi.T, Phi)
                                      + self.rho * np.eye(B))
 
-        for c in self.classes:
+        for c in self.classes_:
             m = (y == c).astype(int)
             if self.basis_set == 'full':
                 kidx = np.ones(Phi.shape[1]).astype('bool')
@@ -225,7 +225,7 @@ class LSPC(base.BaseEstimator):
         predictions_proba = self.predict_proba(X)
         predictions = []
         for i in range(X.shape[0]):
-            predictions.append(self.classes[predictions_proba[i, :].argmax()])
+            predictions.append(self.classes_[predictions_proba[i, :].argmax()])
         return predictions
 
     def predict_proba(self, X):
@@ -250,8 +250,8 @@ class LSPC(base.BaseEstimator):
                 if self.basis_set == 'full':
                     kidx = np.ones(Phi.shape[1]).astype('bool')
                 else:
-                    kidx = self.basis_classes == self.classes[c]
-                post[c] = max(0, np.dot(self.theta[self.classes[c]].T,
+                    kidx = self.basis_classes == self.classes_[c]
+                post[c] = max(0, np.dot(self.theta[self.classes_[c]].T,
                                         Phi[i, kidx]))
             post = post / sum(post)
             predictions[i, :] = post

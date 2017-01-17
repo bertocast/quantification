@@ -36,7 +36,7 @@ def wrapper(clf, train, test, pos_class=None):
     y_bin_test = np.ones(y[test].shape, dtype=np.int)
     y_bin_test[~mask] = 0
 
-    return confusion_matrix(y_bin_test, clf.predict(X[test]))
+    return confusion_matrix(y_bin_test, clf.predict(X[test]), labels=clf.classes_)
 
 
 def cleanup():
