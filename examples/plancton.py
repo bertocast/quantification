@@ -66,8 +66,8 @@ def cc(X, y):
         X_train = np.concatenate(X_train)[:500,]
         y_train = np.concatenate(y_train)[:500]
 
-        sigma_candidates = pair_distance_centiles(X_train, centiles=[10, 50, 90])[1:2]
-        rho_candidates = [.01, .1]
+        sigma_candidates = pair_distance_centiles(X_train, centiles=[50, 90])
+        rho_candidates = [.01, .1, 1.]
         param_grid = dict(sigma=sigma_candidates, rho=rho_candidates)
         grid_options = {'scoring': g_mean, 'verbose': 11}
 

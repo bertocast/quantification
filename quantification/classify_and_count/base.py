@@ -407,8 +407,11 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
         pos_class = clf.classes_[1]
         neg_class = clf.classes_[0]
         pos_preds = clf.predict_proba(X[y_bin == pos_class,])[:, 1]
-        neg_preds = clf.predict_proba(X[y_bin == neg_class,])[:, +1]
+        neg_preds = clf.predict_proba(X[y_bin == neg_class,])[:, 1]
 
+        print neg_preds
+        print neg_preds.shape
+        print sum(np.isnan(neg_preds))
         train_pos_pdf, _ = np.histogram(pos_preds, bins=self.b)
         train_neg_pdf, _ = np.histogram(neg_preds, bins=self.b)
         self.train_dist_[cls] = np.full((self.b, 2), np.nan)
