@@ -255,7 +255,8 @@ class LSPC(base.BaseEstimator):
                     kidx = self.basis_classes == self.classes_[c]
                 post[c] = max(0, np.dot(self.theta[self.classes_[c]].T,
                                         Phi[i, kidx]))
-            post = post / sum(post)
+            if sum(post) != 0:
+                post = post / sum(post)
             predictions[i, :] = post
         return predictions
 

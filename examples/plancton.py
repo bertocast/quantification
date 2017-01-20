@@ -75,7 +75,7 @@ def cc(X, y):
                                             estimator_class=LSPC(),
                                             estimator_params=dict(rho=.01, sigma=1000.0),
                                             strategy='macro')
-        cc.fit(X_train, y_train, local=False, verbose=True)
+        cc.fit(X_train, y_train, local=True, verbose=True, cv=2)
 
         pred_cc = []
         pred_ac = []
