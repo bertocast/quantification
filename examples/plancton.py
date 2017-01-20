@@ -73,9 +73,7 @@ def cc(X, y):
 
         cc = BaseMulticlassClassifyAndCount(b=8,
                                             estimator_class=LSPC(),
-                                            estimator_params=dict(),
-                                            estimator_grid=param_grid,
-                                            grid_params=grid_options,
+                                            estimator_params=dict(rho=.01, sigma=1000.0),
                                             strategy='macro')
         cc.fit(X_train, y_train, local=False, verbose=True)
 

@@ -209,6 +209,8 @@ class LSPC(base.BaseEstimator):
 
         self.theta = theta
 
+        return self
+
     def predict(self, X):
         """Perform classification on samples in X, and return most likely
         classes for each test instance.
