@@ -354,7 +354,8 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
 
         for pos_class in self.classes_:
             if verbose:
-                print "Fitting classifier for class {}/{}".format(pos_class + 1, n_classes)
+                print "Class {}/{}".format(pos_class + 1, n_classes)
+                print "\tFitting  classifier..."
             mask = (y == pos_class)
             y_bin = np.ones(y.shape, dtype=np.int)
             y_bin[~mask] = 0
@@ -364,11 +365,11 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
                 clf = clf.best_estimator_
             self.estimators_[pos_class] = clf
             if verbose:
-                print "Computing performance for classifier of class {}/{}".format(pos_class + 1, n_classes)
+                print "\tComputing performance..."
             self._compute_performance(X, y_bin, pos_class, folds=cv, local=local, verbose=verbose)
             if self.b:
                 if verbose:
-                    print "Computing distribution for classifier of class {}/{}".format(pos_class + 1, n_classes)
+                    print "\tComputing distribution..."
                 self._compute_distribution(clf, X, y_bin, pos_class)
 
         return self
