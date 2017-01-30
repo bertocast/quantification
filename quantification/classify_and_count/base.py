@@ -409,9 +409,6 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
         pos_preds = clf.predict_proba(X[y_bin == pos_class,])[:, 1]
         neg_preds = clf.predict_proba(X[y_bin == neg_class,])[:, 1]
 
-        print neg_preds
-        print neg_preds.shape
-        print sum(np.isnan(neg_preds))
         train_pos_pdf, _ = np.histogram(pos_preds, bins=self.b)
         train_neg_pdf, _ = np.histogram(neg_preds, bins=self.b)
         self.train_dist_[cls] = np.full((self.b, 2), np.nan)
@@ -452,7 +449,6 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
             predictions = clf.predict(X)
             freq = np.bincount(predictions, minlength=2)
             relative_freq = freq / float(np.sum(freq))
-            print "TPR: {}, FRP: {}".format(self.tpr_[cls], self.fpr_[cls])
             adjusted = (relative_freq - self.fpr_[cls]) / float(self.tpr_[cls] - self.fpr_[cls])
             adjusted = np.nan_to_num(adjusted)
             probabilities[n] = np.clip(adjusted[1], 0, 1)

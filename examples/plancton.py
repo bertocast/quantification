@@ -8,6 +8,7 @@ import pandas as pd
 from sklearn.datasets.base import Bunch
 from sklearn.model_selection import LeaveOneOut
 from sklearn.preprocessing import LabelEncoder
+from sklearn.svm import SVC
 
 from quantification.classify_and_count.base import BaseMulticlassClassifyAndCount
 from quantification.classify_and_count.ensemble import EnsembleMulticlassCC
