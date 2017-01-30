@@ -16,7 +16,7 @@ from quantification.utils.errors import ClusterException
 
 class BaseEnsembleCCModel(BaseClassifyAndCountModel):
     def __init__(self, estimator_class, estimator_params, estimator_grid, grid_params, b, strategy='macro'):
-        super(BaseEnsembleCCModel, self).__init__(b, estimator_class, estimator_params, grid_params, estimator_grid)
+        super(BaseEnsembleCCModel, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b)
         self.strategy = strategy
 
 
