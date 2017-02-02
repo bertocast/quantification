@@ -357,8 +357,10 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 pred = clf.predict(X)
                 freq = np.bincount(pred, minlength=2)
                 relative_freq = freq / float(np.sum(freq))
-
-                adjusted = (relative_freq[1] - qnf.fpr_[cls]) / float(qnf.tpr_[cls] - qnf.fpr_[cls])
+                if float(qnf.tpr_[cls] - qnf.fpr_[cls]) == 0:
+                    adjusted = relative_freq[1]
+                else:
+                    adjusted = (relative_freq[1] - qnf.fpr_[cls]) / float(qnf.tpr_[cls] - qnf.fpr_[cls])
                 binary_freqs[cls].append(np.clip(adjusted, 0, 1))
 
         for cls, freqs in binary_freqs.iteritems():

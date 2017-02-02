@@ -6,6 +6,7 @@ import warnings
 import numpy as np
 import pandas as pd
 from sklearn.datasets.base import Bunch
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import LeaveOneOut
 from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import LabelEncoder
@@ -150,18 +151,11 @@ def cc_ensemble(X, y):
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
 
-        sigma_candidates = pair_distance_centiles(np.concatenate(X_train), centiles=[10, 50, 90])
-        rho_candidates = [.01, .1, .5, 1.]
-        param_grid = dict(sigma=sigma_candidates, rho=rho_candidates)
-        grid_options = {'scoring': g_mean, 'verbose': 11}
 
         cc = EnsembleMulticlassCC(b=8,
-                                  estimator_class=LSPC(),
-                                  estimator_params=dict(),
-                                  estimator_grid=param_grid,
-                                  grid_params=grid_options,
+                                  estimator_class=RandomForestClassifier(class_weight='balanced'),
                                   strategy='macro')
-        cc.fit(X_train, y_train, verbose=True, local=False)
+        cc.fit(X_train, y_train, verbose=True, local=True)
         pred_cc = []
         pred_ac = []
         pred_pcc = []
@@ -221,7 +215,7 @@ if __name__ == '__main__':
     X = np.array(plankton.data)
     y = np.array(plankton.target)
 
-    cc_err, ac_err, pcc_err, pac_err, hdy_err, cc_bc, ac_bc, pcc_bc, pac_bc, hdy_bc = cc(X, y)
+    #cc_err, ac_err, pcc_err, pac_err, hdy_err, cc_bc, ac_bc, pcc_bc, pac_bc, hdy_bc = cc(X, y)
     ecc_err, eac_err, epcc_err, epac_err, ehdy_err, ecc_bc, eac_bc, epcc_bc, epac_bc, ehdy_bc = cc_ensemble(X, y)
 
     head = "{:>15}" * 3
