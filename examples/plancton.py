@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from sklearn.datasets.base import Bunch
 from sklearn.model_selection import LeaveOneOut
+from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import SVC
 
@@ -67,16 +68,13 @@ def cc(X, y):
         X_train = np.concatenate(X_train)[:500,]
         y_train = np.concatenate(y_train)[:500]
 
-        sigma_candidates = pair_distance_centiles(X_train, centiles=[50, 90])
-        rho_candidates = [.01, .1, 1.]
-        param_grid = dict(sigma=sigma_candidates, rho=rho_candidates)
-        grid_options = {'scoring': g_mean, 'verbose': 11}
 
         cc = BaseMulticlassClassifyAndCount(b=8,
-                                            estimator_class=LSPC(),
-                                            estimator_params=dict(rho=.01, sigma=1000.0),
+                                            estimator_class=MLPClassifier(learning_rate='adaptive'),
+                                            estimator_grid=dict(alpha=[10 ** i for i in xrange(-1, 5)]),
+                                            grid_params=dict(scoring=g_mean, verbose=11),
                                             strategy='macro')
-        cc.fit(X_train, y_train, local=True, verbose=True, cv=2)
+        cc.fit(X_train, y_train, local=True, verbose=True, cv=30)
 
         pred_cc = []
         pred_ac = []

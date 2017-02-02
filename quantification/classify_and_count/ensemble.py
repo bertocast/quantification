@@ -345,6 +345,8 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             probabilities[cls] = relative_freq[1]
 
         probs = np.array(probabilities.values())
+        if np.sum(probs) == 0:
+            return probs
         return probs / np.sum(probs)
 
     def _predict_ac(self, X):
@@ -363,6 +365,8 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             freqs = np.array(freqs)
             probabilities[cls] = np.mean(freqs)
         probs = np.array(probabilities.values())
+        if np.sum(probs) == 0:
+            return probs
         return probs / np.sum(probs)
 
     def _predict_pcc(self, X):
@@ -380,6 +384,8 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             probabilities[cls] = relative_freq[1]
 
         probs = np.array(probabilities.values())
+        if np.sum(probs) == 0:
+            return probs
         return probs / np.sum(probs)
 
     def _predict_pac(self, X):
@@ -396,6 +402,8 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             freqs = np.array(freqs)
             probabilities[cls] = np.mean(freqs)
         probs = np.array(probabilities.values())
+        if np.sum(probs) == 0:
+            return probs
         return probs / np.sum(probs)
 
     def _predict_hdy(self, X):
@@ -411,4 +419,6 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             cls_prevalences[cls] = np.mean(cls_prevalences[cls])
 
         probs = np.array(cls_prevalences.values())
+        if np.sum(probs) == 0:
+            return probs
         return probs / np.sum(probs)
