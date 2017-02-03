@@ -162,12 +162,13 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             self._parallel_fit(X, y, verbose)
         else:
             for n, (X_sample, y_sample) in enumerate(zip(X, y)):
+                if verbose:
+                    print "Processing sample {}/{}".format(n + 1, len(y))
                 qnf, classes = self._fit_and_get_distributions(X_sample, y_sample, verbose)
                 for cls in classes:
                     self.cls_smp_[cls].append(n)
                 self.qnfs_[n] = deepcopy(qnf)
-                if verbose:
-                    print "Sample {}/{} processed".format(n + 1, len(y))
+
 
         for pos_class in self.classes_:
             if verbose:
@@ -397,7 +398,10 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             for (cls, clf) in qnf.estimators_.iteritems():
                 pred = clf.predict_proba(X)
                 relative_freq = np.mean(pred, axis=0)
-                adjusted = (relative_freq[1] - qnf.fp_pa_[cls]) / float(qnf.tp_pa_[cls] - qnf.fp_pa_[cls])
+                if float(qnf.tp_pa_[cls] - qnf.fp_pa_[cls]) == 0:
+                    adjusted = relative_freq[1]
+                else:
+                    adjusted = (relative_freq[1] - qnf.fp_pa_[cls]) / float(qnf.tp_pa_[cls] - qnf.fp_pa_[cls])
                 binary_freqs[cls].append(np.clip(adjusted, 0, 1))
 
         for cls, freqs in binary_freqs.iteritems():

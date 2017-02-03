@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from sklearn.datasets.base import Bunch
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import LeaveOneOut
+from sklearn.model_selection import KFold
 from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import SVC
@@ -47,7 +47,7 @@ def print_and_write(text):
 
 
 def cc(X, y):
-    loo = LeaveOneOut()
+    cv = KFold(n_splits=10)
 
     cc_bcs = []
     cc_aes = []
@@ -61,19 +61,17 @@ def cc(X, y):
     hdy_aes = []
 
     print_and_write("CC MONOSAMPLE")
-    for n_fold, (train_index, test_index) in enumerate(loo.split(X)):
-        print "Training fold {}/{}".format(n_fold + 1, 60)
+    for n_fold, (train_index, test_index) in enumerate(cv.split(X)):
+        print "Training fold {}/{}".format(n_fold + 1, cv.get_n_splits())
         time_init = time.time()
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
-        X_train = np.concatenate(X_train)[:500,]
-        y_train = np.concatenate(y_train)[:500]
+        X_train = np.concatenate(X_train)[:500]
+        y_train = np.concatenate(y_train)[:500,]
 
 
         cc = BaseMulticlassClassifyAndCount(b=8,
-                                            estimator_class=MLPClassifier(learning_rate='adaptive'),
-                                            estimator_grid=dict(alpha=[10 ** i for i in xrange(-1, 5)]),
-                                            grid_params=dict(scoring=g_mean, verbose=11),
+                                            estimator_class=RandomForestClassifier(class_weight='balanced'),
                                             strategy='macro')
         cc.fit(X_train, y_train, local=True, verbose=True, cv=30)
 
@@ -132,7 +130,7 @@ def cc(X, y):
 
 
 def cc_ensemble(X, y):
-    loo = LeaveOneOut()
+    cv = KFold(n_splits=10)
 
     cc_bcs = []
     cc_aes = []
@@ -146,7 +144,7 @@ def cc_ensemble(X, y):
     hdy_aes = []
 
     print_and_write("CC ENSEMBLE")
-    for n_fold, (train_index, test_index) in enumerate(loo.split(X)):
+    for n_fold, (train_index, test_index) in enumerate(cv.split(X)):
         print "Training fold {}/{}".format(n_fold + 1, 60)
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
@@ -215,7 +213,7 @@ if __name__ == '__main__':
     X = np.array(plankton.data)
     y = np.array(plankton.target)
 
-    #cc_err, ac_err, pcc_err, pac_err, hdy_err, cc_bc, ac_bc, pcc_bc, pac_bc, hdy_bc = cc(X, y)
+    cc_err, ac_err, pcc_err, pac_err, hdy_err, cc_bc, ac_bc, pcc_bc, pac_bc, hdy_bc = cc(X, y)
     ecc_err, eac_err, epcc_err, epac_err, ehdy_err, ecc_bc, eac_bc, epcc_bc, epac_bc, ehdy_bc = cc_ensemble(X, y)
 
     head = "{:>15}" * 3
