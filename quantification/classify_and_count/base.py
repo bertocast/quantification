@@ -38,13 +38,16 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
         """Check the estimator."""
         if self.estimator_class is not None:
             clf = self.estimator_class
+        else:
+            clf = default
+        if self.estimator_params is not None:
             clf.set_params(**self.estimator_params)
             if not self.estimator_grid:
                 estimator = clf
             else:
-                estimator = GridSearchCV(estimator=self.estimator_class, param_grid=self.estimator_grid, **self.grid_params)
+                estimator = GridSearchCV(estimator=self.estimator_class, param_grid=self.estimator_grid,
+                                         **self.grid_params)
         else:
-            clf = default
             clf.set_params(**default_params)
             if not self.estimator_grid:
                 estimator = clf
@@ -127,7 +130,7 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
     """
 
     def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=None, strategy='macro'):
-        super(BaseBinaryClassifyAndCount, self).__init__(b, estimator_class, estimator_params, estimator_grid, grid_params)
+        super(BaseBinaryClassifyAndCount, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b)
         self.estimator_ = self._make_estimator()
         self.strategy = strategy
 

@@ -6,16 +6,13 @@ import warnings
 import numpy as np
 import pandas as pd
 from sklearn.datasets.base import Bunch
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import KFold
-from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import LeaveOneOut
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import SVC
 
 from quantification.classify_and_count.base import BaseMulticlassClassifyAndCount
 from quantification.classify_and_count.ensemble import EnsembleMulticlassCC
 from quantification.metrics.multiclass import absolute_error, bray_curtis
-from quantification.utils.models import LSPC, pair_distance_centiles
 
 
 def load_plankton_file(path, sample_col="Sample", target_col="class"):
@@ -47,7 +44,7 @@ def print_and_write(text):
 
 
 def cc(X, y):
-    cv = KFold(n_splits=10)
+    loo = LeaveOneOut()
 
     cc_bcs = []
     cc_aes = []
@@ -61,19 +58,24 @@ def cc(X, y):
     hdy_aes = []
 
     print_and_write("CC MONOSAMPLE")
-    for n_fold, (train_index, test_index) in enumerate(cv.split(X)):
-        print "Training fold {}/{}".format(n_fold + 1, cv.get_n_splits())
+    for n_fold, (train_index, test_index) in enumerate(loo.split(X)):
+        print "Training fold {}/{}".format(n_fold + 1, 60)
         time_init = time.time()
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
-        X_train = np.concatenate(X_train)[:500]
-        y_train = np.concatenate(y_train)[:500,]
+        X_train = np.concatenate(X_train)
+        y_train = np.concatenate(y_train)
 
+        grid = dict(C=[10 ** i for i in xrange(1, 4)], gamma=[10 ** i for i in xrange(-6, 0)])
 
         cc = BaseMulticlassClassifyAndCount(b=8,
-                                            estimator_class=RandomForestClassifier(class_weight='balanced'),
+                                            estimator_class=SVC(class_weight='balanced', kernel='rbf', probability=True,
+                                                                tol=0.1),
+                                            estimator_grid=grid,
+                                            grid_params=dict(scoring=g_mean, verbose=11),
                                             strategy='macro')
-        cc.fit(X_train, y_train, local=True, verbose=True, cv=30)
+
+        cc.fit(X_train, y_train, local=True, verbose=True)
 
         pred_cc = []
         pred_ac = []
@@ -130,7 +132,7 @@ def cc(X, y):
 
 
 def cc_ensemble(X, y):
-    cv = KFold(n_splits=10)
+    loo = LeaveOneOut()
 
     cc_bcs = []
     cc_aes = []
@@ -144,16 +146,18 @@ def cc_ensemble(X, y):
     hdy_aes = []
 
     print_and_write("CC ENSEMBLE")
-    for n_fold, (train_index, test_index) in enumerate(cv.split(X)):
+    for n_fold, (train_index, test_index) in enumerate(loo.split(X)):
         print "Training fold {}/{}".format(n_fold + 1, 60)
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
 
-
         cc = EnsembleMulticlassCC(b=8,
-                                  estimator_class=RandomForestClassifier(class_weight='balanced'),
+                                  estimator_class=SVC(class_weight='balanced', kernel='linear', probability=True),
+                                  estimator_grid=dict(C=[10 ** i for i in xrange(-3, 3)]),
+                                  grid_params=dict(scoring=g_mean, verbose=11),
                                   strategy='macro')
         cc.fit(X_train, y_train, verbose=True, local=True)
+
         pred_cc = []
         pred_ac = []
         pred_pcc = []
@@ -207,9 +211,9 @@ def cc_ensemble(X, y):
 
 if __name__ == '__main__':
     warnings.filterwarnings('ignore')
-    plankton, le = load_plankton_file('plancton.csv')
+    plankton, le = load_plankton_file(sys.argv[1])
     global file
-    file = open('{}.txt'.format('plancton_results_macro_avg_klr'), 'wb')
+    file = open('{}.txt'.format('plancton_results_macro_avg_svc_linear'), 'wb')
     X = np.array(plankton.data)
     y = np.array(plankton.target)
 
