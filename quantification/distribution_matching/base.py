@@ -96,9 +96,15 @@ class BinaryCDEIter(BaseClassifyAndCountModel):
         self.classes_ = np.unique(y)
         self.estimator_params['class_weight'] = dict(zip(self.classes_, [1, 1]))
         self.estimator_ = self._make_estimator()
-        if not hasattr(self.estimator_, 'class_weight'):
-            raise ValueError("Classifier must have class_weight attribute in order to perform cost "
-                             "sensitive classification")
+        if isinstance(self.estimator_, GridSearchCV):
+            if not hasattr(self.estimator.estimator, 'class_weight'):
+                raise ValueError("Classifier must have class_weight attribute in order to perform cost "
+                                "sensitive classification")
+        else:
+            if not hasattr(self.estimator_, 'class_weight'):
+                raise ValueError("Classifier must have class_weight attribute in order to perform cost "
+                                 "sensitive classification")
+
         self.estimator_ = self.estimator_.fit(X, y)
         training_prevalences = np.bincount(y, minlength=2)
         self.pos_neg_orig = training_prevalences[1] / float(training_prevalences[0])
