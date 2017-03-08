@@ -112,10 +112,12 @@ class BinaryCDEIter(BaseClassifyAndCountModel):
         self.y_train = y
         return self
 
-    def predict(self, X):
+    def predict(self, X, verbose=False):
 
         n_iter = 0
         while n_iter < self.num_iter:
+            if verbose:
+                print "Iteration", n_iter
             pred = self.estimator_.predict(X)
             test_prevalences = np.bincount(pred, minlength=2)
             dmr = self.pos_neg_orig / (test_prevalences[1] / float(test_prevalences[0]))
