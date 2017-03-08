@@ -97,7 +97,7 @@ class BinaryCDEIter(BaseClassifyAndCountModel):
         self.estimator_params['class_weight'] = dict(zip(self.classes_, [1, 1]))
         self.estimator_ = self._make_estimator()
         if isinstance(self.estimator_, GridSearchCV):
-            if not hasattr(self.estimator.estimator, 'class_weight'):
+            if not hasattr(self.estimator_.estimator, 'class_weight'):
                 raise ValueError("Classifier must have class_weight attribute in order to perform cost "
                                 "sensitive classification")
         else:
