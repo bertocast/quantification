@@ -125,7 +125,7 @@ class BinaryCDEIter(BaseClassifyAndCountModel):
                 self.estimator_params['class_weight'] = 'balanced'
             else:
                 self.estimator_params['class_weight'] = dict(zip(self.classes_, [dmr, 1.0]))
-            self.estimator_.set_params(self.estimator_params)
+            self.estimator_.set_params(**self.estimator_params)
             self.estimator_ = self.estimator_.fit(self.X_train, self.y_train)
             n_iter += 1
 
