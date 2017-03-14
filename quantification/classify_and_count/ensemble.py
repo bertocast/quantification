@@ -49,8 +49,8 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
         return self
 
     def _performance(self, qnf, n, X, y):
-        X_val = np.concatenate([X[:n], X[(n + 1):]])
-        y_val = np.concatenate([y[:n], y[(n + 1):]])
+        X_val = np.concatenate(X[:n] + X[(n + 1):])
+        y_val = np.concatenate(y[:n] + y[(n + 1):])
         cm = []
         for X_, y_ in zip(X_val, y_val):
             cm.append(confusion_matrix(y_, qnf.estimator_.predict(X_)))
