@@ -52,8 +52,8 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
         print len(X)
         print len(y)
         print n
-        X_val = np.concatenate(X[:n] + X[(n + 1):])
-        y_val = np.concatenate(y[:n] + y[(n + 1):])
+        X_val = X[:n] + X[(n + 1):]
+        y_val = y[:n] + y[(n + 1):]
         print len(X_val)
         cm = []
         for X_, y_ in zip(X_val, y_val):
