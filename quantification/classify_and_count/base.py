@@ -134,7 +134,7 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
         self.estimator_ = self._make_estimator()
         self.strategy = strategy
 
-    def fit(self, X, y, local=True, plot=False):
+    def fit(self, X, y, local=True, plot=False, verbose=False):
         """
         Fit C&C model.
 
@@ -170,7 +170,7 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
         self.estimator_.fit(X, y)
         if isinstance(self.estimator_, GridSearchCV):
             self.estimator_ = self.estimator_.best_estimator_
-        self._compute_performance(X, y, local=local)
+        self._compute_performance(X, y, local=local, verbose=verbose)
         if self.b:
             self._compute_distribution(X, y, plot=plot)
         return self
@@ -214,12 +214,12 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
         else:
             raise ValueError("Invalid method %s. Choices are `cc`, `ac`, `pcc`, `pac`.", method)
 
-    def _compute_performance(self, X, y, local):
+    def _compute_performance(self, X, y, local, verbose):
         """Compute the performance metrics, that is, confusion matrix, FPR, TPR and the probabilities averages
         and store them. The calculus of the confusion matrix can be parallelized if 'local' parameter is set to True.
         """
         if local:
-            cm = model_score.cv_confusion_matrix(self.estimator_, X, y, 50)
+            cm = model_score.cv_confusion_matrix(self.estimator_, X, y, 50, verbose)
         else:
             cm = distributed.cv_confusion_matrix(self.estimator_, X, y, self.X_y_path_, folds=50)
 
@@ -380,7 +380,7 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
     def _compute_performance(self, X, y, pos_class, folds, local, verbose):
 
         if local:
-            cm = model_score.cv_confusion_matrix(self.estimators_[pos_class], X, y, folds)
+            cm = model_score.cv_confusion_matrix(self.estimators_[pos_class], X, y, folds, verbose)
         else:
             cm = distributed.cv_confusion_matrix(self.estimators_[pos_class], X, y, self.X_y_path_, pos_class=pos_class,
                                                  folds=folds,

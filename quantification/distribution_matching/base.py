@@ -176,7 +176,7 @@ class BinaryCDEAC(BaseClassifyAndCountModel):
         super(BinaryCDEAC, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b=None)
         self.num_iter = num_iter
 
-    def fit(self, X, y):
+    def fit(self, X, y, verbose=False):
         self.classes_ = np.unique(y)
         self.estimator_params['class_weight'] = dict(zip(self.classes_, [1, 1]))
         self.estimator_ = self._make_estimator()
@@ -188,7 +188,7 @@ class BinaryCDEAC(BaseClassifyAndCountModel):
         self.pos_neg_orig = training_prevalences[1] / float(training_prevalences[0])
         self.X_train = X
         self.y_train = y
-        cm = model_score.cv_confusion_matrix(self.estimator_, X, y, 10)
+        cm = model_score.cv_confusion_matrix(self.estimator_, X, y, 10, verbose)
         cm = np.mean(cm, axis=0)
         self.tpr_ = cm[1, 1] / float(cm[1, 1] + cm[1, 0])
         self.fpr_ = cm[0, 1] / float(cm[0, 1] + cm[0, 0])
