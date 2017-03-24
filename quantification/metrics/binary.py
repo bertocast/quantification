@@ -21,10 +21,13 @@ def mean_square_error(p_true, p_pred):
 
 
 def relative_absolute_error(p_true, p_pred, epsilon=None):
-    if p_true == 0:
+
+    if (p_true == 0).sum():
         if not epsilon:
             raise ValueError("p_true is zero, so epsilon is required to compute de RSE. Common value is 1/(2|T|)")
+        p_true[p_true == 0] = epsilon
         return (np.abs(p_pred - p_true) + epsilon) / (p_true + epsilon)
+
     return np.abs(p_pred - p_true) / p_true
 
 
