@@ -27,8 +27,7 @@ class TestBinaryClassifyAndCount(ModelTestCase):
 
     def test_default_classifier(self):
         cc = BaseBinaryClassifyAndCount()
-        assert_is_instance(cc.estimator_.estimator, LogisticRegression)
-        assert_equal(cc.estimator_.param_grid, dict(C=[0.1, 1, 10]))
+        assert_is_instance(cc.estimator_, LogisticRegression)
 
     def test_non_default_classifier(self):
         cc = BaseBinaryClassifyAndCount(estimator_class=DecisionTreeRegressor(), estimator_params=dict(max_depth=3),
@@ -39,8 +38,8 @@ class TestBinaryClassifyAndCount(ModelTestCase):
 
     def test_tpr_and_fpr_are_not_nan_after_fit(self):
         cc = BaseBinaryClassifyAndCount()
-        X = np.concatenate(self.binary_data.data)
-        y = np.concatenate(self.binary_data.target)
+        X = self.binary_data.data
+        y = self.binary_data.target
         cc.fit(X, y)
         assert_not_equal(cc.tp_pa_, np.nan)
         assert_not_equal(cc.fp_pa_, np.nan)
@@ -53,8 +52,8 @@ class TestBinaryClassifyAndCount(ModelTestCase):
 
     def test_predict_returns_feasible_probabilities(self):
         cc = BaseBinaryClassifyAndCount()
-        X = np.concatenate(self.binary_data.data)
-        y = np.concatenate(self.binary_data.target)
+        X = self.binary_data.data
+        y = self.binary_data.target
         cc.fit(X, y)
 
         probabilities = cc.predict(X)
@@ -87,16 +86,16 @@ class TestMulticlassClassifyAndCount(ModelTestCase):
 
     def test_one_clf_for_each_class_after_fit(self):
         cc = BaseMulticlassClassifyAndCount()
-        X = np.concatenate(self.multiclass_data.data)
-        y = np.concatenate(self.multiclass_data.target)
+        X = self.multiclass_data.data
+        y = self.multiclass_data.target
         cc.fit(X, y)
         for label in cc.classes_:
             assert_true(cc.estimators_.get(label))
 
     def test_performance_not_nan_nor_equal_after_fit(self):
         cc = BaseMulticlassClassifyAndCount()
-        X = np.concatenate(self.multiclass_data.data)
-        y = np.concatenate(self.multiclass_data.target)
+        X = self.multiclass_data.data
+        y = self.multiclass_data.target
         cc.fit(X, y)
 
         assert_false(np.all(cc.tp_pa_ == np.nan))
@@ -106,8 +105,8 @@ class TestMulticlassClassifyAndCount(ModelTestCase):
 
     def test_predict_returns_feasible_probabilities(self):
         cc = BaseMulticlassClassifyAndCount()
-        X = np.concatenate(self.multiclass_data.data)
-        y = np.concatenate(self.multiclass_data.target)
+        X = self.multiclass_data.data
+        y = self.multiclass_data.target
         cc.fit(X, y)
 
         probabilities = cc.predict(X)
@@ -129,3 +128,21 @@ class TestMulticlassClassifyAndCount(ModelTestCase):
         assert_true(np.all(probabilities <= 1.))
         assert_true(np.all(probabilities >= 0.))
         assert_almost_equal(np.sum(probabilities), 1.0)
+
+    def test_ovo_classifier(self):
+        cc = BaseMulticlassClassifyAndCount(multiclass='ovo')
+        X = self.multiclass_data.data
+        y = self.multiclass_data.target
+        cc.fit(X, y, cv=3)
+
+        probabilities = cc.predict(X)
+        assert_true(np.all(probabilities <= 1.))
+        assert_true(np.all(probabilities >= 0.))
+        assert_almost_equal(np.sum(probabilities), 1.0)
+
+        probabilities = cc.predict(X, method='ac')
+        assert_true(np.all(probabilities <= 1.))
+        assert_true(np.all(probabilities >= 0.))
+        assert_almost_equal(np.sum(probabilities), 1.0)
+
+

@@ -4,7 +4,7 @@ import numpy as np
 import six
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV
-
+from sklearn.multiclass import OneVsOneClassifier
 
 from quantification import BasicModel
 from quantification.metrics import distributed, model_score
@@ -299,7 +299,7 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
                              "with hard (crisp) classifiers like %s", self.estimator_.__class__.__name__)
 
         p = np.mean(predictions, axis=0)
-        return np.array(p)
+        return np.array(p   )
 
     def _predict_pac(self, X):
         predictions = self._predict_pcc(X)
@@ -337,47 +337,64 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
 
 
 class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=None, strategy='macro'):
+    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=None,
+                 strategy='macro', multiclass='ova'):
         super(BaseMulticlassClassifyAndCount, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b)
         self.strategy = strategy
+        self.multiclass = multiclass
 
     def fit(self, X, y, cv=50, verbose=False, local=True):
         self.classes_ = np.unique(y).tolist()
         n_classes = len(self.classes_)
-        self.estimators_ = dict.fromkeys(self.classes_)
-        self.confusion_matrix_ = dict.fromkeys(self.classes_)
         self.fpr_ = dict.fromkeys(self.classes_)
         self.tpr_ = dict.fromkeys(self.classes_)
-        self.tp_pa_ = dict.fromkeys(self.classes_)
-        self.fp_pa_ = dict.fromkeys(self.classes_)
-        self.train_dist_ = dict.fromkeys(self.classes_)
+
 
         if not local:
             self._persist_data(X, y)
 
-        for pos_class in self.classes_:
-            if verbose:
-                print "Class {}/{}".format(pos_class + 1, n_classes)
-                print "\tFitting  classifier..."
-            mask = (y == pos_class)
-            y_bin = np.ones(y.shape, dtype=np.int)
-            y_bin[~mask] = 0
-            clf = self._make_estimator()
-            clf = clf.fit(X, y_bin)
-            if isinstance(clf, GridSearchCV):
-                clf = clf.best_estimator_
-            self.estimators_[pos_class] = clf
-            if verbose:
-                print "\tComputing performance..."
-            self._compute_performance(X, y_bin, pos_class, folds=cv, local=local, verbose=verbose)
-            if self.b:
+        if self.multiclass == 'ova':
+            self.estimators_ = dict.fromkeys(self.classes_)
+            self.confusion_matrix_ = dict.fromkeys(self.classes_)
+
+            self.tp_pa_ = dict.fromkeys(self.classes_)
+            self.fp_pa_ = dict.fromkeys(self.classes_)
+            self.train_dist_ = dict.fromkeys(self.classes_)
+            # TODO: Use sklearn's OneVsAllClassifier
+            for pos_class in self.classes_:
                 if verbose:
-                    print "\tComputing distribution..."
-                self._compute_distribution(clf, X, y_bin, pos_class)
+                    print "Class {}/{}".format(pos_class + 1, n_classes)
+                    print "\tFitting  classifier..."
+                mask = (y == pos_class)
+                y_bin = np.ones(y.shape, dtype=np.int)
+                y_bin[~mask] = 0
+                clf = self._make_estimator()
+                clf = clf.fit(X, y_bin)
+                if isinstance(clf, GridSearchCV):
+                    clf = clf.best_estimator_
+                self.estimators_[pos_class] = clf
+                if verbose:
+                    print "\tComputing performance..."
+                self._compute_performance_ova(X, y_bin, pos_class, folds=cv, local=local, verbose=verbose)
+                if self.b:
+                    if verbose:
+                        print "\tComputing distribution..."
+                    self._compute_distribution(clf, X, y_bin, pos_class)
+        elif self.multiclass == 'ovo':
+            clf = self._make_estimator()
+            model = OneVsOneClassifier(clf)
+
+            if verbose:
+                print "Fitting classifiers..."
+            model.fit(X, y)
+            self.clf = model
+            if verbose:
+                print "Computing performance..."
+            self._compute_performance_ovo(X, y, folds=cv, local=local, verbose=verbose)
 
         return self
 
-    def _compute_performance(self, X, y, pos_class, folds, local, verbose):
+    def _compute_performance_ova(self, X, y, pos_class, folds, local, verbose):
 
         if local:
             cm = model_score.cv_confusion_matrix(self.estimators_[pos_class], X, y, folds, verbose)
@@ -406,6 +423,25 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
                                  np.sum(y == self.estimators_[pos_class].classes_[1])
         self.fp_pa_[pos_class] = np.sum(predictions[y == self.estimators_[pos_class].classes_[0], 1]) / \
                                  np.sum(y == self.estimators_[pos_class].classes_[0])
+
+    def _compute_performance_ovo(self, X, y, folds, local, verbose):
+        if local:
+            cm = model_score.cv_confusion_matrix(self.clf, X, y, folds, verbose)
+        else:
+            cm = distributed.cv_confusion_matrix(self.clf, X, y, self.X_y_path_,
+                                                 folds=folds,
+                                                 verbose=verbose)
+        if self.strategy == 'micro':
+            self.confusion_matrix_ = np.mean(cm, axis=0)
+            for n, pos_class in enumerate(self.classes_):
+                self.tpr_[pos_class] = self.confusion_matrix_[n, n] / float(self.confusion_matrix_[:, n].sum())
+                self.fpr_[pos_class] = np.delete(self.confusion_matrix_[:, n], n).sum() / float(
+                    np.delete(self.confusion_matrix_,n,axis=0).sum())
+        elif self.strategy == 'macro':
+            self.confusion_matrix_ = cm
+            for n, pos_class in enumerate(self.classes_):
+                self.tpr_[pos_class] = np.mean([cm_[n, n] / float(cm_[:, n].sum()) for cm_ in cm])
+                self.fpr_[pos_class] = np.mean([np.delete(cm_[:, n], n).sum() /float(np.delete(cm, n, axis=0).sum()) for cm_ in cm])
 
     def _compute_distribution(self, clf, X, y_bin, cls):
         pos_class = clf.classes_[1]
@@ -437,11 +473,16 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
     def _predict_cc(self, X):
         n_classes = len(self.classes_)
         probabilities = np.full(n_classes, np.nan)
-        for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
-            predictions = clf.predict(X)
-            freq = np.bincount(predictions, minlength=2)
-            relative_freq = freq / float(np.sum(freq))
-            probabilities[n] = relative_freq[1]
+        if self.multiclass == 'ovo':
+            predictions = self.clf.predict(X)
+            freq = np.bincount(predictions, minlength=len(self.classes_))
+            probabilities = freq / float(np.sum(freq))
+        else:
+            for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
+                predictions = clf.predict(X)
+                freq = np.bincount(predictions, minlength=2)
+                relative_freq = freq / float(np.sum(freq))
+                probabilities[n] = relative_freq[1]
         if np.sum(probabilities) == 0:
             return probabilities
         return probabilities / np.sum(probabilities)
@@ -449,6 +490,7 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
     def _predict_ac(self, X):
         n_classes = len(self.classes_)
         probabilities = np.full(n_classes, np.nan)
+        
         for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
             predictions = clf.predict(X)
             freq = np.bincount(predictions, minlength=2)
