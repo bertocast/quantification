@@ -54,7 +54,7 @@ def cv_confusion_matrix(clf, X, y, data_file, pos_class=None, folds=50, verbose=
                                      reentrant=True,
                                      setup=functools.partial(setup, basename(data_file)),
                                      cleanup=cleanup,
-                                     scheduler_node='dhcp015.aic.uniovi.es',
+                                     scheduler_node='pomar.aic.uniovi.es',
                                      loglevel=logging.ERROR)
     try:
         jobs = []
