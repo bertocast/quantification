@@ -134,7 +134,7 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
         self.estimator_ = self._make_estimator()
         self.strategy = strategy
 
-    def fit(self, X, y, local=True, plot=False, verbose=False):
+    def fit(self, X, y, local=True, cv=50, plot=False, verbose=False):
         """
         Fit C&C model.
 
@@ -170,7 +170,7 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
         self.estimator_.fit(X, y)
         if isinstance(self.estimator_, GridSearchCV):
             self.estimator_ = self.estimator_.best_estimator_
-        self._compute_performance(X, y, local=local, verbose=verbose)
+        self._compute_performance(X, y, local=local, verbose=verbose, cv=cv)
         if self.b:
             self._compute_distribution(X, y, plot=plot)
         return self
@@ -214,12 +214,12 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
         else:
             raise ValueError("Invalid method %s. Choices are `cc`, `ac`, `pcc`, `pac`.", method)
 
-    def _compute_performance(self, X, y, local, verbose):
+    def _compute_performance(self, X, y, local, verbose, cv=50):
         """Compute the performance metrics, that is, confusion matrix, FPR, TPR and the probabilities averages
         and store them. The calculus of the confusion matrix can be parallelized if 'local' parameter is set to True.
         """
         if local:
-            cm = model_score.cv_confusion_matrix(self.estimator_, X, y, 50, verbose)
+            cm = model_score.cv_confusion_matrix(self.estimator_, X, y, cv, verbose)
         else:
             cm = distributed.cv_confusion_matrix(self.estimator_, X, y, self.X_y_path_, folds=50)
 
