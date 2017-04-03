@@ -1,4 +1,5 @@
 import numpy as np
+from sklearn.utils import check_array
 from sklearn.utils import check_consistent_length
 
 
@@ -21,6 +22,8 @@ def mean_square_error(p_true, p_pred):
 
 
 def relative_absolute_error(p_true, p_pred, epsilon=None):
+    p_true = check_array(p_true)[0]
+    p_pred = check_array(p_pred)[0]
 
     if (p_true == 0).sum():
         if not epsilon:
@@ -41,3 +44,4 @@ def normalized_absolute_score(p_true, p_pred):
 
 def normalized_square_score(p_true, p_pred):
     1 - np.power(np.abs(p_pred - p_true) / np.max([p_true, 1 - p_true]), 2)
+
