@@ -219,7 +219,7 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
         and store them. The calculus of the confusion matrix can be parallelized if 'local' parameter is set to True.
         """
         if local:
-            cm = model_score.cv_confusion_matrix(self.estimator_, X, y, cv, verbose)
+            cm = model_score.cv_confusion_matrix(self.estimator_, X, y, folds=cv, verbose=verbose)
         else:
             cm = distributed.cv_confusion_matrix(self.estimator_, X, y, self.X_y_path_, folds=50)
 
@@ -299,7 +299,7 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
                              "with hard (crisp) classifiers like %s", self.estimator_.__class__.__name__)
 
         p = np.mean(predictions, axis=0)
-        return np.array(p   )
+        return np.array(p)
 
     def _predict_pac(self, X):
         predictions = self._predict_pcc(X)
@@ -488,6 +488,8 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
         return probabilities / np.sum(probabilities)
 
     def _predict_ac(self, X):
+        if self.multiclass == 'ovo':
+            raise NotImplementedError
         n_classes = len(self.classes_)
         probabilities = np.full(n_classes, np.nan)
         

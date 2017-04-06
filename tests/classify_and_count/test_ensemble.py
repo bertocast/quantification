@@ -10,23 +10,23 @@ from tests.base import ModelTestCase
 
 class TestEnsembleBinaryCC(ModelTestCase):
     def test_X_y_different_length_raise_an_error(self):
-        X = self.binary_data.data
-        y = self.binary_data.target[:-2]
+        X = self.binary_X
+        y = self.binary_y[2:]
         cc = EnsembleBinaryCC()
         assert_raises(ValueError, cc.fit, X, y)
 
     def test_performance_not_empty_after_fit(self):
-        X = self.binary_data.data
-        y = self.binary_data.target
+        X = self.binary_X
+        y = self.binary_y
         cc = EnsembleBinaryCC()
         cc.fit(X, y)
 
-        assert_true(np.all([qnf.confusion_matrix_ for qnf in cc.qnfs_]))
+        assert_true(np.all([isinstance(qnf.confusion_matrix_, list) for qnf in cc.qnfs_]))
 
     def test_predict_returns_feasible_probabilities(self):
         cc = EnsembleBinaryCC()
-        X = self.binary_data.data
-        y = self.binary_data.target
+        X = self.binary_X
+        y = self.binary_y
         cc.fit(X, y)
 
         probabilities = cc.predict(X[0])
@@ -53,8 +53,8 @@ class TestEnsembleBinaryCC(ModelTestCase):
 class TestEnsembleMulticlassCC(ModelTestCase):
     def test_performance_not_null_after_fit(self):
         cc = EnsembleMulticlassCC(b=100)
-        X = self.multiclass_data.data
-        y = self.multiclass_data.target
+        X = self.mc_X
+        y = self.mc_y
         cc.fit(X, y)
 
         for qnf in cc.qnfs_:
@@ -65,8 +65,8 @@ class TestEnsembleMulticlassCC(ModelTestCase):
 
     def test_predict_returns_feasible_probabilities(self):
         cc = EnsembleMulticlassCC(b=100)
-        X = self.multiclass_data.data
-        y = self.multiclass_data.target
+        X = self.mc_X
+        y = self.mc_y
         cc.fit(X, y)
 
         probabilities = cc.predict(np.concatenate(X))

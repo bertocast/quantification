@@ -9,8 +9,8 @@ from tests.base import ModelTestCase
 class TestBinaryEnsembleHDy(ModelTestCase):
     def test_predict_returns_feasible_probabilities(self):
         hdy = BinaryEnsembleHDy(b=100)
-        X = self.binary_data.data
-        y = self.binary_data.target
+        X = self.binary_X
+        y = self.binary_y
         hdy.fit(X, y)
 
         probabilities = hdy.predict(X[0])
@@ -26,8 +26,8 @@ class TestBinaryEnsembleHDy(ModelTestCase):
 class TestMulticlassEnsembleHDy(ModelTestCase):
     def test_predict_returns_feasible_probabilities(self):
         hdy = MulticlassEnsembleHDy(b=100)
-        X = self.multiclass_data.data
-        y = self.multiclass_data.target
+        X = self.mc_X
+        y = self.mc_y
         hdy.fit(X, y)
 
         probabilities = hdy.predict(X[0])
