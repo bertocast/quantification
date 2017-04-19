@@ -379,7 +379,7 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
                 if self.b:
                     if verbose:
                         print "\tComputing distribution..."
-                    self._compute_distribution(clf, X, y_bin, pos_class)
+                    self._compute_distribution_ova(clf, X, y_bin, pos_class)
         elif self.multiclass == 'ovo':
             clf = self._make_estimator()
             model = OneVsOneClassifier(clf)
@@ -391,6 +391,10 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
             if verbose:
                 print "Computing performance..."
             self._compute_performance_ovo(X, y, folds=cv, local=local, verbose=verbose)
+            if self.b:
+                if verbose:
+                    print "\tComputing distribution..."
+                self._compute_distribution_ovo(clf, X, y)
 
         return self
 
@@ -443,7 +447,7 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
                 self.tpr_[pos_class] = np.mean([cm_[n, n] / float(cm_[:, n].sum()) for cm_ in cm])
                 self.fpr_[pos_class] = np.mean([np.delete(cm_[:, n], n).sum() /float(np.delete(cm, n, axis=0).sum()) for cm_ in cm])
 
-    def _compute_distribution(self, clf, X, y_bin, cls):
+    def _compute_distribution_ova(self, clf, X, y_bin, cls):
         pos_class = clf.classes_[1]
         neg_class = clf.classes_[0]
         pos_preds = clf.predict_proba(X[y_bin == pos_class,])[:, 1]
@@ -455,6 +459,9 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
         for i in range(self.b):
             self.train_dist_[cls][i] = [train_pos_pdf[i] / float(sum(y_bin == pos_class)),
                                         train_neg_pdf[i] / float(sum(y_bin == neg_class))]
+
+    def _compute_distribution_ovo(self, X, y):
+        pass
 
     def predict(self, X, method='cc'):
         if method == 'cc':
@@ -488,18 +495,24 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
         return probabilities / np.sum(probabilities)
 
     def _predict_ac(self, X):
-        if self.multiclass == 'ovo':
-            raise NotImplementedError
         n_classes = len(self.classes_)
         probabilities = np.full(n_classes, np.nan)
-        
-        for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
-            predictions = clf.predict(X)
-            freq = np.bincount(predictions, minlength=2)
-            relative_freq = freq / float(np.sum(freq))
-            adjusted = (relative_freq - self.fpr_[cls]) / float(self.tpr_[cls] - self.fpr_[cls])
-            adjusted = np.nan_to_num(adjusted)
-            probabilities[n] = np.clip(adjusted[1], 0, 1)
+        if self.multiclass == 'ovo':
+            for n, clf in enumerate(self.clf.estimators_):
+                predictions = clf.predict(X)
+                freq = np.bincount(predictions, minlength=2)
+                relative_freq = freq / float(np.sum(freq))
+                adjusted = (relative_freq - self.fpr_[n]) / float(self.tpr_[n] - self.fpr_[n])
+                adjusted = np.nan_to_num(adjusted)
+                probabilities[n] = np.clip(adjusted[1], 0, 1)
+        else:
+            for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
+                predictions = clf.predict(X)
+                freq = np.bincount(predictions, minlength=2)
+                relative_freq = freq / float(np.sum(freq))
+                adjusted = (relative_freq - self.fpr_[cls]) / float(self.tpr_[cls] - self.fpr_[cls])
+                adjusted = np.nan_to_num(adjusted)
+                probabilities[n] = np.clip(adjusted[1], 0, 1)
         if np.sum(probabilities) == 0:
             return probabilities
         return probabilities / np.sum(probabilities)
@@ -507,15 +520,25 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
     def _predict_pcc(self, X):
         n_classes = len(self.classes_)
         probabilities = np.full(n_classes, np.nan)
-        for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
-            try:
-                predictions = clf.predict_proba(X)
-            except AttributeError:
-                raise ValueError("Probabilistic methods like PCC or PAC cannot be used "
+        if self.multiclass == 'ovo':
+            for n, clf in enumerate(self.clf.estimators_):
+                try:
+                    predictions = clf.predict_proba(X)
+                except AttributeError:
+                    raise ValueError("Probabilistic methods like PCC or PAC cannot be used "
+                                 "with hard (crisp) classifiers like %s", clf.__class__.__name__)
+                p = np.mean(predictions, axis=0)
+                probabilities[n] = p[1]
+        else:
+            for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
+                try:
+                    predictions = clf.predict_proba(X)
+                except AttributeError:
+                    raise ValueError("Probabilistic methods like PCC or PAC cannot be used "
                                  "with hard (crisp) classifiers like %s", clf.__class__.__name__)
 
-            p = np.mean(predictions, axis=0)
-            probabilities[n] = p[1]
+                p = np.mean(predictions, axis=0)
+                probabilities[n] = p[1]
         if np.sum(probabilities) == 0:
             return probabilities
         return probabilities / np.sum(probabilities)
@@ -523,15 +546,28 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
     def _predict_pac(self, X):
         n_classes = len(self.classes_)
         probabilities = np.full(n_classes, np.nan)
-        for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
-            try:
-                predictions = clf.predict_proba(X)
-            except AttributeError:
-                raise ValueError("Probabilistic methods like PCC or PAC cannot be used "
-                                 "with hard (crisp) classifiers like %s", clf.__class__.__name__)
 
-            p = np.mean(predictions, axis=0)
-            probabilities[n] = np.clip((p[1] - self.fp_pa_[cls]) / float(self.tp_pa_[cls] - self.fp_pa_[cls]), 0, 1)
+
+        if self.multiclass == 'ovo':
+            for n, clf in enumerate(self.clf.estimators_):
+                try:
+                    predictions = clf.predict_proba(X)
+                except AttributeError:
+                    raise ValueError("Probabilistic methods like PCC or PAC cannot be used "
+                                     "with hard (crisp) classifiers like %s", clf.__class__.__name__)
+
+                p = np.mean(predictions, axis=0)
+                probabilities[n] = np.clip((p[1] - self.fp_pa_[n]) / float(self.tp_pa_[n] - self.fp_pa_[n]), 0, 1)
+        else:
+            for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
+                try:
+                    predictions = clf.predict_proba(X)
+                except AttributeError:
+                    raise ValueError("Probabilistic methods like PCC or PAC cannot be used "
+                                     "with hard (crisp) classifiers like %s", clf.__class__.__name__)
+
+                p = np.mean(predictions, axis=0)
+                probabilities[n] = np.clip((p[1] - self.fp_pa_[cls]) / float(self.tp_pa_[cls] - self.fp_pa_[cls]), 0, 1)
 
         if np.sum(probabilities) == 0:
             return probabilities

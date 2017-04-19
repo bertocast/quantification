@@ -138,4 +138,18 @@ class TestMulticlassClassifyAndCount(ModelTestCase):
         assert_true(np.all(probabilities >= 0.))
         assert_almost_equal(np.sum(probabilities), 1.0)
 
+        probabilities = cc.predict(X, method='ac')
+        assert_true(np.all(probabilities <= 1.))
+        assert_true(np.all(probabilities >= 0.))
+        assert_almost_equal(np.sum(probabilities), 1.0)
+
+        probabilities = cc.predict(X, method='pcc')
+        assert_true(np.all(probabilities <= 1.))
+        assert_true(np.all(probabilities >= 0.))
+        assert_almost_equal(np.sum(probabilities), 1.0)
+
+        probabilities = cc.predict(X, method='pac')
+        assert_true(np.all(probabilities <= 1.))
+        assert_true(np.all(probabilities >= 0.))
+        assert_almost_equal(np.sum(probabilities), 1.0)
 
