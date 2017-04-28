@@ -8,9 +8,12 @@ def cv_confusion_matrix(clf, X, y, folds=50, verbose=False):
     cv_iter = skf.split(X, y)
     cms = []
 
+    if verbose:
+        print "Computing cross-validation confusion matrix"
+
     for n, (train, test) in enumerate(cv_iter):
         if verbose:
-            print "Computing CM {}/{}".format(n, folds)
+            print "\t{}/{}".format(n+1, folds)
         clf.fit(X[train,], y[train])
         cm = confusion_matrix(y[test], clf.predict(X[test]), labels=clf.classes_)
         cms.append(cm)
