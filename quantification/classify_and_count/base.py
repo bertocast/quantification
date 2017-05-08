@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
+from matplotlib import pyplot as plt
 import six
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV
@@ -8,7 +9,6 @@ from sklearn.multiclass import OneVsOneClassifier
 
 from quantification import BasicModel
 from quantification.metrics import distributed, model_score
-
 
 class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
     """Base class for C&C Models"""
@@ -129,8 +129,10 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
 
     """
 
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=None, strategy='macro'):
-        super(BaseBinaryClassifyAndCount, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b)
+    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=None,
+                 strategy='macro'):
+        super(BaseBinaryClassifyAndCount, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params,
+                                                         b)
         self.estimator_ = self._make_estimator()
         self.strategy = strategy
 
@@ -172,7 +174,10 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
             self.estimator_ = self.estimator_.best_estimator_
         self._compute_performance(X, y, local=local, verbose=verbose, cv=cv)
         if self.b:
-            self._compute_distribution(X, y, plot=plot)
+            if self.b == 'piramidal':
+                self._compute_distribution_piramidal(X, y, plot=False)
+            else:
+                self._compute_distribution(X, y, plot=plot)
         return self
 
     def predict(self, X, method='cc', plot=False):
@@ -268,7 +273,6 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
                                    train_neg_pdf[i] / float(sum(y == neg_class))]
 
         if plot:
-            import matplotlib.pyplot as plt
             plt.subplot(121)
             plt.hist(neg_preds, self.b)
             plt.title('Negative PDF')
@@ -279,6 +283,21 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
             plt.title('Positive PDF')
 
             plt.show()
+
+    def _compute_distribution_piramidal(self, X, y, plot=False):
+        pos_class = self.estimator_.classes_[1]
+        neg_class = self.estimator_.classes_[0]
+        pos_preds = self.estimator_.predict_proba(X[y == pos_class,])[:, 1]
+        neg_preds = self.estimator_.predict_proba(X[y == neg_class,])[:, +1]
+
+        self.train_dist_ = {}
+        for b in range(2, 9):
+            train_pos_pdf, _ = np.histogram(pos_preds, b)
+            train_neg_pdf, _ = np.histogram(neg_preds, b)
+            self.train_dist_[b] = np.full((b, 2), np.nan)
+            for i in range(b):
+                self.train_dist_[b][i] = [train_pos_pdf[i] / float(sum(y == pos_class)),
+                                          train_neg_pdf[i] / float(sum(y == neg_class))]
 
     def _predict_cc(self, X):
         predictions = self.estimator_.predict(X)
@@ -308,6 +327,9 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
         return np.array([neg, pos])
 
     def _predict_hdy(self, X, plot):
+        if self.b == 'piramidal':
+            return self._predict_hdy_piramidal(X, False)
+
         if not self.b:
             raise ValueError("If HDy predictions are in order, the quantifier must be trained with the parameter `b`")
         preds = self.estimator_.predict_proba(X)[:, 1]
@@ -335,11 +357,31 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
         prevalence = probas[p_min]
         return np.array([1 - prevalence, prevalence])
 
+    def _predict_hdy_piramidal(self, X, plot):
+        preds = self.estimator_.predict_proba(X)[:, 1]
+        probas = [p / 100.0 for p in range(0, 100)]
+        hd = np.full((len(probas), 7), np.nan)
+
+        for b in range(2, 9):
+            test_pdf, _ = np.histogram(preds, b)
+            for p in range(len(probas)):
+                diff = np.full(b, np.nan)
+                for i in range(b):
+                    di = np.sqrt(self.train_dist_[b][i, 0] * probas[p] + self.train_dist_[b][i, 1] * (1 - probas[p]))
+                    ti = np.sqrt(test_pdf[i] / float(X.shape[0]))
+                    diff[i] = np.power(di - ti, 2)
+                hd[p, b-2] = np.sqrt(np.sum(diff))
+        hd = hd.mean(axis=1)
+        p_min = hd.argmin()
+        prevalence = probas[p_min]
+        return np.array([1 - prevalence, prevalence])
+
 
 class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
     def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=None,
                  strategy='macro', multiclass='ova'):
-        super(BaseMulticlassClassifyAndCount, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b)
+        super(BaseMulticlassClassifyAndCount, self).__init__(estimator_class, estimator_params, estimator_grid,
+                                                             grid_params, b)
         self.strategy = strategy
         self.multiclass = multiclass
 
@@ -348,7 +390,6 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
         n_classes = len(self.classes_)
         self.fpr_ = dict.fromkeys(self.classes_)
         self.tpr_ = dict.fromkeys(self.classes_)
-
 
         if not local:
             self._persist_data(X, y)
@@ -440,12 +481,13 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
             for n, pos_class in enumerate(self.classes_):
                 self.tpr_[pos_class] = self.confusion_matrix_[n, n] / float(self.confusion_matrix_[:, n].sum())
                 self.fpr_[pos_class] = np.delete(self.confusion_matrix_[:, n], n).sum() / float(
-                    np.delete(self.confusion_matrix_,n,axis=0).sum())
+                    np.delete(self.confusion_matrix_, n, axis=0).sum())
         elif self.strategy == 'macro':
             self.confusion_matrix_ = cm
             for n, pos_class in enumerate(self.classes_):
                 self.tpr_[pos_class] = np.mean([cm_[n, n] / float(cm_[:, n].sum()) for cm_ in cm])
-                self.fpr_[pos_class] = np.mean([np.delete(cm_[:, n], n).sum() /float(np.delete(cm, n, axis=0).sum()) for cm_ in cm])
+                self.fpr_[pos_class] = np.mean(
+                    [np.delete(cm_[:, n], n).sum() / float(np.delete(cm, n, axis=0).sum()) for cm_ in cm])
 
     def _compute_distribution_ova(self, clf, X, y_bin, cls):
         pos_class = clf.classes_[1]
@@ -526,7 +568,7 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
                     predictions = clf.predict_proba(X)
                 except AttributeError:
                     raise ValueError("Probabilistic methods like PCC or PAC cannot be used "
-                                 "with hard (crisp) classifiers like %s", clf.__class__.__name__)
+                                     "with hard (crisp) classifiers like %s", clf.__class__.__name__)
                 p = np.mean(predictions, axis=0)
                 probabilities[n] = p[1]
         else:
@@ -535,7 +577,7 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
                     predictions = clf.predict_proba(X)
                 except AttributeError:
                     raise ValueError("Probabilistic methods like PCC or PAC cannot be used "
-                                 "with hard (crisp) classifiers like %s", clf.__class__.__name__)
+                                     "with hard (crisp) classifiers like %s", clf.__class__.__name__)
 
                 p = np.mean(predictions, axis=0)
                 probabilities[n] = p[1]
@@ -546,7 +588,6 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
     def _predict_pac(self, X):
         n_classes = len(self.classes_)
         probabilities = np.full(n_classes, np.nan)
-
 
         if self.multiclass == 'ovo':
             for n, clf in enumerate(self.clf.estimators_):
