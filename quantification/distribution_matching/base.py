@@ -8,9 +8,13 @@ from quantification.metrics import model_score
 
 
 class BinaryHDy(BaseBinaryClassifyAndCount):
+    def _compute_performance(self, X, y, local, verbose, cv=50):
+        pass
+
     def predict(self, X, plot=False, method="hdy"):
         assert method == 'hdy'
         return self._predict_hdy(X, plot=plot)
+
 
 class BinaryHDyPiramidal(BaseBinaryClassifyAndCount):
     def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None):
@@ -20,6 +24,10 @@ class BinaryHDyPiramidal(BaseBinaryClassifyAndCount):
                                                  grid_params,
                                                  b='piramidal',
                                                  strategy='macro')
+
+    def _compute_performance(self, X, y, local, verbose, cv=50):
+        pass
+
     def predict(self, X, method='hdy', plot=False):
         assert method == 'hdy'
         return self._predict_hdy_piramidal(X, plot=plot)
