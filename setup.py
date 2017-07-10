@@ -15,7 +15,7 @@ setup(name='quantification',
       author_email="bertocast@gmail.com",
       description='Quantification algorithms',
       packages=find_packages(exclude='tests'),
-      long_description=read('README.md'),
+      long_description=read('README.rstrst'),
       keywords=['quantification', 'machine learning'],
       classifiers=[
           "Development Status :: 3 - Alpha",
