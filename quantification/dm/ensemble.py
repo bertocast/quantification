@@ -1,10 +1,11 @@
 import numpy as np
 
-from quantification.classify_and_count.ensemble import EnsembleMulticlassCC, EnsembleBinaryCC, BaseEnsembleCCModel
-from quantification.distribution_matching.base import BinaryEM, MulticlassEM
+from quantification.cc.ensemble import EnsembleMulticlassCC, EnsembleBinaryCC, BaseEnsembleCCModel
+from quantification.dm.base import BinaryEM, MulticlassEM
 
 
 class BinaryEnsembleHDy(EnsembleBinaryCC):
+    """"""
     def predict(self, X, method='hdy'):
         assert method == "hdy"
         return self._predict_hdy(X)

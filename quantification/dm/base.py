@@ -2,44 +2,68 @@ import numpy as np
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import GridSearchCV
 
-from quantification.classify_and_count.base import BaseMulticlassClassifyAndCount, BaseBinaryClassifyAndCount, \
+from quantification.cc.base import BaseMulticlassCC, BaseBinaryCC, \
     BaseClassifyAndCountModel
 from quantification.metrics import model_score
 
 
-class BinaryHDy(BaseBinaryClassifyAndCount):
-    def _compute_performance(self, X, y, local, verbose, cv=50):
-        pass
+class BinaryHDy(BaseBinaryCC):
+    """
+         Binary HDy method.
+
+         It is just a wrapper of BaseClassifyAndCountModel (see :ref:`Classify and Count <cc_ref>`) to perform HDy.
+         Although HDy is a distribution matching algorithm, it needs a classifier too.
+
+    """
 
     def predict(self, X, plot=False, method="hdy"):
         assert method == 'hdy'
         return self._predict_hdy(X, plot=plot)
 
 
-class BinaryHDyPiramidal(BaseBinaryClassifyAndCount):
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None):
-        super(BinaryHDyPiramidal, self).__init__(estimator_class,
-                                                 estimator_params,
-                                                 estimator_grid,
-                                                 grid_params,
-                                                 b='piramidal',
-                                                 strategy='macro')
+class MulticlassHDy(BaseMulticlassCC):
+    """
+             Binary HDy method.
 
-    def _compute_performance(self, X, y, local, verbose, cv=50):
-        pass
+             It is just a wrapper of BaseClassifyAndCountModel (see :ref:`Classify and Count <cc_ref>`) to perform HDy.
+             Although HDy is a distribution matching algorithm, it needs a classifier too.
 
-    def predict(self, X, method='hdy', plot=False):
-        assert method == 'hdy'
-        return self._predict_hdy_piramidal(X, plot=plot)
-
-
-class MulticlassHDy(BaseMulticlassClassifyAndCount):
+        """
     def predict(self, X, method="hdy"):
         assert method == "hdy"
         return self._predict_hdy(X)
 
 
 class BinaryEM(BaseClassifyAndCountModel):
+    """
+        Binary EM method.
+
+        Parameters
+        -----------
+        tol : float, optional, default=1e-9
+            Minimum error before stopping the learning process.
+
+        estimator_class : object, optional
+            An instance of a classifier class. It has to have fit and predict methods. It is highly advised to use one of
+            the implementations in sklearn library. If it is leave as None, Logistic Regression will be used.
+
+        estimator_params : dictionary, optional
+            Additional params to initialize the classifier.
+
+        estimator_grid : dictionary, optional
+            During training phase, grid search is performed. This parameter should provided the parameters of the classifier
+            that will be tested (e.g. estimator_grid={C: [0.1, 1, 10]} for Logistic Regression).
+
+        Attributes
+        ----------
+        estimator_ : object
+            The underlying classifier
+
+        prob_tr_ = float
+            Prevalence of the positive class in the training set.
+
+        """
+
     def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, tol=1e-9):
         super(BinaryEM, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b=None)
         self.tol = tol
@@ -66,13 +90,41 @@ class BinaryEM(BaseClassifyAndCountModel):
 
             p_s = np.sum(p_cond_s) / m
 
-            if abs(p_s - p_s_last_) < self.tol:
+            if np.abs(p_s - p_s_last_) < self.tol:
                 break
 
         return np.array([1 - p_s, p_s])
 
 
 class MulticlassEM(BaseClassifyAndCountModel):
+    """
+            Multiclass EM method.
+
+            Parameters
+            -----------
+            tol : float, optional, default=1e-9
+                Minimum error before stopping the learning process.
+
+            estimator_class : object, optional
+                An instance of a classifier class. It has to have fit and predict methods. It is highly advised to use one of
+                the implementations in sklearn library. If it is leave as None, Logistic Regression will be used.
+
+            estimator_params : dictionary, optional
+                Additional params to initialize the classifier.
+
+            estimator_grid : dictionary, optional
+                During training phase, grid search is performed. This parameter should provided the parameters of the classifier
+                that will be tested (e.g. estimator_grid={C: [0.1, 1, 10]} for Logistic Regression).
+
+            Attributes
+            ----------
+            classes_ : array
+                Unique classes in the training set.
+
+            qnfs_ : array, shape = (n_samples)
+            List of quantifiers to train. There is one for each class in the training set.
+
+            """
     def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, tol=1e-9):
         super(MulticlassEM, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b=None)
         self.tol = tol
@@ -107,6 +159,40 @@ class MulticlassEM(BaseClassifyAndCountModel):
 
 
 class BinaryCDEIter(BaseClassifyAndCountModel):
+    """
+            Binary CDE Iterate method.
+
+            Parameters
+            -----------
+            num_iter : float, optional, default=3
+                Number of iterations.
+
+            estimator_class : object, optional
+                An instance of a classifier class. It has to have fit and predict methods. It is highly advised to use one of
+                the implementations in sklearn library. If it is leave as None, Logistic Regression will be used.
+
+            estimator_params : dictionary, optional
+                Additional params to initialize the classifier.
+
+            estimator_grid : dictionary, optional
+                During training phase, grid search is performed. This parameter should provided the parameters of the classifier
+                that will be tested (e.g. estimator_grid={C: [0.1, 1, 10]} for Logistic Regression).
+
+            Attributes
+            ----------
+            estimator_ : object
+                The underlying classifier
+
+            pos_neg_orig : float
+                Original ratio between positive and negatives examples.
+
+            X_train : array, shape=(num_samples, num_features)
+                Training features dataset.
+
+            y_train : array, shape=(num_samples,)
+                Class of each example in the training dataset.
+
+            """
     def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, num_iter=3):
         super(BinaryCDEIter, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b=None)
         self.num_iter = num_iter
@@ -158,6 +244,34 @@ class BinaryCDEIter(BaseClassifyAndCountModel):
 
 
 class MulticlassCDEIter(BaseClassifyAndCountModel):
+    """
+        Multiclass CDE Iterate method.
+
+        Parameters
+        -----------
+        num_iter : float, optional, default=3
+            Number of iterations.
+
+        estimator_class : object, optional
+            An instance of a classifier class. It has to have fit and predict methods. It is highly advised to use one of
+            the implementations in sklearn library. If it is leave as None, Logistic Regression will be used.
+
+        estimator_params : dictionary, optional
+            Additional params to initialize the classifier.
+
+        estimator_grid : dictionary, optional
+            During training phase, grid search is performed. This parameter should provided the parameters of the classifier
+            that will be tested (e.g. estimator_grid={C: [0.1, 1, 10]} for Logistic Regression).
+
+        Attributes
+        ----------
+        classes_ : array
+            Unique classes in the training dataset.
+
+        qnfs_ : array, shape = (n_samples)
+            List of quantifiers to train. There is one for each class in the training set.
+
+        """
     def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, num_iter=3):
         super(MulticlassCDEIter, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b=None)
         self.num_iter = num_iter

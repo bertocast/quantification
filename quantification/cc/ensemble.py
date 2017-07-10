@@ -9,9 +9,12 @@ from sklearn.metrics import confusion_matrix
 import numpy as np
 from sklearn.model_selection import GridSearchCV
 
-from quantification.classify_and_count.base import BaseClassifyAndCountModel, BaseBinaryClassifyAndCount, \
-    BaseMulticlassClassifyAndCount
+from quantification.cc.base import BaseClassifyAndCountModel, BaseBinaryCC, \
+    BaseMulticlassCC
 from quantification.utils.errors import ClusterException
+
+
+# TODO: Add wrappers
 
 
 class BaseEnsembleCCModel(BaseClassifyAndCountModel):
@@ -19,24 +22,77 @@ class BaseEnsembleCCModel(BaseClassifyAndCountModel):
         super(BaseEnsembleCCModel, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b)
         self.strategy = strategy
 
+    def predict(self, X):
+        raise NotImplementedError
+
+    def fit(self, X, y):
+        raise NotImplementedError
+
 
 class EnsembleBinaryCC(BaseEnsembleCCModel):
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=None, strategy='macro'):
-        super(EnsembleBinaryCC, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b, strategy)
+    """
+        Binary ensemble Classify And Count method.
+
+
+        It is meant to be trained once and be able to predict using the following methods:
+
+            - Classify & Count
+            - Adjusted Count
+            - Probabilistic Classify & Count
+            - Probabilistic Adjusted Count
+            - HDy
+
+        The idea is not to trained the classifiers more than once, due to the computational cost. In the training phase
+        every single performance metric that is needed in predictions are computed, that is, FPR, TPR and so on.
+
+        Parameters
+        -----------
+        b : integer, optional
+            Number of bins to compute the distributions in the HDy method. If you are not going to use that method in the
+            prediction phase, leave it as None. The training phase will be probably faster.
+
+        estimator_class : object, optional
+            An instance of a classifier class. It has to have fit and predict methods. It is highly advised to use one of
+            the implementations in sklearn library. If it is leave as None, Logistic Regression will be used.
+
+        estimator_params : dictionary, optional
+            Additional params to initialize the classifier.
+
+        estimator_grid : dictionary, optional
+            During training phase, grid search is performed. This parameter should provided the parameters of the classifier
+            that will be tested (e.g. estimator_grid={C: [0.1, 1, 10]} for Logistic Regression).
+
+        strategy : str, optional, default="macro"
+            Strategy to follow when doing the aggregation of partial results of each model of the ensemble. `macro` and
+            `micro` are supported values.
+
+        Attributes
+        ----------
+        qnfs : array, shape = (n_samples)
+            List of quantifiers to train. There is one for each sample in the training data.
+            See :ref:`Classify and Count <cc_ref>`.
+
+
+        """
+
+    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=None,
+                 strategy='macro'):
+        super(EnsembleBinaryCC, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b,
+                                               strategy)
 
     def fit(self, X, y):
 
-        self.qnfs_ = []
+        self.qnfs = []
 
         if len(X) != len(y):
             raise ValueError("X and y has to be the same length.")
         for n, (X_sample, y_sample) in enumerate(zip(X, y)):
             if len(np.unique(y_sample)) < 2:
                 continue
-            qnf = BaseBinaryClassifyAndCount(b=self.b,
-                                             estimator_class=self.estimator_class,
-                                             estimator_params=self.estimator_params,
-                                             estimator_grid=self.estimator_grid)
+            qnf = BaseBinaryCC(b=self.b,
+                               estimator_class=self.estimator_class,
+                               estimator_params=self.estimator_params,
+                               estimator_grid=self.estimator_grid)
             try:
                 qnf.estimator_.fit(X_sample, y_sample)
             except ValueError:  # Positive classes has not enough samples to perform cv
@@ -44,7 +100,7 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
             if isinstance(qnf.estimator_, GridSearchCV):
                 qnf.estimator_ = qnf.estimator_.best_estimator_
             qnf = self._performance(qnf, n, X, y)
-            self.qnfs_.append(qnf)
+            self.qnfs.append(qnf)
 
         return self
 
@@ -104,7 +160,7 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
             raise ValueError("Invalid method %s. Choices are `cc`, `ac`, `pcc`, `pac`.", method)
 
     def _predict_cc(self, X):
-        predictions = np.array([qnf.estimator_.predict(X) for qnf in self.qnfs_])
+        predictions = np.array([qnf.estimator_.predict(X) for qnf in self.qnfs])
         maj = np.apply_along_axis(lambda x: np.argmax(np.bincount(x, minlength=2)),
                                   axis=0,
                                   arr=predictions.astype('int'))
@@ -113,8 +169,8 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
         return relative_freq
 
     def _predict_ac(self, X):
-        predictions = np.full((len(self.qnfs_), 2), np.nan)
-        for n, qnf in enumerate(self.qnfs_):
+        predictions = np.full((len(self.qnfs), 2), np.nan)
+        for n, qnf in enumerate(self.qnfs):
             probabilities = qnf._predict_cc(X)
             adjusted = (probabilities[1] - qnf.fpr_) / float(qnf.tpr_ - qnf.fpr_)
             predictions[n] = np.clip(np.array([1 - adjusted, adjusted]), 0, 1)
@@ -122,14 +178,14 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
         return predictions / np.sum(predictions)
 
     def _predict_pcc(self, X):
-        predictions = np.array([qnf.estimator_.predict_proba(X) for qnf in self.qnfs_])
+        predictions = np.array([qnf.estimator_.predict_proba(X) for qnf in self.qnfs])
         probabilities = np.mean(predictions, axis=1)
         maj = np.mean(probabilities, axis=0)
         return maj
 
     def _predict_pac(self, X):
-        predictions = np.full((len(self.qnfs_), 2), np.nan)
-        for n, qnf in enumerate(self.qnfs_):
+        predictions = np.full((len(self.qnfs), 2), np.nan)
+        for n, qnf in enumerate(self.qnfs):
             probabilities = qnf._predict_cc(X)
             pos = np.clip((probabilities[0] - qnf.fp_pa_) / float(qnf.tp_pa_ - qnf.fp_pa_), 0, 1)
             neg = np.clip((probabilities[1] - qnf.fn_pa_) / float(qnf.tn_pa_ - qnf.fn_pa_), 0, 1)
@@ -140,13 +196,63 @@ class EnsembleBinaryCC(BaseEnsembleCCModel):
     def _predict_hdy(self, X):
         if not self.b:
             raise ValueError("If HDy predictions are in order, the quantifier must be trained with the parameter `b`")
-        predictions = np.array([qnf.predict(X) for qnf in self.qnfs_])
+        predictions = np.array([qnf.predict(X) for qnf in self.qnfs])
         return np.mean(predictions, axis=0)
 
 
 class EnsembleMulticlassCC(BaseEnsembleCCModel):
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=None, strategy='macro'):
-        super(EnsembleMulticlassCC, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b, strategy)
+    """
+            Multiclass ensemble Classify And Count method.
+
+
+            It is meant to be trained once and be able to predict using the following methods:
+
+                - Classify & Count
+                - Adjusted Count
+                - Probabilistic Classify & Count
+                - Probabilistic Adjusted Count
+                - HDy
+
+            The idea is not to trained the classifiers more than once, due to the computational cost. In the training phase
+            every single performance metric that is needed in predictions are computed, that is, FPR, TPR and so on.
+
+            Parameters
+            -----------
+            b : integer, optional
+                Number of bins to compute the distributions in the HDy method. If you are not going to use that method in the
+                prediction phase, leave it as None. The training phase will be probably faster.
+
+            estimator_class : object, optional
+                An instance of a classifier class. It has to have fit and predict methods. It is highly advised to use one of
+                the implementations in sklearn library. If it is leave as None, Logistic Regression will be used.
+
+            estimator_params : dictionary, optional
+                Additional params to initialize the classifier.
+
+            estimator_grid : dictionary, optional
+                During training phase, grid search is performed. This parameter should provided the parameters of the classifier
+                that will be tested (e.g. estimator_grid={C: [0.1, 1, 10]} for Logistic Regression).
+
+            strategy : str, optional, default="macro"
+                Strategy to follow when doing the aggregation of partial results of each model of the ensemble. `macro` and
+                `micro` are supported values.
+
+            Attributes
+            ----------
+            qnfs : array, shape = (n_samples)
+                List of quantifiers to train. There is one for each sample in the training data.
+                See :ref:`Classify and Count <cc_ref>`.
+
+            classes: array
+                Unique classes accross every sample.
+
+
+            """
+
+    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=None,
+                 strategy='macro'):
+        super(EnsembleMulticlassCC, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b,
+                                                   strategy)
 
     def fit(self, X, y, verbose=False, local=True):
 
@@ -154,7 +260,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             raise ValueError("X and y has to be the same length.")
 
         self.classes_ = np.unique(np.concatenate(y)).tolist()
-        self.qnfs_ = [None for _ in y]
+        self.qnfs = [None for _ in y]
         self.cls_smp_ = {k: [] for k in self.classes_}
 
         if not local:
@@ -167,22 +273,21 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 qnf, classes = self._fit_and_get_distributions(X_sample, y_sample, verbose)
                 for cls in classes:
                     self.cls_smp_[cls].append(n)
-                self.qnfs_[n] = deepcopy(qnf)
-
+                self.qnfs[n] = deepcopy(qnf)
 
         for pos_class in self.classes_:
             if verbose:
                 print "Computing performance for classifiers of class {}".format(pos_class + 1)
             for sample in self.cls_smp_[pos_class]:
-                self.qnfs_[sample] = self._performance(self.cls_smp_[pos_class], sample, pos_class, X, y)
+                self.qnfs[sample] = self._performance(self.cls_smp_[pos_class], sample, pos_class, X, y)
 
         return self
 
     def _fit_and_get_distributions(self, X_sample, y_sample, verbose):
         # TODO: Refactor this to a dicts of classes and binary quantifiers
-        qnf = BaseMulticlassClassifyAndCount(estimator_class=self.estimator_class,
-                                             estimator_params=self.estimator_params,
-                                             estimator_grid=self.estimator_grid)
+        qnf = BaseMulticlassCC(estimator_class=self.estimator_class,
+                               estimator_params=self.estimator_params,
+                               estimator_grid=self.estimator_grid)
         classes = np.unique(y_sample).tolist()
         invalid_classes = []
         qnf.estimators_ = dict()
@@ -219,7 +324,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 qnf.train_dist_[cls] = np.full((self.b, 2), np.nan)
                 for i in range(self.b):
                     qnf.train_dist_[cls][i] = [train_pos_pdf[i] / float(sum(y_bin == pos_class)),
-                                                     train_neg_pdf[i] / float(sum(y_bin == neg_class))]
+                                               train_neg_pdf[i] / float(sum(y_bin == neg_class))]
         valid_classes = filter(lambda x: x not in invalid_classes, classes)
         qnf.classes_ = valid_classes
         return qnf, filter(lambda x: x not in invalid_classes, classes)
@@ -261,7 +366,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 job()
                 if job.exception:
                     raise ClusterException(job.exception + job.ip_addr)
-                self.qnfs_[job.id], classes = deepcopy(job.result)
+                self.qnfs[job.id], classes = deepcopy(job.result)
                 for cls in classes:
                     self.cls_smp_[cls].append(job.id)
 
@@ -276,7 +381,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         samples_val = samples[:n] + samples[(n + 1):]
         X_val = [X[i] for i in samples_val]
         y_val = [y[i] for i in samples_val]
-        qnf = self.qnfs_[n]
+        qnf = self.qnfs[n]
 
         cm = []
         for X_, y_ in zip(X_val, y_val):
@@ -299,9 +404,9 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             qnf.confusion_matrix_[label] = np.mean(cm, axis=0)
 
             qnf.tpr_[label] = qnf.confusion_matrix_[label][1, 1] / float(qnf.confusion_matrix_[label][1, 1]
-                                                                     + qnf.confusion_matrix_[label][1, 0])
+                                                                         + qnf.confusion_matrix_[label][1, 0])
             qnf.fpr_[label] = qnf.confusion_matrix_[label][0, 1] / float(qnf.confusion_matrix_[label][0, 1]
-                                                                     + qnf.confusion_matrix_[label][0, 0])
+                                                                         + qnf.confusion_matrix_[label][0, 0])
         elif self.strategy == 'macro':
             qnf.confusion_matrix_[label] = cm
             qnf.tpr_[label] = np.mean([cm_[1, 1] / float(cm_[1, 1] + cm_[1, 0]) for cm_ in cm])
@@ -331,7 +436,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
     def _predict_cc(self, X):
         probabilities = dict.fromkeys(self.classes_)
         predictions = {k: [] for k in self.classes_}
-        for qnf in self.qnfs_:
+        for qnf in self.qnfs:
             for cls, clf in qnf.estimators_.iteritems():
                 pred = clf.predict(X)
                 predictions[cls].append(pred)
@@ -353,7 +458,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
     def _predict_ac(self, X):
         probabilities = dict.fromkeys(self.classes_)
         binary_freqs = {k: [] for k in self.classes_}
-        for qnf in self.qnfs_:
+        for qnf in self.qnfs:
             for cls, clf in qnf.estimators_.iteritems():
                 pred = clf.predict(X)
                 freq = np.bincount(pred, minlength=2)
@@ -375,7 +480,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
     def _predict_pcc(self, X):
         probabilities = dict.fromkeys(self.classes_)
         predictions = {k: [] for k in self.classes_}
-        for qnf in self.qnfs_:
+        for qnf in self.qnfs:
             for cls, clf in qnf.estimators_.iteritems():
                 pred = clf.predict_proba(X)
                 predictions[cls].append(pred)
@@ -394,7 +499,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
     def _predict_pac(self, X):
         probabilities = dict.fromkeys(self.classes_)
         binary_freqs = {k: [] for k in self.classes_}
-        for qnf in self.qnfs_:
+        for qnf in self.qnfs:
             for (cls, clf) in qnf.estimators_.iteritems():
                 pred = clf.predict_proba(X)
                 relative_freq = np.mean(pred, axis=0)
@@ -415,8 +520,8 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
     def _predict_hdy(self, X):
 
         cls_prevalences = {k: [] for k in self.classes_}
-        for n, qnf in enumerate(self.qnfs_):
-            print "\rPredicting by quantifier {}/{}".format(n, len(self.qnfs_)),
+        for n, qnf in enumerate(self.qnfs):
+            print "\rPredicting by quantifier {}/{}".format(n, len(self.qnfs)),
             probs = qnf.predict(X)
             for m, cls in enumerate(qnf.classes_):
                 cls_prevalences[cls].append(probs[m])

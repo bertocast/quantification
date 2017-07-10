@@ -7,12 +7,11 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV
 from sklearn.multiclass import OneVsOneClassifier
 
-from quantification import BasicModel
+from quantification.base import BasicModel
 from quantification.metrics import distributed, model_score
 
-class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
-    """Base class for C&C Models"""
 
+class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
     def __init__(self, estimator_class, estimator_params, estimator_grid, grid_params, b):
         if estimator_params is None:
             estimator_params = dict()
@@ -60,16 +59,19 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
         return estimator
 
     def _make_estimator(self):
+        """Build the estimator"""
         estimator = self._validate_estimator(default=LogisticRegression(), default_grid={'C': [0.1, 1, 10]},
                                              default_params=dict())
         return estimator
 
 
-class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
+class BaseBinaryCC(BaseClassifyAndCountModel):
     """
     Binary Classify And Count method.
 
+
     It is meant to be trained once and be able to predict using the following methods:
+
         - Classify & Count
         - Adjusted Count
         - Probabilistic Classify & Count
@@ -82,7 +84,7 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
     If you are only going to use one of the methods above, you can use the wrapper classes in this package.
 
     Parameters
-    ----------
+    -----------
     b : integer, optional
         Number of bins to compute the distributions in the HDy method. If you are not going to use that method in the
         prediction phase, leave it as None. The training phase will be probably faster.
@@ -131,8 +133,8 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
 
     def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=None,
                  strategy='macro'):
-        super(BaseBinaryClassifyAndCount, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params,
-                                                         b)
+        super(BaseBinaryCC, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params,
+                                           b)
         self.estimator_ = self._make_estimator()
         self.strategy = strategy
 
@@ -221,7 +223,7 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
 
     def _compute_performance(self, X, y, local, verbose, cv=50):
         """Compute the performance metrics, that is, confusion matrix, FPR, TPR and the probabilities averages
-        and store them. The calculus of the confusion matrix can be parallelized if 'local' parameter is set to True.
+        and store them. The calculus of the confusion matrix can be parallelized if 'local' parameter is set to False.
         """
         if local:
             cm = model_score.cv_confusion_matrix(self.estimator_, X, y, folds=cv, verbose=verbose)
@@ -285,6 +287,9 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
             plt.show()
 
     def _compute_distribution_piramidal(self, X, y, plot=False):
+        """Compute the distributions in a piramidal fashion, that is, for each number of bins from 2 to 8, one histogram
+        is calculated. Then, at predicting time, they are combined.
+        """
         pos_class = self.estimator_.classes_[1]
         neg_class = self.estimator_.classes_[0]
         pos_preds = self.estimator_.predict_proba(X[y == pos_class,])[:, 1]
@@ -300,17 +305,20 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
                                           train_neg_pdf[i] / float(sum(y == neg_class))]
 
     def _predict_cc(self, X):
+        """Compute the prevalence following the Classify and Count strategy"""
         predictions = self.estimator_.predict(X)
         freq = np.bincount(predictions, minlength=2)
         relative_freq = freq / float(np.sum(freq))
         return relative_freq
 
     def _predict_ac(self, X):
+        """Compute the prevalence following the Adjusted Count strategy"""
         probabilities = self._predict_cc(X)
         adjusted = np.clip((probabilities[1] - self.fpr_) / float(self.tpr_ - self.fpr_), 0, 1)
         return np.array([1 - adjusted, adjusted])
 
     def _predict_pcc(self, X):
+        """Compute the prevalence following the Probabilistic Classify and Count strategy"""
         try:
             predictions = self.estimator_.predict_proba(X)
         except AttributeError:
@@ -321,12 +329,14 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
         return np.array(p)
 
     def _predict_pac(self, X):
+        """Compute the prevalence following the Probabilistic Adjusted Count strategy"""
         predictions = self._predict_pcc(X)
         neg = np.clip((predictions[0] - self.fp_pa_) / float(self.tp_pa_ - self.fp_pa_), 0, 1)
         pos = np.clip((predictions[1] - self.fn_pa_) / float(self.tn_pa_ - self.fn_pa_), 0, 1)
         return np.array([neg, pos])
 
     def _predict_hdy(self, X, plot):
+        """Compute the prevalence by applying HDy algorithm."""
         if self.b == 'piramidal':
             return self._predict_hdy_piramidal(X, False)
 
@@ -358,6 +368,7 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
         return np.array([1 - prevalence, prevalence])
 
     def _predict_hdy_piramidal(self, X, plot):
+        """compute the prevalence by applying HDy algorithm using a piramidal estimationg of the distributions."""
         preds = self.estimator_.predict_proba(X)[:, 1]
         probas = [p / 100.0 for p in range(0, 100)]
         hd = np.full((len(probas), 7), np.nan)
@@ -370,18 +381,81 @@ class BaseBinaryClassifyAndCount(BaseClassifyAndCountModel):
                     di = np.sqrt(self.train_dist_[b][i, 0] * probas[p] + self.train_dist_[b][i, 1] * (1 - probas[p]))
                     ti = np.sqrt(test_pdf[i] / float(X.shape[0]))
                     diff[i] = np.power(di - ti, 2)
-                hd[p, b-2] = np.sqrt(np.sum(diff))
+                hd[p, b - 2] = np.sqrt(np.sum(diff))
         hd = hd.mean(axis=1)
         p_min = hd.argmin()
         prevalence = probas[p_min]
         return np.array([1 - prevalence, prevalence])
 
 
-class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
+class BaseMulticlassCC(BaseClassifyAndCountModel):
+    """
+        Multiclass Classify And Count method.
+
+        It is meant to be trained once and be able to predict using the following methods:
+            - Classify & Count
+            - Adjusted Count
+            - Probabilistic Classify & Count
+            - Probabilistic Adjusted Count
+            - HDy
+
+        The idea is not to trained the classifiers more than once, due to the computational cost. In the training phase
+        every single performance metric that is needed in predictions are computed, that is, FPR, TPR and so on.
+
+        If you are only going to use one of the methods above, you can use the wrapper classes in this package.
+
+        Parameters
+        ----------
+        b : integer, optional
+            Number of bins to compute the distributions in the HDy method. If you are not going to use that method in the
+            prediction phase, leave it as None. The training phase will be probably faster.
+
+        estimator_class : object, optional
+            An instance of a classifier class. It has to have fit and predict methods. It is highly advised to use one of
+            the implementations in sklearn library. If it is leave as None, Logistic Regression will be used.
+
+        estimator_params : dictionary, optional
+            Additional params to initialize the classifier.
+
+        estimator_grid : dictionary, optional
+            During training phase, grid search is performed. This parameter should provided the parameters of the classifier
+            that will be tested (e.g. estimator_grid={C: [0.1, 1, 10]} for Logistic Regression).
+
+        strategy : string, optional
+            Strategy to follow when aggregating.
+
+        multiclass : string, optional
+            One versus all or one vs one
+
+        Attributes
+        ----------
+        estimator_class : object
+            The underlying classifier+
+
+        confusion_matrix_ : dictionary
+            The confusion matrix estimated by cross-validation of the underlying classifier for each class
+
+        tpr_ : dictionary
+            True Positive Rate of the underlying classifier from the confusion matrix for each class
+
+        fpr_ : dictionary
+            False Positive Rate of the underlying classifier from the confusion matrix for each class
+
+        tp_pa_ : dictionary
+            True Positive Probability Average of the underlying classifier if it is probabilistic for each class
+
+        fp_pa_ : dictionary
+            False Positive Probability Average of the underlying classifier if it is probabilistic for each class
+
+        train_dist_ : dictionary
+            Distribution of the positive and negative samples for each bin in the training data for each class
+
+        """
+
     def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=None,
                  strategy='macro', multiclass='ova'):
-        super(BaseMulticlassClassifyAndCount, self).__init__(estimator_class, estimator_params, estimator_grid,
-                                                             grid_params, b)
+        super(BaseMulticlassCC, self).__init__(estimator_class, estimator_params, estimator_grid,
+                                               grid_params, b)
         self.strategy = strategy
         self.multiclass = multiclass
 
@@ -503,7 +577,7 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
                                         train_neg_pdf[i] / float(sum(y_bin == neg_class))]
 
     def _compute_distribution_ovo(self, X, y):
-        pass
+        raise NotImplementedError
 
     def predict(self, X, method='cc'):
         if method == 'cc':
@@ -640,49 +714,106 @@ class BaseMulticlassClassifyAndCount(BaseClassifyAndCountModel):
         return probabilities / np.sum(probabilities)
 
 
-class BinaryClassifyAndCount(BaseBinaryClassifyAndCount):
+class BinaryCC(BaseBinaryCC):
+    """
+        Binary Classify And Count method.
+
+        Just a wrapper to perform adjusted count without the need of every other single methods.
+        The main difference with the general class is the `predict` method that enforces to use CC.
+
+        """
+
     def predict(self, X, method='cc', plot=False):
         assert method == 'cc'
         return self._predict_cc(X)
 
 
-class BinaryAdjustedCount(BaseBinaryClassifyAndCount):
+class BinaryAC(BaseBinaryCC):
+    """
+        Binary Adjusted Count method.
+
+        Just a wrapper to perform adjusted count without the need of every other single methods.
+        The main difference with the general class is the `predict` method that enforces to use AC.
+        """
+
     def predict(self, X, method='ac', plot=False):
         assert method == 'ac'
         return self._predict_ac(X)
 
 
-class BinaryProbabilisticCC(BaseBinaryClassifyAndCount):
+class BinaryPCC(BaseBinaryCC):
+    """
+        Binary Probabilistic Classify And Count method.
+
+        Just a wrapper to perform adjusted count without the need of every other single methods.
+        The main difference with the general class is the `predict` method that enforces to use PCC.
+        """
+
     def predict(self, X, method='pcc', plot=False):
         assert method == 'pcc'
         return self._predict_pcc(X)
 
 
-class BinaryProbabilisticAC(BaseBinaryClassifyAndCount):
+class BinaryPAC(BaseBinaryCC):
+    """
+        Binary Probabilistic Adjusted Count method.
+
+        Just a wrapper to perform adjusted count without the need of every other single methods.
+        The main difference with the general class is the `predict` method that enforces to use PAC.
+        """
+
     def predict(self, X, method='pac', plot=False):
         assert method == 'pac'
         return self._predict_pac(X)
 
 
-class MulticlassClassifyAndCount(BaseMulticlassClassifyAndCount):
+class MulticlassCC(BaseMulticlassCC):
+    """
+        Multiclass Classify And Count method.
+
+        Just a wrapper to perform adjusted count without the need of every other single methods.
+        The main difference with the general class is the `predict` method that enforces to use CC.
+        """
+
     def predict(self, X, method='cc'):
         assert method == 'cc'
         return self._predict_cc(X)
 
 
-class MulticlassAdjustedCount(BaseMulticlassClassifyAndCount):
+class MulticlassAC(BaseMulticlassCC):
+    """
+        Multiclass Adjusted Count method.
+
+        Just a wrapper to perform adjusted count without the need of every other single methods.
+        The main difference with the general class is the `predict` method that enforces to use AC.
+
+        """
+
     def predict(self, X, method='ac'):
         assert method == 'ac'
         return self._predict_ac(X)
 
 
-class MulticlassProbabilisticCC(BaseMulticlassClassifyAndCount):
+class MulticlassPCC(BaseMulticlassCC):
+    """
+        Multiclass Probabilistic Classify And Count method.
+
+        Just a wrapper to perform adjusted count without the need of every other single methods.
+        The main difference with the general class is the `predict` method that enforces to use PCC."""
+
     def predict(self, X, method='pcc'):
         assert method == 'pcc'
         return self._predict_pcc(X)
 
 
-class MulticlassProbabilisticAC(BaseMulticlassClassifyAndCount):
+class MulticlassPAC(BaseMulticlassCC):
+    """
+        Multiclass Probabilistic Adjusted Count method.
+
+        Just a wrapper to perform adjusted count without the need of every other single methods.
+        The main difference with the general class is the `predict` method that enforces to use PAC.
+        """
+
     def predict(self, X, method='pac'):
         assert method == 'pac'
         return self._predict_pac(X)

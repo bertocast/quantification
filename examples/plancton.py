@@ -10,8 +10,8 @@ from sklearn.model_selection import LeaveOneOut
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import SVC
 
-from quantification.classify_and_count.base import BaseMulticlassClassifyAndCount
-from quantification.classify_and_count.ensemble import EnsembleMulticlassCC
+from quantification.cc.base import BaseMulticlassCC
+from quantification.cc.ensemble import EnsembleMulticlassCC
 from quantification.metrics.multiclass import absolute_error, bray_curtis
 
 
@@ -68,12 +68,12 @@ def cc(X, y):
 
         grid = dict(C=[10 ** i for i in xrange(1, 4)], gamma=[10 ** i for i in xrange(-6, 0)])
 
-        cc = BaseMulticlassClassifyAndCount(b=8,
-                                            estimator_class=SVC(class_weight='balanced', kernel='rbf', probability=True,
+        cc = BaseMulticlassCC(b=8,
+                              estimator_class=SVC(class_weight='balanced', kernel='rbf', probability=True,
                                                                 tol=0.1),
-                                            estimator_grid=grid,
-                                            grid_params=dict(scoring=g_mean, verbose=11),
-                                            strategy='macro')
+                              estimator_grid=grid,
+                              grid_params=dict(scoring=g_mean, verbose=11),
+                              strategy='macro')
 
         cc.fit(X_train, y_train, local=True, verbose=True)
 

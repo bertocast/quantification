@@ -4,7 +4,7 @@ from nose.tools import assert_false
 from nose.tools import assert_raises
 from nose.tools import assert_true
 
-from quantification.classify_and_count.ensemble import EnsembleBinaryCC, EnsembleMulticlassCC
+from quantification.cc.ensemble import EnsembleBinaryCC, EnsembleMulticlassCC
 from tests.base import ModelTestCase
 
 
@@ -21,7 +21,7 @@ class TestEnsembleBinaryCC(ModelTestCase):
         cc = EnsembleBinaryCC()
         cc.fit(X, y)
 
-        assert_true(np.all([isinstance(qnf.confusion_matrix_, list) for qnf in cc.qnfs_]))
+        assert_true(np.all([isinstance(qnf.confusion_matrix_, list) for qnf in cc.qnfs]))
 
     def test_predict_returns_feasible_probabilities(self):
         cc = EnsembleBinaryCC()
@@ -57,7 +57,7 @@ class TestEnsembleMulticlassCC(ModelTestCase):
         y = self.mc_y
         cc.fit(X, y)
 
-        for qnf in cc.qnfs_:
+        for qnf in cc.qnfs:
             for cm, tp, fp in zip(qnf.confusion_matrix_, qnf.tp_pa_, qnf.fp_pa_):
                 assert_false(np.any(np.isnan(cm)))
                 assert_false(np.isnan(tp))
