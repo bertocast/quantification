@@ -1,0 +1,16 @@
+:mod:`quantification.cc`.BinaryProbabilisticCC
+=====================================================
+
+.. currentmodule:: quantification.cc
+
+.. autoclass:: BinaryProbabilisticCC
+
+   
+   .. automethod:: __init__
+   
+
+.. include:: quantification.cc.BinaryProbabilisticCC.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>

@@ -1,0 +1,16 @@
+:mod:`quantification.cc`.MulticlassClassifyAndCount
+==========================================================
+
+.. currentmodule:: quantification.cc
+
+.. autoclass:: MulticlassClassifyAndCount
+
+   
+   .. automethod:: __init__
+   
+
+.. include:: quantification.cc.MulticlassClassifyAndCount.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>

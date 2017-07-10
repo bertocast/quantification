@@ -1,0 +1,16 @@
+:mod:`quantification.classify_and_count`.EnsembleMulticlassCC
+====================================================================
+
+.. currentmodule:: quantification.classify_and_count
+
+.. autoclass:: EnsembleMulticlassCC
+
+   
+   .. automethod:: __init__
+   
+
+.. include:: quantification.classify_and_count.EnsembleMulticlassCC.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>

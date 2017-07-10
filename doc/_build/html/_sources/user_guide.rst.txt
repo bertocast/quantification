@@ -1,0 +1,37 @@
+=============
+API Reference
+=============
+
+This is the class and function reference of scikit-learn.
+
+
+.. _cc_ref:
+
+:mod: `quantification.classify_and_count`. Classify and Count methods
+====================================================================================
+
+.. automodule:: quantification.classify_and_count
+   :no-members:
+   :no-inherited-members:
+
+Classes
+-------
+.. currentmodule:: quantification
+
+.. autosummary::
+   :toctree: generated/
+   :hidden:
+   :template: class.rst
+
+   BaseBinaryClassifyAndCount
+   BinaryClassifyAndCount
+   BinaryAdjustedCount
+   BinaryProbabilisticCC
+   BinaryProbabilisticAC
+   BaseMulticlassClassifyAndCount
+   MulticlassClassifyAndCount
+   MulticlassAdjustedCount
+   MulticlassProbabilisticCC
+   MulticlassProbabilisticAC
+   EnsembleBinaryCC
+   EnsembleMulticlassCC

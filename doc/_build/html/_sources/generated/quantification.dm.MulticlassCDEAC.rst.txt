@@ -1,0 +1,16 @@
+:mod:`quantification.dm`.MulticlassCDEAC
+===============================================
+
+.. currentmodule:: quantification.dm
+
+.. autoclass:: MulticlassCDEAC
+
+   
+   .. automethod:: __init__
+   
+
+.. include:: quantification.dm.MulticlassCDEAC.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>

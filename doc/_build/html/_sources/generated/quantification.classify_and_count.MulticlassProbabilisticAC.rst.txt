@@ -1,0 +1,16 @@
+:mod:`quantification.classify_and_count`.MulticlassProbabilisticAC
+=========================================================================
+
+.. currentmodule:: quantification.classify_and_count
+
+.. autoclass:: MulticlassProbabilisticAC
+
+   
+   .. automethod:: __init__
+   
+
+.. include:: quantification.classify_and_count.MulticlassProbabilisticAC.examples
+
+.. raw:: html
+
+    <div class="clearer"></div>
