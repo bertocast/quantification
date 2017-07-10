@@ -1,42 +1,52 @@
-|Codecov|_ 
+.. -*- mode: rst -*-
+
+|Codecov|_
 
 .. |Codecov| image:: https://codecov.io/github/albertorepo/quantification/badge.svg?branch=master&service=github
 .. _Codecov: https://codecov.io/github/albertorepo/quantification?branch=master
 
-## Welcome to GitHub Pages
+PyQuan
+======
 
-You can use the [editor on GitHub](https://github.com/albertorepo/quantification/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+PyQuan is a Python module for quantification learning.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+The project was started in 2016 by Alberto Castaño and Juan José del Coz.
 
-### Markdown
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Installation
+------------
 
-```markdown
-Syntax highlighted code block
+Dependencies
+~~~~~~~~~~~~
 
-# Header 1
-## Header 2
-### Header 3
+PyQuan requires:
 
-- Bulleted
-- List
+- Python (>= 2.7 or >= 3.3)
+- NumPy (>= 1.8.2)
+- SciPy (>= 0.13.3)
+- Sklearn
 
-1. Numbered
-2. List
+User installation
+~~~~~~~~~~~~~~~~~
 
-**Bold** and _Italic_ and `Code` text
+If you already have a working installation of numpy and scipy,
+the easiest way to install PyQuan is using ``pip`` ::
 
-[Link](url) and ![Image](src)
-```
+    pip install -U pip install https://github.com/albertorepo/quantification/archive/master.zip
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
 
-### Jekyll Themes
+Source code
+~~~~~~~~~~~
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/albertorepo/quantification/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+You can check the latest sources with the command::
 
-### Support or Contact
+    git clone https://github.com/albertorepo/quantification.git
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+
+Testing
+~~~~~~~
+
+After installation, you can launch the test suite from outside the
+source directory (you will need to have the ``nose`` package installed)::
+
+    nosetests -v quantification
