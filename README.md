@@ -1,3 +1,8 @@
+|Codecov|_ 
+
+.. |Codecov| image:: https://codecov.io/github/albertorepo/quantification/badge.svg?branch=master&service=github
+.. _Codecov: https://codecov.io/github/albertorepo/quantification?branch=master
+
 ## Welcome to GitHub Pages
 
 You can use the [editor on GitHub](https://github.com/albertorepo/quantification/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
