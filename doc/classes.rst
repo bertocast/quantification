@@ -63,3 +63,32 @@ Classes
    dm.BinaryEnsembleEM
    dm.MulticlassEnsembleHDy
    dm.MulticlassEnsembleEM
+
+
+.. _metrics_ref:
+
+:mod:`quantification.metrics`. Quantification metrics
+======================================================
+
+.. automodule:: quantification.metrics
+   :no-members:
+   :no-inherited-members:
+
+Functions
+---------
+.. currentmodule:: quantification
+
+.. autosummary::
+   :toctree: generated/
+   :template: function.rst
+   
+   metrics.bias
+   metrics.square_error
+   metrics.kl_divergence
+   metrics.absolute_error
+   metrics.normalized_absolute_error
+   metrics.relative_absolute_error
+   metrics.symmetric_absolute_error
+   metrics.normalized_square_score
+   metrics.normalized_relative_absolute_error
+   metrics.bray_curtis

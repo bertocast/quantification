@@ -6,7 +6,7 @@ SPHINXOPTS    =
 SPHINXBUILD   = python -msphinx
 SPHINXPROJ    = quantification
 SOURCEDIR     = .
-BUILDDIR      = _build
+BUILDDIR      = /Users/albertocastano/PycharmProjects/quandocs
 
 # Put it first so that "make" without argument is like "make help".
 help:
