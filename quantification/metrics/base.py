@@ -9,7 +9,7 @@ def check_array_and_consistent_length(p_true, p_pred):
     return p_true, p_pred
 
 
-def binary_kl_divergence(p_true, p_pred):
+def binary_kl_divergence(p_true, p_pred, eps=1e-12):
     """Also known as discrimination information, relative entropy or normalized cross-entropy
     (see [Esuli and Sebastiani 2010; Forman 2008]). KL Divergence is a special case of the family of f-divergences and
     it can be defined for binary quantification.
@@ -22,9 +22,7 @@ def binary_kl_divergence(p_true, p_pred):
     p_pred : float
         Predicted prevalence.
     """
-    if p_pred == 0:
-        raise NotImplementedError
-    kl = np.sum(p_true * np.log(p_true / p_pred))
+    kl = np.sum(p_true * np.log((p_true + eps) / (p_pred + eps)))
     return kl
 
 
