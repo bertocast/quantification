@@ -24,8 +24,8 @@ def binary_kl_divergence(p_true, p_pred):
     """
     if p_pred == 0:
         raise NotImplementedError
-    kl = [p_p * np.log(p_t / p_p) for p_p, p_t in zip(p_pred, p_true)]
-    return np.sum(kl)
+    kl = np.sum(p_true * np.log(p_true / p_pred))
+    return kl
 
 
 def multiclass_kl_divergence(p_true, p_pred):

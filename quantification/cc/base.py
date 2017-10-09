@@ -727,6 +727,15 @@ class BinaryCC(BaseBinaryCC):
         assert method == 'cc'
         return self._predict_cc(X)
 
+    def _compute_performance(self, X, y, local, verbose, cv=50):
+        pass
+
+    def _compute_distribution(self, X, y, plot):
+        pass
+
+    def _compute_distribution_piramidal(self, X, y, plot=False):
+        pass
+
 
 class BinaryAC(BaseBinaryCC):
     """
