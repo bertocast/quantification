@@ -313,8 +313,8 @@ class BaseBinaryCC(BaseClassifyAndCountModel):
 
     def _predict_ac(self, X):
         """Compute the prevalence following the Adjusted Count strategy"""
-        probabilities = self._predict_cc(X)
-        adjusted = np.clip((probabilities[1] - self.fpr_) / float(self.tpr_ - self.fpr_), 0, 1)
+        prevalence = self._predict_cc(X)
+        adjusted = np.clip((prevalence - self.fpr_) / float(self.tpr_ - self.fpr_), 0, 1)
         return adjusted
 
     def _predict_pcc(self, X):
@@ -330,9 +330,8 @@ class BaseBinaryCC(BaseClassifyAndCountModel):
 
     def _predict_pac(self, X):
         """Compute the prevalence following the Probabilistic Adjusted Count strategy"""
-        predictions = self._predict_pcc(X)
-        neg = np.clip((predictions[0] - self.fp_pa_) / float(self.tp_pa_ - self.fp_pa_), 0, 1)
-        pos = np.clip((predictions[1] - self.fn_pa_) / float(self.tn_pa_ - self.fn_pa_), 0, 1)
+        prevalence = self._predict_pcc(X)
+        pos = np.clip((prevalence - self.fn_pa_) / float(self.tn_pa_ - self.fn_pa_), 0, 1)
         return pos
 
     def _predict_hdy(self, X, plot):
