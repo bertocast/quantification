@@ -22,10 +22,9 @@ def binary_kl_divergence(p_true, p_pred, eps=1e-12):
     p_pred : float
         Predicted prevalence.
     """
-    p_true += eps
-    p_pred += eps
 
-    kl = p_true * np.log(p_true / p_pred) + (1 - p_true) * np.log((1 - p_true) / (1 - p_pred))
+    kl = (p_true + eps) * np.log((p_true + eps) / (p_pred + eps)) + (1 - p_true + eps) * np.log(
+        (1 - p_true + eps) / (1 - p_pred + eps))
     return kl
 
 
