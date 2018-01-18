@@ -309,13 +309,13 @@ class BaseBinaryCC(BaseClassifyAndCountModel):
         predictions = self.estimator_.predict(X)
         freq = np.bincount(predictions, minlength=2)
         relative_freq = freq / float(np.sum(freq))
-        return relative_freq
+        return relative_freq[1]
 
     def _predict_ac(self, X):
         """Compute the prevalence following the Adjusted Count strategy"""
         probabilities = self._predict_cc(X)
         adjusted = np.clip((probabilities[1] - self.fpr_) / float(self.tpr_ - self.fpr_), 0, 1)
-        return np.array([1 - adjusted, adjusted])
+        return adjusted
 
     def _predict_pcc(self, X):
         """Compute the prevalence following the Probabilistic Classify and Count strategy"""
@@ -326,14 +326,14 @@ class BaseBinaryCC(BaseClassifyAndCountModel):
                              "with hard (crisp) classifiers like %s", self.estimator_.__class__.__name__)
 
         p = np.mean(predictions, axis=0)
-        return np.array(p)
+        return p[1]
 
     def _predict_pac(self, X):
         """Compute the prevalence following the Probabilistic Adjusted Count strategy"""
         predictions = self._predict_pcc(X)
         neg = np.clip((predictions[0] - self.fp_pa_) / float(self.tp_pa_ - self.fp_pa_), 0, 1)
         pos = np.clip((predictions[1] - self.fn_pa_) / float(self.tn_pa_ - self.fn_pa_), 0, 1)
-        return np.array([neg, pos])
+        return pos
 
     def _predict_hdy(self, X, plot):
         """Compute the prevalence by applying HDy algorithm."""
@@ -365,7 +365,7 @@ class BaseBinaryCC(BaseClassifyAndCountModel):
 
         p_min = np.argmin(hd)
         prevalence = probas[p_min]
-        return np.array([1 - prevalence, prevalence])
+        return prevalence
 
     def _predict_hdy_piramidal(self, X, plot):
         """compute the prevalence by applying HDy algorithm using a piramidal estimationg of the distributions."""
