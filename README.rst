@@ -32,7 +32,7 @@ User installation
 If you already have a working installation of numpy and scipy,
 the easiest way to install PyQuan is using ``pip`` ::
 
-    pip install -U pip install https://github.com/albertorepo/quantification/archive/master.zip
+    pip install -U https://github.com/albertorepo/quantification/archive/master.zip
 
 
 Source code
