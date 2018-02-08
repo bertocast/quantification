@@ -22,11 +22,11 @@ def main():
     prev_true = prev_true[1]
 
     # Get the predicted prevalences using every of the methods available in the BaseBinaryCC
-    prev_cc = qnf.predict(X, method='cc')[1]
-    prev_ac = qnf.predict(X, method='ac')[1]
-    prev_pcc = qnf.predict(X, method='pcc')[1]
-    prev_pac = qnf.predict(X, method='pac')[1]
-    prev_hdy= qnf.predict(X, method='hdy')[1]
+    prev_cc = qnf.predict(X, method='cc')
+    prev_ac = qnf.predict(X, method='ac')
+    prev_pcc = qnf.predict(X, method='pcc')
+    prev_pac = qnf.predict(X, method='pac')
+    prev_hdy= qnf.predict(X, method='hdy')
 
     formatter = "{:<4}{:>15.2f}"
     print(formatter.format("True", prev_true))

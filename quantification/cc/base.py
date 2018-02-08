@@ -6,7 +6,7 @@ import six
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV
 from sklearn.multiclass import OneVsOneClassifier
-
+from copy import deepcopy
 from quantification.base import BasicModel
 from quantification.metrics import distributed, model_score
 
@@ -486,7 +486,7 @@ class BaseMulticlassCC(BaseClassifyAndCountModel):
                 clf = clf.fit(X, y_bin)
                 if isinstance(clf, GridSearchCV):
                     clf = clf.best_estimator_
-                self.estimators_[pos_class] = clf
+                self.estimators_[pos_class] = deepcopy(clf)
                 if verbose:
                     print "\tComputing performance..."
                 self._compute_performance_ova(X, y_bin, pos_class, folds=cv, local=local, verbose=verbose)
