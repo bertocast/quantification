@@ -16,14 +16,14 @@ def binary_kl_divergence(p_true, p_pred, eps=1e-12):
 
     Parameters
     ----------
-    p_true : float
-        True prevalence.
+    p_true : array_like, shape = (n_samples)
+        True binary prevalences.
 
-    p_pred : float
-        Predicted prevalence.
+    p_pred : array_like, shape = (n_samples)
+        Predicted binary prevalences.
     """
 
-    kl = (p_true + eps) * np.log((p_true + eps) / (p_pred + eps)) + (1 - p_true + eps) * np.log(
+    kl = (p_true + eps) * np.log2((p_true + eps) / (p_pred + eps)) + (1 - p_true + eps) * np.log2(
         (1 - p_true + eps) / (1 - p_pred + eps))
     return kl
 
@@ -35,16 +35,16 @@ def multiclass_kl_divergence(p_true, p_pred):
 
     Parameters
     ----------
-    p_true : array_like, shape=(n_classes)
-        True prevalences. In case of binary quantification, this parameter could be a single float value.
+    p_true : array_like, shape = (n_classes)
+        True prevalences.
 
-    p_pred : array_like, shape=(n_classes)
-        Predicted prevalences. In case of binary quantification, this parameter could be a single float value.
+    p_pred : array_like, shape = (n_classes)
+        Predicted prevalences.
     """
     p_true, p_pred = check_array_and_consistent_length(p_true, p_pred)
     if np.any(p_pred == 0):
         raise NotImplementedError
-    return np.sum(p_true * np.log(p_true / p_pred))
+    return np.sum(p_true * np.log2(p_true / p_pred))
 
 
 def bias(p_true, p_pred):
