@@ -727,10 +727,12 @@ class BinaryCC(BaseBinaryCC):
         return self._predict_cc(X)
 
     def _compute_performance(self, X, y, local, verbose, cv=50):
-        pass
+        self.confusion_matrix_ = np.full((2, 2), np.nan)
+        self.tpr_ = np.nan
+        self.fpr_ = np.nan
 
     def _compute_distribution(self, X, y, plot):
-        pass
+        self.train_dist_ = np.full((self.b, 2), np.nan)
 
     def _compute_distribution_piramidal(self, X, y, plot=False):
         pass
@@ -755,12 +757,23 @@ class BinaryPCC(BaseBinaryCC):
 
         Just a wrapper to perform adjusted count without the need of every other single methods.
         The main difference with the general class is the `predict` method that enforces to use PCC.
+        Moreover, tihs class will not compute some parameters that are not needed and only will slow the process.
         """
 
     def predict(self, X, method='pcc', plot=False):
         assert method == 'pcc'
         return self._predict_pcc(X)
 
+    def _compute_performance(self, X, y, local, verbose, cv=50):
+        self.confusion_matrix_ = np.full((2, 2), np.nan)
+        self.tpr_ = np.nan
+        self.fpr_ = np.nan
+
+    def _compute_distribution(self, X, y, plot):
+        self.train_dist_ = np.full((self.b, 2), np.nan)
+
+    def _compute_distribution_piramidal(self, X, y, plot=False):
+        pass
 
 class BinaryPAC(BaseBinaryCC):
     """
