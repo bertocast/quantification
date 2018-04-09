@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
@@ -249,14 +251,11 @@ class BaseBinaryCC(BaseClassifyAndCountModel):
             predictions = self.estimator_.predict_proba(X)
         except AttributeError:
             return
-        self.tp_pa_ = np.sum(predictions[y == self.estimator_.classes_[0], 0]) / \
-                      np.sum(y == self.estimator_.classes_[0])
-        self.fp_pa_ = np.sum(predictions[y == self.estimator_.classes_[1], 0]) / \
+        self.tp_pa_ = np.sum(predictions[y == self.estimator_.classes_[1], 1]) / \
                       np.sum(y == self.estimator_.classes_[1])
-        self.tn_pa_ = np.sum(predictions[y == self.estimator_.classes_[1], 1]) / \
-                      np.sum(y == self.estimator_.classes_[1])
-        self.fn_pa_ = np.sum(predictions[y == self.estimator_.classes_[0], 1]) / \
+        self.fp_pa_ = np.sum(predictions[y == self.estimator_.classes_[0], 1]) / \
                       np.sum(y == self.estimator_.classes_[0])
+
 
     def _compute_distribution(self, X, y, plot):
         """Compute the distributions of each of the classes and store them. If plot is set to True, both histograms
@@ -331,7 +330,7 @@ class BaseBinaryCC(BaseClassifyAndCountModel):
     def _predict_pac(self, X):
         """Compute the prevalence following the Probabilistic Adjusted Count strategy"""
         prevalence = self._predict_pcc(X)
-        pos = np.clip((prevalence - self.fn_pa_) / float(self.tn_pa_ - self.fn_pa_), 0, 1)
+        pos = np.clip((prevalence - self.fp_pa_) / float(self.tp_pa_ - self.fp_pa_), 0, 1)
         return pos
 
     def _predict_hdy(self, X, plot):
@@ -477,8 +476,8 @@ class BaseMulticlassCC(BaseClassifyAndCountModel):
             # TODO: Use sklearn's OneVsAllClassifier
             for pos_class in self.classes_:
                 if verbose:
-                    print "Class {}/{}".format(pos_class + 1, n_classes)
-                    print "\tFitting  classifier..."
+                    print("Class {}/{}".format(pos_class + 1, n_classes))
+                    print("\tFitting  classifier...")
                 mask = (y == pos_class)
                 y_bin = np.ones(y.shape, dtype=np.int)
                 y_bin[~mask] = 0
@@ -488,26 +487,26 @@ class BaseMulticlassCC(BaseClassifyAndCountModel):
                     clf = clf.best_estimator_
                 self.estimators_[pos_class] = deepcopy(clf)
                 if verbose:
-                    print "\tComputing performance..."
+                    print("\tComputing performance...")
                 self._compute_performance_ova(X, y_bin, pos_class, folds=cv, local=local, verbose=verbose)
                 if self.b:
                     if verbose:
-                        print "\tComputing distribution..."
+                        print("\tComputing distribution...")
                     self._compute_distribution_ova(clf, X, y_bin, pos_class)
         elif self.multiclass == 'ovo':
             clf = self._make_estimator()
             model = OneVsOneClassifier(clf)
 
             if verbose:
-                print "Fitting classifiers..."
+                print("Fitting classifiers...")
             model.fit(X, y)
             self.clf = model
             if verbose:
-                print "Computing performance..."
+                print("Computing performance...")
             self._compute_performance_ovo(X, y, folds=cv, local=local, verbose=verbose)
             if self.b:
                 if verbose:
-                    print "\tComputing distribution..."
+                    print("\tComputing distribution...")
                 self._compute_distribution_ovo(clf, X, y)
 
         return self
