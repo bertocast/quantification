@@ -1,3 +1,4 @@
+from __future__ import print_function
 import numpy as np
 from sklearn.utils import check_consistent_length, check_array
 

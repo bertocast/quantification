@@ -1,3 +1,4 @@
+from __future__ import print_function
 import numpy as np
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import StratifiedKFold
@@ -10,11 +11,11 @@ def cv_confusion_matrix(clf, X, y, folds=50, verbose=False):
     cms = []
 
     if verbose:
-        print "Computing cross-validation confusion matrix"
+        print("Computing cross-validation confusion matrix")
 
     for n, (train, test) in enumerate(cv_iter):
         if verbose:
-            print "\t{}/{}".format(n+1, folds)
+            print("\t{}/{}".format(n+1, folds))
         clf.fit(X[train,], y[train])
         cm = confusion_matrix(y[test], clf.predict(X[test]), labels=clf.classes_)
         cms.append(cm)
