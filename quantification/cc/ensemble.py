@@ -1,3 +1,4 @@
+from __future__ import print_function
 import functools
 import logging
 from copy import deepcopy
@@ -269,7 +270,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
         else:
             for n, (X_sample, y_sample) in enumerate(zip(X, y)):
                 if verbose:
-                    print "Processing sample {}/{}".format(n + 1, len(y))
+                    print("Processing sample {}/{}".format(n + 1, len(y)))
                 qnf, classes = self._fit_and_get_distributions(X_sample, y_sample, verbose)
                 for cls in classes:
                     self.cls_smp_[cls].append(n)
@@ -277,7 +278,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
 
         for pos_class in self.classes_:
             if verbose:
-                print "Computing performance for classifiers of class {}".format(pos_class + 1)
+                print("Computing performance for classifiers of class {}".format(pos_class + 1))
             for sample in self.cls_smp_[pos_class]:
                 self.qnfs[sample] = self._performance(self.cls_smp_[pos_class], sample, pos_class, X, y)
 
@@ -305,7 +306,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
                 invalid_classes.append(cls)
                 continue
             if verbose:
-                print "\tFitting classifier for class {}".format(cls + 1)
+                print("\tFitting classifier for class {}".format(cls + 1))
             clf = qnf._make_estimator()
             clf = clf.fit(X_sample, y_bin)
             if isinstance(clf, GridSearchCV):
@@ -313,7 +314,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
             qnf.estimators_[cls] = clf
             if self.b:
                 if verbose:
-                    print "\tComputing distribution for classifier of class {}".format(cls + 1)
+                    print("\tComputing distribution for classifier of class {}".format(cls + 1))
                 pos_class = clf.classes_[1]
                 neg_class = clf.classes_[0]
                 pos_preds = clf.predict_proba(X_sample[y_bin == pos_class,])[:, 1]
@@ -521,7 +522,7 @@ class EnsembleMulticlassCC(BaseEnsembleCCModel):
 
         cls_prevalences = {k: [] for k in self.classes_}
         for n, qnf in enumerate(self.qnfs):
-            print "\rPredicting by quantifier {}/{}".format(n, len(self.qnfs)),
+            print("\rPredicting by quantifier {}/{}".format(n, len(self.qnfs)), end='')
             probs = qnf.predict(X)
             for m, cls in enumerate(qnf.classes_):
                 cls_prevalences[cls].append(probs[m])
