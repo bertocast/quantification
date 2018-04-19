@@ -18,7 +18,7 @@ def cv_confusion_matrix(clf, X, y, folds=50, verbose=False):
     for n, (train, test) in enumerate(cv_iter):
         if verbose:
             print("\t{}/{}".format(n+1, folds))
-            clf_c.fit(X[train,], y[train])
+        clf_c.fit(X[train,], y[train])
         cm = confusion_matrix(y[test], clf_c.predict(X[test]), labels=clf_c.classes_)
         cms.append(cm)
     return np.array(cms)
