@@ -571,7 +571,7 @@ class EDy(BaseCC):
         K = np.zeros((n_classes, n_classes))
         Kt = np.zeros(n_classes)
 
-        repr_train = np.zeros((len(self.y_train), n_classes))
+        repr_train = self.train_dist_
         repr_test = np.zeros((len(X), n_classes))
 
         for n, clf in self.estimators_.iteritems():
@@ -617,8 +617,22 @@ class EDy(BaseCC):
     def distance(self, p, q):
         return np.square(p[:, None] - q).sum()
 
-    def _compute_distribution(self, clf, X, y_bin, cls):
-        pass
+    def _compute_distribution(self, X, y):
+        if len(self.classes_) == 1:
+            pos_preds = self.estimators_[1].predict_proba(X[y == 1])[:, 1]
+            neg_preds = self.estimators_[1].predict_proba(X[y == 0])[:, 1]
+            self.train_dist_= np.vstack([pos_preds, neg_preds])
+        else:
+            for n_cls, cls in enumerate(self.classes_):
+                mask = (y == cls)
+                y_bin = np.ones(y.shape, dtype=np.int)
+                y_bin[~mask] = 0
+
+                for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
+                    preds = clf.predict_proba(X[y == cls])[:, 1]
+                    self.train_dist_[n_cls, :, n_clf] = preds
+
+
 
     def _compute_performance(self, X, y, pos_class, folds, local, verbose):
         pass

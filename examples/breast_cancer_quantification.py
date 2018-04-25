@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 from quantification.cc import BaseCC
-from quantification.dm.base import EDx
+from quantification.dm.base import EDx, EDy
 
 
 def main():
@@ -50,10 +50,9 @@ def main():
     edx.fit(X_train, y_train)
     prev_edx = edx.predict(X_test)[1]
 
-
-    # edy = MulticlassEDy()
-    # edy.fit(X_train, y_train)
-    # prev_edy = edy.predict(X_test)[1]
+    edy = EDy()
+    edy.fit(X_train, y_train)
+    prev_edy = edy.predict(X_test)[1]
 
     formatter = "{:<4}{:>15.4f}"
     print(formatter.format("True", prev_true))
@@ -63,7 +62,7 @@ def main():
     print(formatter.format("PAC", prev_pac))
     print(formatter.format("HDy", prev_hdy))
     print(formatter.format("EDx", prev_edx))
-    #print(formatter.format("EDy", prev_edy))
+    print(formatter.format("EDy", prev_edy))
 
 
 if __name__ == '__main__':

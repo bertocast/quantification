@@ -173,7 +173,7 @@ class BaseCC(BaseClassifyAndCountModel):
         if self.b:
             if verbose:
                 print("\tComputing distribution...")
-            self._compute_distribution(X, y)
+        self._compute_distribution(X, y)
 
         return self
 
@@ -208,6 +208,9 @@ class BaseCC(BaseClassifyAndCountModel):
                                  np.sum(y == self.estimators_[pos_class].classes_[0])
 
     def _compute_distribution(self, X, y):
+
+        if not self.b:
+            return
 
         if len(self.classes_) == 1:
             # If it is a binary problem, add the representation of the negative samples
