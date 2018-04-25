@@ -552,7 +552,7 @@ class EDx(BaseCC):
     def distance(self, p, q):
         return np.square(p[:, None] - q).sum()
 
-    def _compute_distribution(self, clf, X, y_bin, cls):
+    def _compute_distribution(self, X, y):
         pass
 
     def _compute_performance(self, X, y, pos_class, folds, local, verbose):
