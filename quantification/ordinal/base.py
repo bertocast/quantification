@@ -16,7 +16,7 @@ class OQT():
             y_bin[~mask] = 0
 
             clf = LinearRegression()
-            pass
+
 
     def predict(self, X):
         pass
