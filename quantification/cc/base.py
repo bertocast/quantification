@@ -141,7 +141,6 @@ class BaseCC(BaseClassifyAndCountModel):
         self.classes_ = np.unique(y).tolist()
         n_classes = len(self.classes_)
 
-        n_clfs = n_classes  # OvA
         self.fpr_ = dict.fromkeys(self.classes_)
         self.tpr_ = dict.fromkeys(self.classes_)
 
@@ -153,8 +152,7 @@ class BaseCC(BaseClassifyAndCountModel):
 
         self.tp_pa_ = dict.fromkeys(self.classes_)
         self.fp_pa_ = dict.fromkeys(self.classes_)
-        if self.b:
-            self.train_dist_ = np.zeros((n_classes, self.b, n_clfs))
+
         for pos_class in self.classes_:
             if verbose:
                 print("Class {}/{}".format(pos_class + 1, n_classes))
@@ -211,6 +209,10 @@ class BaseCC(BaseClassifyAndCountModel):
 
         if not self.b:
             return
+
+        n_classes = len(self.classes_)
+        n_clfs = n_classes  # OvA
+        self.train_dist_ = np.zeros((n_classes, self.b, n_clfs))
 
         if len(self.classes_) == 1:
             # If it is a binary problem, add the representation of the negative samples
