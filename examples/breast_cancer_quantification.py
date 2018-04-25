@@ -46,9 +46,9 @@ def main():
     prev_pac = qnf.predict(X_test, method='pac')[1]
     prev_hdy= qnf.predict(X_test, method='hdy')[1]
 
-    #edx = EDx()
-    #edx.fit(X_train, y_train)
-    #prev_edx = edx.predict(X_test)[1]
+    edx = EDx()
+    edx.fit(X_train, y_train)
+    prev_edx = edx.predict(X_test)[1]
 
 
     # edy = MulticlassEDy()
@@ -62,7 +62,7 @@ def main():
     print(formatter.format("PCC", prev_pcc))
     print(formatter.format("PAC", prev_pac))
     print(formatter.format("HDy", prev_hdy))
-    #print(formatter.format("EDx", prev_edx))
+    print(formatter.format("EDx", prev_edx))
     #print(formatter.format("EDy", prev_edy))
 
 

@@ -141,11 +141,6 @@ class BaseCC(BaseClassifyAndCountModel):
         self.classes_ = np.unique(y).tolist()
         n_classes = len(self.classes_)
 
-
-        if n_classes == 2:
-            self.classes_ = self.classes_[1:]
-            n_classes = 1
-
         n_clfs = n_classes  # OvA
         self.fpr_ = dict.fromkeys(self.classes_)
         self.tpr_ = dict.fromkeys(self.classes_)
@@ -214,21 +209,25 @@ class BaseCC(BaseClassifyAndCountModel):
 
     def _compute_distribution(self, X, y):
 
-        for n_cls, cls in enumerate(self.classes_):
-            mask = (y == cls)
-            y_bin = np.ones(y.shape, dtype=np.int)
-            y_bin[~mask] = 0
-
-            for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
-                preds = clf.predict_proba(X[y == cls])[:, 1]
-                pdf, _ = np.histogram(preds, bins=self.b)
-                self.train_dist_[n_cls, :, n_clf] = pdf / float(sum(y_bin))
-
         if len(self.classes_) == 1:
             # If it is a binary problem, add the representation of the negative samples
-            preds = self.estimators_[1].predict_proba(X[y == 0])[:, 1]
-            pdf, _ = np.histogram(preds, bins=self.b)
-            self.train_dist_= np.vstack([(pdf / float(sum(y == 0)))[None, :, None], self.train_dist_])
+            pos_preds = self.estimators_[1].predict_proba(X[y == 1])[:, 1]
+            neg_preds = self.estimators_[1].predict_proba(X[y == 0])[:, 1]
+            pos_pdf, _ = np.histogram(pos_preds, bins=self.b)
+            neg_pdf, _ = np.histogram(neg_preds, bins=self.b)
+            self.train_dist_= np.vstack([(pos_pdf / float(sum(y == 1)))[None, :, None], (pos_pdf / float(sum(y == 0)))[None, :, None]])
+        else:
+            for n_cls, cls in enumerate(self.classes_):
+                mask = (y == cls)
+                y_bin = np.ones(y.shape, dtype=np.int)
+                y_bin[~mask] = 0
+
+                for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
+                    preds = clf.predict_proba(X[y == cls])[:, 1]
+                    pdf, _ = np.histogram(preds, bins=self.b)
+                    self.train_dist_[n_cls, :, n_clf] = pdf / float(sum(y_bin))
+
+
 
 
 
