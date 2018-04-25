@@ -214,7 +214,7 @@ class BaseCC(BaseClassifyAndCountModel):
         n_clfs = n_classes  # OvA
         self.train_dist_ = np.zeros((n_classes, self.b, n_clfs))
 
-        if len(self.classes_) == 1:
+        if len(self.classes_) == 2:
             # If it is a binary problem, add the representation of the negative samples
             pos_preds = self.estimators_[1].predict_proba(X[y == 1])[:, 1]
             neg_preds = self.estimators_[1].predict_proba(X[y == 0])[:, 1]
@@ -337,13 +337,13 @@ class BaseCC(BaseClassifyAndCountModel):
             pdf, _ = np.histogram(clf.predict_proba(X)[:, 1], self.b)
             test_dist[:, n_clf] = pdf / float(X.shape[0])
 
-        if n_classes == 1:
+        if n_classes == 2:
             p_combs = np.linspace(0, 1, 101)[:, None]
 
         else:
             num_combs = 101
-            p = np.linspace(0, 1, num_combs)
-            p_combs = np.array(np.meshgrid(*([p] * (n_classes - 1)))).T.reshape(-1, (n_classes - 1))
+            ps = np.linspace(0, 1, num_combs)
+            p_combs = np.array(np.meshgrid(*([ps] * (n_classes - 1)))).T.reshape(-1, (n_classes - 1))
             p_combs = p_combs[p_combs.sum(1) <= 1.]
 
         p_combs = np.hstack([p_combs, 1 - p_combs.sum(axis=1, keepdims=True)])

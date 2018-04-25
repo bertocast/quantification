@@ -572,19 +572,21 @@ class EDy(BaseCC):
         Kt = np.zeros(n_classes)
 
         repr_train = self.train_dist_
-        repr_test = np.zeros((len(X), n_classes))
+        if n_classes == 2:
+            repr_test = self.estimators_[1].predict_proba(X)[:, 1]
+        else:
+            repr_test = np.zeros((len(X), n_classes))
 
-        for n, clf in self.estimators_.iteritems():
-            repr_train[..., n] = clf.predict_proba(self.X_train)[..., 1]
-            repr_test[..., n] = clf.predict_proba(X)[..., 1]
+            for n, clf in self.estimators_.iteritems():
+                repr_test[..., n] = clf.predict_proba(X)[..., 1]
 
         for i in range(n_classes):
-            K[i, i] = self.distance(repr_train[self.y_train == self.classes_[i]],
-                                    repr_train[self.y_train == self.classes_[i]])
-            Kt[i] = self.distance(repr_train[self.y_train == self.classes_[i]], repr_test)
+            K[i, i] = self.distance(repr_train[self.classes_[i]],
+                                    repr_train[self.classes_[i]])
+            Kt[i] = self.distance(repr_train[self.classes_[i]], repr_test)
             for j in range(i + 1, n_classes):
-                K[i, j] = self.distance(repr_train[self.y_train == self.classes_[i]],
-                                        repr_train[self.y_train == self.classes_[j]])
+                K[i, j] = self.distance(repr_train[self.classes_[i]],
+                                        repr_train[self.classes_[j]])
                 K[j, i] = K[i, j]
 
         train_cls = np.array(np.bincount(self.y_train))[:, np.newaxis]
@@ -604,9 +606,12 @@ class EDy(BaseCC):
         t = - Kt[:-1] + K[:-1, -1] + Kt[-1] - K[-1, -1]
 
         G = 2 * B
+        if not is_pd(G):
+            G = nearest_pd(G)
+
         a = 2 * t
-        C = np.array([[-1, -1], [1, 0], [0, 1]], dtype=np.float).T
-        b = np.array([-1, 0, 0], dtype=np.float)
+        C = np.vstack([- np.ones((1, n_classes - 1)), np.eye(n_classes - 1)]).T
+        b = np.array([-1] + [0] * (n_classes - 1), dtype=np.float)
         sol = quadprog.solve_qp(G=G,
                                 a=a, C=C, b=b)
 
@@ -618,10 +623,14 @@ class EDy(BaseCC):
         return np.square(p[:, None] - q).sum()
 
     def _compute_distribution(self, X, y):
-        if len(self.classes_) == 1:
+
+        n_classes = len(self.classes_)
+        self.train_dist_ = dict.fromkeys(self.classes_)
+        if len(self.classes_) == 2:
             pos_preds = self.estimators_[1].predict_proba(X[y == 1])[:, 1]
             neg_preds = self.estimators_[1].predict_proba(X[y == 0])[:, 1]
-            self.train_dist_= np.vstack([pos_preds, neg_preds])
+            self.train_dist_[0] = neg_preds
+            self.train_dist_[1] = pos_preds
         else:
             for n_cls, cls in enumerate(self.classes_):
                 mask = (y == cls)
