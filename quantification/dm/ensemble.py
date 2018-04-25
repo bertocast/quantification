@@ -1,7 +1,7 @@
 import numpy as np
 
 from quantification.cc.ensemble import EnsembleMulticlassCC, EnsembleBinaryCC, BaseEnsembleCCModel
-from quantification.dm.base import BinaryEM, MulticlassEM
+from quantification.dm.base import EM
 
 
 class BinaryEnsembleHDy(EnsembleBinaryCC):
@@ -30,7 +30,7 @@ class BinaryEnsembleEM(BaseEnsembleCCModel):
         for n, (X_sample, y_sample) in enumerate(zip(X, y)):
             if len(np.unique(y_sample)) < 2:
                 continue
-            qnf = BinaryEM(estimator_class=self.estimator_class, estimator_params=self.estimator_params,
+            qnf = EM(estimator_class=self.estimator_class, estimator_params=self.estimator_params,
                            estimator_grid=self.estimator_grid, tol=self.tol)
 
             qnf.fit(X, y)
@@ -72,7 +72,7 @@ class MulticlassEnsembleEM(BaseEnsembleCCModel):
                 if verbose:
                     print "\tFitting classifier for class {}".format(cls + 1)
 
-                qnf = BinaryEM(estimator_class=self.estimator_class, estimator_params=self.estimator_params,
+                qnf = EM(estimator_class=self.estimator_class, estimator_params=self.estimator_params,
                                estimator_grid=self.estimator_grid, tol=self.tol)
                 qnf = qnf.fit(X_sample, y_bin)
                 self.qnfs_[cls].append(qnf)

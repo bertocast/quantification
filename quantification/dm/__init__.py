@@ -1,14 +1,11 @@
-from .base import BinaryHDy, BinaryEM, BinaryCDEAC, BinaryCDEIter
-from .base import MulticlassHDy, MulticlassEM, MulticlassCDEAC, MulticlassCDEIter
+from .base import HDy, EM, CDEAC, CDEIter
 from .ensemble import BinaryEnsembleHDy, BinaryEnsembleEM
 from .ensemble import MulticlassEnsembleHDy, MulticlassEnsembleEM
 
-__all__ = ["BinaryHDy",
-           "BinaryEM",
-           "BinaryCDEIter",
-           "MulticlassHDy",
-           "MulticlassEM",
-           "MulticlassCDEIter",
+__all__ = ["HDy",
+           "EM",
+           "CDEAC",
+           "CDEIter"
            "BinaryEnsembleHDy",
            "BinaryEnsembleEM",
            "MulticlassEnsembleHDy",

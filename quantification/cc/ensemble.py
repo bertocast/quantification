@@ -10,8 +10,7 @@ from sklearn.metrics import confusion_matrix
 import numpy as np
 from sklearn.model_selection import GridSearchCV
 
-from quantification.cc.base import BaseClassifyAndCountModel, BaseBinaryCC, \
-    BaseMulticlassCC
+from quantification.cc.base import BaseClassifyAndCountModel
 from quantification.utils.errors import ClusterException
 
 

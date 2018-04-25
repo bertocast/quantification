@@ -1,19 +1,12 @@
-from .base import BaseBinaryCC, BinaryCC, BinaryAC, BinaryPCC, \
-    BinaryPAC
-from .base import BaseMulticlassCC, MulticlassCC, MulticlassAC, \
-    MulticlassPCC, MulticlassPAC
+from .base import BaseCC, CC, AC, \
+    PCC, PAC
 from .ensemble import EnsembleBinaryCC, EnsembleMulticlassCC
 
-__all__ = ["BaseBinaryCC",
-           "BinaryCC",
-           "BinaryAC",
-           "BinaryPCC",
-           "BinaryPAC",
-           "BaseMulticlassCC",
-           "MulticlassCC",
-           "MulticlassAC",
-           "MulticlassPCC",
-           "MulticlassPAC",
+__all__ = [
+           "CC",
+           "AC",
+           "PCC",
+           "PAC",
            "EnsembleBinaryCC",
            "EnsembleMulticlassCC"
            ]
