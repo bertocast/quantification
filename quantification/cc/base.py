@@ -141,19 +141,29 @@ class BaseCC(BaseClassifyAndCountModel):
         self.classes_ = np.unique(y).tolist()
         n_classes = len(self.classes_)
 
-        self.fpr_ = dict.fromkeys(self.classes_)
-        self.tpr_ = dict.fromkeys(self.classes_)
+
 
         if not local:
             self._persist_data(X, y)
 
-        self.estimators_ = dict.fromkeys(self.classes_)
-        self.confusion_matrix_ = dict.fromkeys(self.classes_)
 
-        self.tp_pa_ = dict.fromkeys(self.classes_)
-        self.fp_pa_ = dict.fromkeys(self.classes_)
+        if n_classes == 2:
+            classes = self.classes_[1:]
+        else:
+            classes = self.classes_
 
-        for pos_class in self.classes_:
+
+
+        self.estimators_ = dict.fromkeys(classes)
+        self.confusion_matrix_ = dict.fromkeys(classes)
+
+        self.fpr_ = dict.fromkeys(classes)
+        self.tpr_ = dict.fromkeys(classes)
+
+        self.tp_pa_ = dict.fromkeys(classes)
+        self.fp_pa_ = dict.fromkeys(classes)
+
+        for pos_class in classes:
             if verbose:
                 print("Class {}/{}".format(pos_class + 1, n_classes))
                 print("\tFitting  classifier...")
@@ -220,7 +230,7 @@ class BaseCC(BaseClassifyAndCountModel):
             neg_preds = self.estimators_[1].predict_proba(X[y == 0])[:, 1]
             pos_pdf, _ = np.histogram(pos_preds, bins=self.b)
             neg_pdf, _ = np.histogram(neg_preds, bins=self.b)
-            self.train_dist_= np.vstack([(pos_pdf / float(sum(y == 1)))[None, :, None], (pos_pdf / float(sum(y == 0)))[None, :, None]])
+            self.train_dist_ = np.vstack([(pos_pdf / float(sum(y == 1)))[None, :, None], (neg_pdf / float(sum(y == 0)))[None, :, None]])
         else:
             for n_cls, cls in enumerate(self.classes_):
                 mask = (y == cls)
@@ -231,10 +241,6 @@ class BaseCC(BaseClassifyAndCountModel):
                     preds = clf.predict_proba(X[y == cls])[:, 1]
                     pdf, _ = np.histogram(preds, bins=self.b)
                     self.train_dist_[n_cls, :, n_clf] = pdf / float(sum(y_bin))
-
-
-
-
 
 
 
@@ -254,7 +260,10 @@ class BaseCC(BaseClassifyAndCountModel):
 
     def _predict_cc(self, X):
         n_classes = len(self.classes_)
-        probabilities = np.zeros(n_classes)
+        if n_classes == 2:
+            probabilities = np.zeros(1)
+        else:
+            probabilities = np.zeros(n_classes)
 
         for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
             predictions = clf.predict(X)
@@ -271,7 +280,10 @@ class BaseCC(BaseClassifyAndCountModel):
 
     def _predict_ac(self, X):
         n_classes = len(self.classes_)
-        probabilities = np.zeros(n_classes)
+        if n_classes == 2:
+            probabilities = np.zeros(1)
+        else:
+            probabilities = np.zeros(n_classes)
         for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
             predictions = clf.predict(X)
             freq = np.bincount(predictions, minlength=2)
@@ -289,7 +301,10 @@ class BaseCC(BaseClassifyAndCountModel):
 
     def _predict_pcc(self, X):
         n_classes = len(self.classes_)
-        probabilities = np.zeros(n_classes)
+        if n_classes == 2:
+            probabilities = np.zeros(1)
+        else:
+            probabilities = np.zeros(n_classes)
         for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
             try:
                 predictions = clf.predict_proba(X)
@@ -309,7 +324,10 @@ class BaseCC(BaseClassifyAndCountModel):
 
     def _predict_pac(self, X):
         n_classes = len(self.classes_)
-        probabilities = np.zeros(n_classes)
+        if n_classes == 2:
+            probabilities = np.zeros(1)
+        else:
+            probabilities = np.zeros(n_classes)
         for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
             try:
                 predictions = clf.predict_proba(X)
@@ -332,10 +350,14 @@ class BaseCC(BaseClassifyAndCountModel):
             raise ValueError("If HDy predictions are in order, the quantifier must be trained with the parameter `b`")
         n_classes = len(self.classes_)
 
-        test_dist = np.zeros((self.b, len(self.estimators_)))
-        for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
-            pdf, _ = np.histogram(clf.predict_proba(X)[:, 1], self.b)
-            test_dist[:, n_clf] = pdf / float(X.shape[0])
+        if n_classes == 2:
+            pdf, _ = np.histogram(self.estimators_[1].predict_proba(X)[:, 1], self.b)
+            test_dist = pdf / float(X.shape[0])
+        else:
+            test_dist = np.zeros((self.b, len(self.estimators_)))
+            for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
+                pdf, _ = np.histogram(clf.predict_proba(X)[:, 1], self.b)
+                test_dist[:, n_clf] = pdf / float(X.shape[0])
 
         if n_classes == 2:
             p_combs = np.linspace(0, 1, 101)[:, None]

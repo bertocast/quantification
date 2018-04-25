@@ -633,15 +633,12 @@ class EDy(BaseCC):
             self.train_dist_[1] = pos_preds
         else:
             for n_cls, cls in enumerate(self.classes_):
-                mask = (y == cls)
-                y_bin = np.ones(y.shape, dtype=np.int)
-                y_bin[~mask] = 0
+
+                self.train_dist_[n_cls] = np.zeros((sum(y == cls), n_classes))
 
                 for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
                     preds = clf.predict_proba(X[y == cls])[:, 1]
-                    self.train_dist_[n_cls, :, n_clf] = preds
-
-
+                    self.train_dist_[n_cls][:, n_clf] = preds
 
     def _compute_performance(self, X, y, pos_class, folds, local, verbose):
         pass
@@ -683,4 +680,3 @@ class kEDx(EDx):
             prevalence[self.class_map[str(n)]] += p
 
         return prevalence
-
