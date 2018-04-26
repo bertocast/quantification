@@ -406,6 +406,9 @@ class AC(BaseCC):
         assert method == 'ac'
         return self._predict_ac(X)
 
+    def _compute_distribution(self, X, y):
+        pass
+
 
 class PCC(BaseCC):
     """
@@ -417,6 +420,12 @@ class PCC(BaseCC):
     def predict(self, X, method='pcc'):
         assert method == 'pcc'
         return self._predict_pcc(X)
+
+    def _compute_performance(self, X, y, pos_class, folds, local, verbose):
+        pass
+
+    def _compute_distribution(self, X, y):
+        pass
 
 
 class PAC(BaseCC):
@@ -430,3 +439,6 @@ class PAC(BaseCC):
     def predict(self, X, method='pac'):
         assert method == 'pac'
         return self._predict_pac(X)
+
+    def _compute_distribution(self, X, y):
+        pass
