@@ -59,7 +59,7 @@ def bias(p_true, p_pred):
     p_pred : array_like, shape=(n_classes)
         Predicted prevalences. In case of binary quantification, this parameter could be a single float value.
     """
-    p_true, p_pred = check_array_and_consistent_length(p_true, p_pred)
+
     return p_pred - p_true
 
 
