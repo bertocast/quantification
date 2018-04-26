@@ -8,6 +8,9 @@ import six
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV
 from copy import deepcopy
+
+from sklearn.utils import check_X_y
+
 from quantification.base import BasicModel
 from quantification.metrics import distributed, model_score
 
@@ -138,6 +141,9 @@ class BaseCC(BaseClassifyAndCountModel):
         self.multiclass = multiclass
 
     def fit(self, X, y, cv=50, verbose=False, local=True):
+
+        X, y = check_X_y(X, y)
+
         self.classes_ = np.unique(y).tolist()
         n_classes = len(self.classes_)
 

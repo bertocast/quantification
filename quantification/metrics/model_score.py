@@ -9,7 +9,6 @@ def cv_confusion_matrix(clf, X, y, folds=50, verbose=False):
     clf_c = deepcopy(clf)
     skf = StratifiedKFold(n_splits=folds)
     cv_iter = skf.split(X, y)
-    n_classes = len(clf_c.classes_)
     cms = []
 
     if verbose:
