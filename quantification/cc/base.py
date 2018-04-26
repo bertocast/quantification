@@ -141,18 +141,13 @@ class BaseCC(BaseClassifyAndCountModel):
         self.classes_ = np.unique(y).tolist()
         n_classes = len(self.classes_)
 
-
-
         if not local:
             self._persist_data(X, y)
-
 
         if n_classes == 2:
             classes = self.classes_[1:]
         else:
             classes = self.classes_
-
-
 
         self.estimators_ = dict.fromkeys(classes)
         self.confusion_matrix_ = dict.fromkeys(classes)
@@ -230,7 +225,8 @@ class BaseCC(BaseClassifyAndCountModel):
             neg_preds = self.estimators_[1].predict_proba(X[y == 0])[:, 1]
             pos_pdf, _ = np.histogram(pos_preds, bins=self.b)
             neg_pdf, _ = np.histogram(neg_preds, bins=self.b)
-            self.train_dist_ = np.vstack([(pos_pdf / float(sum(y == 1)))[None, :, None], (neg_pdf / float(sum(y == 0)))[None, :, None]])
+            self.train_dist_ = np.vstack(
+                [(pos_pdf / float(sum(y == 1)))[None, :, None], (neg_pdf / float(sum(y == 0)))[None, :, None]])
         else:
             for n_cls, cls in enumerate(self.classes_):
                 mask = (y == cls)
@@ -241,8 +237,6 @@ class BaseCC(BaseClassifyAndCountModel):
                     preds = clf.predict_proba(X[y == cls])[:, 1]
                     pdf, _ = np.histogram(preds, bins=self.b)
                     self.train_dist_[n_cls, :, n_clf] = pdf / float(sum(y_bin))
-
-
 
     def predict(self, X, method='cc'):
         if method == 'cc':
@@ -380,8 +374,6 @@ class BaseCC(BaseClassifyAndCountModel):
         return p
 
 
-
-
 class CC(BaseCC):
     """
         Multiclass Classify And Count method.
@@ -393,6 +385,12 @@ class CC(BaseCC):
     def predict(self, X, method='cc'):
         assert method == 'cc'
         return self._predict_cc(X)
+
+    def _compute_performance(self, X, y, pos_class, folds, local, verbose):
+        pass
+
+    def _compute_distribution(self, X, y):
+        pass
 
 
 class AC(BaseCC):
