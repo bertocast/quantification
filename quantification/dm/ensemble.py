@@ -70,7 +70,7 @@ class MulticlassEnsembleEM(BaseEnsembleCCModel):
                 if len(np.unique(y_bin)) != 2 or np.any(np.bincount(y_bin) < 3):
                     continue
                 if verbose:
-                    print "\tFitting classifier for class {}".format(cls + 1)
+                    print ("\tFitting classifier for class {}".format(cls + 1))
 
                 qnf = EM(estimator_class=self.estimator_class, estimator_params=self.estimator_params,
                                estimator_grid=self.estimator_grid, tol=self.tol)

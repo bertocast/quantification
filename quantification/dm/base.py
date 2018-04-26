@@ -138,7 +138,7 @@ class BinaryCDEIter(BaseClassifyAndCountModel):
         n_iter = 0
         while n_iter < self.num_iter:
             if verbose:
-                print "Iteration", n_iter
+                print ("Iteration", n_iter)
             pred = self.estimator_.predict(X)
             test_prevalences = np.bincount(pred, minlength=2)
             dmr = self.pos_neg_orig / (test_prevalences[1] / float(test_prevalences[0]))
@@ -369,7 +369,7 @@ class EM(BaseClassifyAndCountModel):
 
         for pos_class in self.classes_:
             if verbose:
-                print "Fitting classifier for class {}/{}".format(pos_class + 1, n_classes)
+                print ("Fitting classifier for class {}/{}".format(pos_class + 1, n_classes))
             mask = (y == pos_class)
             y_bin = np.ones(y.shape, dtype=np.int)
             y_bin[~mask] = 0
@@ -432,7 +432,7 @@ class CDEIter(BaseClassifyAndCountModel):
 
         for pos_class in self.classes_:
             if verbose:
-                print "Fitting classifier for class {}/{}".format(pos_class + 1, n_classes)
+                print ("Fitting classifier for class {}/{}".format(pos_class + 1, n_classes))
             mask = (y == pos_class)
             y_bin = np.ones(y.shape, dtype=np.int)
             y_bin[~mask] = 0
@@ -466,7 +466,7 @@ class CDEAC(BaseClassifyAndCountModel):
 
         for pos_class in self.classes_:
             if verbose:
-                print "Fitting classifier for class {}/{}".format(pos_class + 1, n_classes)
+                print ("Fitting classifier for class {}/{}".format(pos_class + 1, n_classes))
             mask = (y == pos_class)
             y_bin = np.ones(y.shape, dtype=np.int)
             y_bin[~mask] = 0
@@ -577,7 +577,7 @@ class EDy(BaseCC):
         else:
             repr_test = np.zeros((len(X), n_classes))
 
-            for n, clf in self.estimators_.iteritems():
+            for n, clf in self.estimators_.items():
                 repr_test[..., n] = clf.predict_proba(X)[..., 1]
 
         for i in range(n_classes):

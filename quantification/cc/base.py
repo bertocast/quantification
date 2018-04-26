@@ -259,7 +259,7 @@ class BaseCC(BaseClassifyAndCountModel):
         else:
             probabilities = np.zeros(n_classes)
 
-        for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
+        for n, (cls, clf) in enumerate(self.estimators_.items()):
             predictions = clf.predict(X)
             freq = np.bincount(predictions, minlength=2)
             relative_freq = freq / float(np.sum(freq))
@@ -278,7 +278,7 @@ class BaseCC(BaseClassifyAndCountModel):
             probabilities = np.zeros(1)
         else:
             probabilities = np.zeros(n_classes)
-        for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
+        for n, (cls, clf) in enumerate(self.estimators_.items()):
             predictions = clf.predict(X)
             freq = np.bincount(predictions, minlength=2)
             relative_freq = freq / float(np.sum(freq))
@@ -299,7 +299,7 @@ class BaseCC(BaseClassifyAndCountModel):
             probabilities = np.zeros(1)
         else:
             probabilities = np.zeros(n_classes)
-        for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
+        for n, (cls, clf) in enumerate(self.estimators_.items()):
             try:
                 predictions = clf.predict_proba(X)
             except AttributeError:
@@ -322,7 +322,7 @@ class BaseCC(BaseClassifyAndCountModel):
             probabilities = np.zeros(1)
         else:
             probabilities = np.zeros(n_classes)
-        for n, (cls, clf) in enumerate(self.estimators_.iteritems()):
+        for n, (cls, clf) in enumerate(self.estimators_.items()):
             try:
                 predictions = clf.predict_proba(X)
             except AttributeError:
