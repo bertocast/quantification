@@ -3,6 +3,7 @@ from sklearn.linear_model import LogisticRegression
 
 import numpy as np
 from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
 
 from quantification.cc import BaseCC
 from quantification.dm.base import EDx, kEDx, EDy
@@ -12,7 +13,7 @@ def main():
     # Load the data
     X, y = load_iris(return_X_y=True)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1234)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.3, random_state=1234)
 
     #X=X[25:-25]
     #y=y[25:-25]
@@ -20,6 +21,7 @@ def main():
     # Create de quantifier. We will use a simple logistic regression as the underlying classifier.
     # Number of bins to perform HDy will be set to 8.
     qnf = BaseCC(estimator_class=LogisticRegression(), b=8)
+
 
     # Fit the quantifier
     qnf.fit(X_train, y_train, cv=3)

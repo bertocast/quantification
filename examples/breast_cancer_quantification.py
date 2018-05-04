@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 from quantification.cc import BaseCC
-from quantification.dm.base import EDx, EDy
+from quantification.dm.base import EDx, EDy, CvMy
 
 
 def main():
@@ -14,8 +14,8 @@ def main():
     X, y = load_breast_cancer(return_X_y=True)
     scaler = MinMaxScaler()
     #X = scaler.fit_transform(X, y)
-    #X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
-    X_train, X_test, y_train, y_test = X, X, y, y
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+    #X_train, X_test, y_train, y_test = X, X, y, y
 
     # Create de quantifier. We will use a simple logistic regression as the underlying classifier.
     # Number of bins to perform HDy will be set to 8.
@@ -63,6 +63,12 @@ def main():
     print(formatter.format("HDy", prev_hdy))
     print(formatter.format("EDx", prev_edx))
     print(formatter.format("EDy", prev_edy))
+
+
+
+    cvmy = CvMy()
+    cvmy.fit(X_train, y_train)
+    print(cvmy.predict(X_test))
 
 
 if __name__ == '__main__':

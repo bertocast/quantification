@@ -229,8 +229,8 @@ class BaseCC(BaseClassifyAndCountModel):
             # If it is a binary problem, add the representation of the negative samples
             pos_preds = self.estimators_[1].predict_proba(X[y == 1])[:, 1]
             neg_preds = self.estimators_[1].predict_proba(X[y == 0])[:, 1]
-            pos_pdf, _ = np.histogram(pos_preds, bins=self.b)
-            neg_pdf, _ = np.histogram(neg_preds, bins=self.b)
+            pos_pdf, _ = np.histogram(pos_preds, bins=self.b, range=(0., 1.))
+            neg_pdf, _ = np.histogram(neg_preds, bins=self.b, range=(0., 1.))
             self.train_dist_ = np.vstack(
                 [(pos_pdf / float(sum(y == 1)))[None, :, None], (neg_pdf / float(sum(y == 0)))[None, :, None]])
         else:
@@ -241,7 +241,7 @@ class BaseCC(BaseClassifyAndCountModel):
 
                 for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
                     preds = clf.predict_proba(X[y == cls])[:, 1]
-                    pdf, _ = np.histogram(preds, bins=self.b)
+                    pdf, _ = np.histogram(preds, bins=self.b, range=(0., 1.))
                     self.train_dist_[n_cls, :, n_clf] = pdf / float(sum(y_bin))
 
     def predict(self, X, method='cc'):
@@ -351,12 +351,12 @@ class BaseCC(BaseClassifyAndCountModel):
         n_classes = len(self.classes_)
 
         if n_classes == 2:
-            pdf, _ = np.histogram(self.estimators_[1].predict_proba(X)[:, 1], self.b)
+            pdf, _ = np.histogram(self.estimators_[1].predict_proba(X)[:, 1], self.b, range=(0, 1))
             test_dist = pdf / float(X.shape[0])
         else:
             test_dist = np.zeros((self.b, len(self.estimators_)))
             for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
-                pdf, _ = np.histogram(clf.predict_proba(X)[:, 1], self.b)
+                pdf, _ = np.histogram(clf.predict_proba(X)[:, 1], self.b, range=(0, 1))
                 test_dist[:, n_clf] = pdf / float(X.shape[0])
 
         if n_classes == 2:
