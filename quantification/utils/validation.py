@@ -1,4 +1,5 @@
 import numpy as np
+from sklearn.utils import check_X_y
 
 
 def create_partitions(X, y, n_splits):
@@ -33,3 +34,22 @@ def _iter_test_indices(X, n_splits):
         start, stop = current, current + fold_size
         yield indices[start:stop]
         current = stop
+
+
+def create_bags_with_multiple_prevalence(X, y, n=1001):
+
+    X, y = check_X_y(X, y)
+    n_classes = len(np.unique(y))
+    m = len(X)
+
+    for i in range(n):
+        ps = np.random.uniform(0, 1, n_classes)
+        ps /= ps.sum()
+        idxs = []
+
+        for n, p in enumerate(ps.tolist()):
+            idx = np.random.choice(np.where(y == n)[0], int(p * m), replace=True)
+            idxs.append(idx)
+
+        idxs = np.concatenate(idxs)
+        yield X[idxs], y[idxs], ps
