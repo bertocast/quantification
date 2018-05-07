@@ -47,7 +47,7 @@ def create_bags_with_multiple_prevalence(X, y, n=1001, random_state=None):
     m = len(X)
 
     for i in range(n):
-        ps = np.random.uniform(0, 1, n_classes)
+        ps = np.random.uniform(0.05, 0.95, n_classes)
         ps /= ps.sum()
         idxs = []
 
