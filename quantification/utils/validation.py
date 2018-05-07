@@ -39,7 +39,8 @@ def _iter_test_indices(X, n_splits):
 def create_bags_with_multiple_prevalence(X, y, n=1001):
 
     X, y = check_X_y(X, y)
-    n_classes = len(np.unique(y))
+    classes = np.unique(y)
+    n_classes = len(classes)
     m = len(X)
 
     for i in range(n):
@@ -47,7 +48,7 @@ def create_bags_with_multiple_prevalence(X, y, n=1001):
         ps /= ps.sum()
         idxs = []
 
-        for n, p in enumerate(ps.tolist()):
+        for n, p in zip(classes, ps.tolist()):
             idx = np.random.choice(np.where(y == n)[0], int(p * m), replace=True)
             idxs.append(idx)
 
