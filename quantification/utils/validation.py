@@ -36,7 +36,10 @@ def _iter_test_indices(X, n_splits):
         current = stop
 
 
-def create_bags_with_multiple_prevalence(X, y, n=1001):
+def create_bags_with_multiple_prevalence(X, y, n=1001, random_state=None):
+
+    if random_state:
+        np.random.seed(random_state)
 
     X, y = check_X_y(X, y)
     classes = np.unique(y)
