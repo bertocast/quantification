@@ -13,7 +13,6 @@ from copy import deepcopy
 
 from sklearn.utils import check_X_y
 
-from quantification.base import BasicModel
 from quantification.metrics import distributed, model_score
 
 
