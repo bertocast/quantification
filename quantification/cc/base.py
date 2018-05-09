@@ -1,10 +1,12 @@
 from __future__ import print_function
 
 from abc import ABCMeta, abstractmethod
+from tempfile import mkstemp
 
 import numpy as np
 from matplotlib import pyplot as plt
 import six
+from sklearn.base import BaseEstimator
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV
 from copy import deepcopy
@@ -15,7 +17,7 @@ from quantification.base import BasicModel
 from quantification.metrics import distributed, model_score
 
 
-class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
+class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BaseEstimator)):
     def __init__(self, estimator_class, estimator_params, estimator_grid, grid_params, b):
         if estimator_params is None:
             estimator_params = dict()
@@ -67,6 +69,11 @@ class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BasicModel)):
         estimator = self._validate_estimator(default=LogisticRegression(), default_grid={'C': [0.1, 1, 10]},
                                              default_params=dict())
         return estimator
+
+    def _persist_data(self, X, y):
+        f, path = mkstemp()
+        self.X_y_path_ = path + '.npz'
+        np.savez(path, X=X, y=y)
 
 
 class BaseCC(BaseClassifyAndCountModel):
