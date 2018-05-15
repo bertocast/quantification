@@ -1,8 +1,11 @@
 import quadprog
+import warnings
 
 import numpy as np
+from shapely.geometry import Polygon
 from sklearn.cluster import KMeans
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, cross_val_predict
+from scipy.stats import rankdata, norm
 
 from quantification.cc.base import BaseCC, \
     BaseClassifyAndCountModel
@@ -138,7 +141,7 @@ class BinaryCDEIter(BaseClassifyAndCountModel):
         n_iter = 0
         while n_iter < self.num_iter:
             if verbose:
-                print ("Iteration", n_iter)
+                print("Iteration", n_iter)
             pred = self.estimator_.predict(X)
             test_prevalences = np.bincount(pred, minlength=2)
             dmr = self.pos_neg_orig / (test_prevalences[1] / float(test_prevalences[0]))
@@ -204,116 +207,6 @@ class BinaryCDEAC(BaseClassifyAndCountModel):
         return prevalences
 
 
-"""
-class BinaryEDx(BaseBinaryCC):
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=None,
-                 strategy='macro'):
-        self.uw_train_eds = None
-        super(BinaryEDx, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b, strategy)
-
-    def fit(self, X, y, local=True, cv=50, plot=False, verbose=False):
-        self.X_train = X
-        self.y_train = y
-        super(BinaryEDx, self).fit(X, y, local, cv, plot, verbose)
-
-    def predict(self, X, method='edx', plot=False):
-        assert method == 'edx'
-
-        if not self.uw_train_eds:
-            positive_ed = self.distance(self.X_train[self.y_train == 1], self.X_train[self.y_train == 1])
-            negative_ed = self.distance(self.X_train[self.y_train == 0], self.X_train[self.y_train == 0])
-            pos_neg_ed = self.distance(self.X_train[self.y_train == 1], self.X_train[self.y_train == 0])
-            n_tr_pos, n_tr_neg = float((self.y_train == 1).sum()), float((self.y_train == 0).sum())
-            self.uw_train_eds = np.array([positive_ed, 2 * pos_neg_ed, negative_ed])
-
-        positive_ed = self.distance(self.X_train[self.y_train == 1], X)
-        negative_ed = self.distance(self.X_train[self.y_train == 0], X)
-        uw_train_test_eds = np.array([positive_ed, negative_ed])
-
-        unweighted_train_distances = self.uw_train_eds
-        unweighted_train_test_distances = uw_train_test_eds
-
-
-        m1p = n_tr_neg / n_tr_pos * unweighted_train_test_distances[0].sum()
-        m2 = unweighted_train_test_distances[1].sum()
-        m3p = (n_tr_neg / n_tr_pos) ** 2 * unweighted_train_distances[0].sum()
-        m4p = n_tr_neg / n_tr_pos * (unweighted_train_distances[1] / 2).sum()
-        m5 = unweighted_train_distances[2]
-        m = float(len(X))
-
-        a = 2 * ((m1p - m2) / (n_tr_neg * m)) - 2 * ((m4p - m5) / (n_tr_neg ** 2))
-        b = - (m3p - 2 * m4p + m5) / (n_tr_neg ** 2)
-
-        prevalence = - a / (2 * b)
-
-        return prevalence
-
-    def distance(self, p, q):
-        return np.square(p[:, None] - q).sum()
-
-
-
-class BinaryEDy(BaseBinaryCC):
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=None,
-                 strategy='macro'):
-        self.uw_train_eds = None
-        super(BinaryEDy, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b, strategy)
-
-    def fit(self, X, y, local=True, cv=50, plot=False, verbose=False):
-        super(BinaryEDy, self).fit(X, y, local, cv, plot, verbose)
-        self.y_train = y
-        self.y_train_proba = self.estimator_.predict_proba(X)[..., 1]
-
-    def predict(self, X, method='edy', plot=False):
-        assert method == 'edy'
-
-        y_test_proba = self.estimator_.predict_proba(X)[..., 1]
-
-        if not self.uw_train_eds:
-            positive_ed = self.distance(self.y_train_proba[self.y_train == 1], self.y_train_proba[self.y_train == 1])
-            negative_ed = self.distance(self.y_train_proba[self.y_train == 0], self.y_train_proba[self.y_train == 0])
-            pos_neg_ed = self.distance(self.y_train_proba[self.y_train == 1], self.y_train_proba[self.y_train == 0])
-            n_tr_pos, n_tr_neg = (self.y_train == 1).sum(), (self.y_train == 0).sum()
-            self.uw_train_eds = np.array([positive_ed, 2 * pos_neg_ed, negative_ed])
-
-        positive_ed = self.distance(self.y_train_proba[self.y_train == 1], y_test_proba)
-        negative_ed = self.distance(self.y_train_proba[self.y_train == 0], y_test_proba)
-        uw_train_test_eds = np.array([positive_ed, negative_ed])
-
-        test_ed = self.distance(y_test_proba, y_test_proba) / len(X) ** 2
-        unweighted_train_distances = self.uw_train_eds
-        unweighted_train_test_distances = uw_train_test_eds
-
-        probas = np.array([p / 200.0 for p in range(0, 200)])
-        percentages = (probas * n_tr_neg) / (n_tr_pos + probas * n_tr_neg - probas * n_tr_pos)
-        ed = np.full(len(probas), np.nan)
-        for p in range(len(percentages)):
-            train_test_ed = np.array([percentages[p], 1 - percentages[p]]) * unweighted_train_test_distances
-            train_test_ed = train_test_ed.sum()
-            train_test_ed /= len(X) * (n_tr_pos * percentages[p] + n_tr_neg * (1 - percentages[p]))
-
-            train_ed = np.array(
-                [percentages[p] ** 2, (percentages[p] * (1 - percentages[p])),
-                 (1 - percentages[p]) ** 2]) * unweighted_train_distances
-            train_ed = train_ed.sum()
-
-            train_ed /= (
-                percentages[p] ** 2 * n_tr_pos ** 2 + 2 * (
-                n_tr_pos * n_tr_neg * percentages[p] * (1 - percentages[p])) +
-                (1 - percentages[p]) ** 2 * n_tr_neg ** 2)
-            ed[p] = 2 * train_test_ed - train_ed - test_ed
-
-        p_min = np.argmin(ed)
-        percentage = percentages[p_min]
-        # prevalence = percentage * n_tr_pos / (percentage * n_tr_pos + (1 - percentage) * n_tr_neg)
-        prevalence = probas[p_min]
-        return prevalence
-
-    def distance(self, p, q):
-        return np.square(p[:, None] - q).sum()
-"""
-
-
 class HDy(BaseCC):
     """
              Binary HDy method.
@@ -369,7 +262,7 @@ class EM(BaseClassifyAndCountModel):
 
         for pos_class in self.classes_:
             if verbose:
-                print ("Fitting classifier for class {}/{}".format(pos_class + 1, n_classes))
+                print("Fitting classifier for class {}/{}".format(pos_class + 1, n_classes))
             mask = (y == pos_class)
             y_bin = np.ones(y.shape, dtype=np.int)
             y_bin[~mask] = 0
@@ -432,7 +325,7 @@ class CDEIter(BaseClassifyAndCountModel):
 
         for pos_class in self.classes_:
             if verbose:
-                print ("Fitting classifier for class {}/{}".format(pos_class + 1, n_classes))
+                print("Fitting classifier for class {}/{}".format(pos_class + 1, n_classes))
             mask = (y == pos_class)
             y_bin = np.ones(y.shape, dtype=np.int)
             y_bin[~mask] = 0
@@ -466,7 +359,7 @@ class CDEAC(BaseClassifyAndCountModel):
 
         for pos_class in self.classes_:
             if verbose:
-                print ("Fitting classifier for class {}/{}".format(pos_class + 1, n_classes))
+                print("Fitting classifier for class {}/{}".format(pos_class + 1, n_classes))
             mask = (y == pos_class)
             y_bin = np.ones(y.shape, dtype=np.int)
             y_bin[~mask] = 0
@@ -496,31 +389,35 @@ class EDx(BaseCC):
                                   grid_params=grid_params)
 
     def fit(self, X, y, local=True, cv=50, plot=False, verbose=False):
+        super(EDx, self).fit(X, y)
+
+        n_classes = len(self.classes_)
+        self.K = np.zeros((n_classes, n_classes))
         self.X_train = X
         self.y_train = y
-        super(EDx, self).fit(X, y)
+
+        for i in range(n_classes):
+            self.K[i, i] = self.distance(X[y == self.classes_[i]],
+                                         X[y == self.classes_[i]])
+            for j in range(i + 1, n_classes):
+                self.K[i, j] = self.distance(X[y == self.classes_[i]],
+                                             X[y == self.classes_[j]])
+                self.K[j, i] = self.K[i, j]
 
     def predict(self, X, method="edx"):
         assert method == "edx"
         n_classes = len(self.classes_)
 
-        K = np.zeros((n_classes, n_classes))
         Kt = np.zeros(n_classes)
 
         for i in range(n_classes):
-            K[i, i] = self.distance(self.X_train[self.y_train == self.classes_[i]],
-                                    self.X_train[self.y_train == self.classes_[i]])
             Kt[i] = self.distance(self.X_train[self.y_train == self.classes_[i]], X)
-            for j in range(i + 1, n_classes):
-                K[i, j] = self.distance(self.X_train[self.y_train == self.classes_[i]],
-                                        self.X_train[self.y_train == self.classes_[j]])
-                K[j, i] = K[i, j]
 
         train_cls = np.array(np.bincount(self.y_train))[:, np.newaxis]
         train_cls_m = np.dot(train_cls, train_cls.T)
         m = float(len(X))
 
-        K = K / train_cls_m
+        K = self.K / train_cls_m
         Kt = Kt / (train_cls.squeeze() * m)
         B = np.zeros((n_classes - 1, n_classes - 1))
         for i in range(n_classes - 1):
@@ -550,7 +447,7 @@ class EDx(BaseCC):
         return p
 
     def distance(self, p, q):
-        return np.square(p[:, None] - q).sum()
+        return np.square(p[:, None] ** 2 - q ** 2).sum()
 
     def _compute_distribution(self, X, y):
         pass
@@ -581,12 +478,12 @@ class EDy(BaseCC):
                 repr_test[..., n] = clf.predict_proba(X)[..., 1]
 
         for i in range(n_classes):
-            K[i, i] = self.distance(repr_train[self.classes_[i]],
-                                    repr_train[self.classes_[i]])
-            Kt[i] = self.distance(repr_train[self.classes_[i]], repr_test)
+            K[i, i] = self.l1_norm(repr_train[self.classes_[i]],
+                                   repr_train[self.classes_[i]])
+            Kt[i] = self.l1_norm(repr_train[self.classes_[i]], repr_test)
             for j in range(i + 1, n_classes):
-                K[i, j] = self.distance(repr_train[self.classes_[i]],
-                                        repr_train[self.classes_[j]])
+                K[i, j] = self.l1_norm(repr_train[self.classes_[i]],
+                                       repr_train[self.classes_[j]])
                 K[j, i] = K[i, j]
 
         train_cls = np.array(np.bincount(self.y_train))[:, np.newaxis]
@@ -619,8 +516,8 @@ class EDy(BaseCC):
         p = np.append(p, 1 - p.sum())
         return p
 
-    def distance(self, p, q):
-        return np.square(p[:, None] - q).sum()
+    def l1_norm(self, p, q):
+        return np.abs(p[:, None] - q).sum()
 
     def _compute_distribution(self, X, y):
 
@@ -680,3 +577,262 @@ class kEDx(EDx):
             prevalence[self.class_map[str(n)]] += p
 
         return prevalence
+
+
+class CvMy(BaseCC):
+
+    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None):
+        super(CvMy, self).__init__(estimator_class=estimator_class,
+                                   estimator_params=estimator_params,
+                                   estimator_grid=estimator_grid,
+                                   grid_params=grid_params)
+
+    def fit(self, X, y, local=True, cv=50, plot=False, verbose=False):
+        super(CvMy, self).fit(X, y)
+        self.X_train = X
+        self.y_train = y
+
+    def predict(self, X, method="cvmx"):
+        n_classes = len(self.classes_)
+
+        train_repr = self.estimators_[1].predict_proba(self.X_train)[..., 1][:, np.newaxis]
+        test_repr = self.estimators_[1].predict_proba(X)[..., 1][:, np.newaxis]
+
+        Hn = rankdata(np.concatenate(np.concatenate([train_repr, test_repr])))
+        Htr = Hn[:len(self.X_train)]
+        Htst = Hn[len(self.X_train):]
+
+        K = np.zeros((n_classes, n_classes))
+        Kt = np.zeros(n_classes)
+
+        for i in range(n_classes):
+            K[i, i] = self.distance(Htr[self.y_train == self.classes_[i]],
+                                    Htr[self.y_train == self.classes_[i]])
+
+            Kt[i] = self.distance(Htr[self.y_train == self.classes_[i]], Htst)
+            for j in range(i + 1, n_classes):
+                K[i, j] = self.distance(Htr[self.y_train == self.classes_[i]],
+                                        Htr[self.y_train == self.classes_[j]])
+                K[j, i] = K[i, j]
+
+        train_cls = np.array(np.bincount(self.y_train))[:, np.newaxis]
+        train_cls_m = np.dot(train_cls, train_cls.T)
+        m = float(len(X))
+
+        K = K / train_cls_m
+        Kt = Kt / (train_cls.squeeze() * m)
+        B = np.zeros((n_classes - 1, n_classes - 1))
+        for i in range(n_classes - 1):
+            B[i, i] = - K[i, i] - K[-1, -1] + 2 * K[i, -1]
+            for j in range(n_classes - 1):
+                if j == i:
+                    continue
+                B[i, j] = - K[i, j] - K[-1, -1] + K[i, -1] + K[j, -1]
+
+        t = - Kt[:-1] + K[:-1, -1] + Kt[-1] - K[-1, -1]
+
+        G = 2 * B
+        if not is_pd(G):
+            G = nearest_pd(G)
+
+        a = 2 * t
+        C = np.vstack([- np.ones((1, n_classes - 1)), np.eye(n_classes - 1)]).T
+        b = np.array([-1] + [0] * (n_classes - 1), dtype=np.float)
+        sol = quadprog.solve_qp(G=G,
+                                a=a, C=C, b=b)
+
+        p = sol[0]
+        p = np.append(p, 1 - p.sum())
+
+        self.final_ed = 2 * p.dot(Kt) - p.T.dot(K).dot(p) - self.distance(X, X) / (m * m)
+
+        return p
+
+    def distance(self, p, q):
+        return np.abs(p[:, None] - q).sum()
+
+    def _compute_distribution(self, X, y):
+        pass
+
+    def _compute_performance(self, X, y, pos_class, folds, local, verbose):
+        pass
+
+
+class CvMX(BaseCC):
+    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None):
+        super(CvMX, self).__init__(estimator_class=estimator_class,
+                                   estimator_params=estimator_params,
+                                   estimator_grid=estimator_grid,
+                                   grid_params=grid_params)
+
+    def fit(self, X, y, local=True, cv=50, plot=False, verbose=False):
+        super(CvMX, self).fit(X, y)
+        self.X_train = X
+        self.y_train = y
+
+    def predict(self, X, method="cvmx"):
+        n_classes = len(self.classes_)
+
+        z = np.vstack(np.concatenate([self.X_train, X]))
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)
+            Htr = 1 / len(z) * np.nansum(
+                (self.X_train[:, None] - z) / np.linalg.norm(self.X_train[:, None] - z, axis=-1, keepdims=True),
+                axis=1)
+            Htst = 1 / len(z) * np.nansum(
+                (X[:, None] - z) / np.linalg.norm(X[:, None] - z, axis=-1, keepdims=True),
+                axis=1)
+
+        """
+        Htr = np.zeros_like(self.X_train)
+        Htst = np.zeros_like(X)
+
+        for j in range(len(self.X_train)):
+            for i in range(len(z)):
+                r = (self.X_train[j] - z[i]) / np.linalg.norm(self.X_train[j] - z[i])
+                if np.all(np.isnan(r)):
+                    r = 0
+                Htr[j] += r
+        Htr /= len(z)
+
+        for j in range(len(X)):
+            for i in range(len(z)):
+                r = (X[j] - z[i]) / np.linalg.norm(X[j] - z[i])
+                if np.all(np.isnan(r)):
+                    r = 0
+                Htst[j] += r
+        Htst /= len(z)
+        """
+
+        K = np.zeros((n_classes, n_classes))
+        Kt = np.zeros(n_classes)
+
+        for i in range(n_classes):
+            K[i, i] = self.distance(Htr[self.y_train == self.classes_[i]],
+                                    Htr[self.y_train == self.classes_[i]])
+
+            Kt[i] = self.distance(Htr[self.y_train == self.classes_[i]], Htst)
+            for j in range(i + 1, n_classes):
+                K[i, j] = self.distance(Htr[self.y_train == self.classes_[i]],
+                                        Htr[self.y_train == self.classes_[j]])
+                K[j, i] = K[i, j]
+
+        train_cls = np.array(np.bincount(self.y_train))[:, np.newaxis]
+        train_cls_m = np.dot(train_cls, train_cls.T)
+        m = float(len(X))
+
+        K = K / train_cls_m
+        Kt = Kt / (train_cls.squeeze() * m)
+        B = np.zeros((n_classes - 1, n_classes - 1))
+        for i in range(n_classes - 1):
+            B[i, i] = - K[i, i] - K[-1, -1] + 2 * K[i, -1]
+            for j in range(n_classes - 1):
+                if j == i:
+                    continue
+                B[i, j] = - K[i, j] - K[-1, -1] + K[i, -1] + K[j, -1]
+
+        t = - Kt[:-1] + K[:-1, -1] + Kt[-1] - K[-1, -1]
+
+        G = 2 * B
+        if not is_pd(G):
+            G = nearest_pd(G)
+
+        a = 2 * t
+        C = np.vstack([- np.ones((1, n_classes - 1)), np.eye(n_classes - 1)]).T
+        b = np.array([-1] + [0] * (n_classes - 1), dtype=np.float)
+        sol = quadprog.solve_qp(G=G,
+                                a=a, C=C, b=b)
+
+        p = sol[0]
+        p = np.append(p, 1 - p.sum())
+
+        self.final_ed = 2 * p.dot(Kt) - p.T.dot(K).dot(p) - self.distance(X, X) / (m * m)
+
+        return p
+
+    def distance(self, p, q):
+        return np.sqrt(np.sum(np.square(p[:, None] - q)))
+
+    def _compute_distribution(self, X, y):
+        pass
+
+    def _compute_performance(self, X, y, pos_class, folds, local, verbose):
+        pass
+
+
+class MMy(BaseCC):
+
+    def fit(self, X, y, cv=50, verbose=False, local=True):
+        if len(np.unique(y)) != 2:
+            raise AttributeError("This is a binary method, more than two clases are not yet supported")
+
+        super(MMy, self).fit(X, y)
+
+    def predict(self, X, method='cc'):
+
+        test_repr = self.estimators_[1].predict_proba(X)[:, 1]
+        counts, _ = np.histogram(test_repr, bins=self.b, range=(0., 1.))
+        test_dist = np.cumsum(counts)
+
+        test_dist = np.insert(test_dist, 0, 0)
+        test_dist = test_dist / test_dist.max()
+
+        ps = np.linspace(0., 1., 1001)
+        areas = np.zeros_like(ps)
+        l1 = np.zeros_like(ps)
+
+        for i in range(len(ps)):
+            Du = (1 - ps[i]) * self.train_dist_[0] + ps[i] * self.train_dist_[1]
+            Du = np.insert(Du, 0, 0)
+
+            dists = np.dstack((Du, test_dist)).squeeze()
+            line = np.array([[0, 0], [1, 1]])
+            polygon = np.concatenate([dists, line[::-1], dists[0:1]])
+            areas[i] = Polygon(polygon).area
+
+            l1[i] = np.abs(Du - test_dist).sum()
+
+
+        import matplotlib.pyplot as plt
+
+        p = ps[areas.argmin()]
+
+        Du_opt = (1 - p) * self.train_dist_[0] + p * self.train_dist_[1]
+        Du_opt = np.insert(Du_opt, 0, 0)
+        Du_opt = Du_opt / Du_opt.max()
+        plt.figure()
+        plt.plot(Du_opt, test_dist)
+        plt.plot([0, 1], [0, 1], color='k')
+        plt.title("Optimum prevalence: {}".format(p))
+
+        p_w = 0.1
+
+        Du_w = (1 - p_w) * self.train_dist_[0] + p_w * self.train_dist_[1]
+        Du_w = np.insert(Du_w, 0, 0)
+        Du_w = Du_w / Du_w.max()
+        plt.figure()
+        plt.plot(Du_w, test_dist)
+        plt.plot([0, 1], [0, 1], color='k')
+        plt.title("Prevalence: {}".format(p_w))
+
+        plt.show()
+        return np.array([1 - p, p])
+
+    def _compute_distribution(self, X, y):
+
+        pred = cross_val_predict(self.estimators_[1], X, y, cv=10, method='predict_proba')
+        # pred = self.estimators_[1].predict_proba(X)
+
+        self.train_dist_ = {0: None, 1: None}
+
+        train_repr = pred[y == self.classes_[0]][..., 1]
+        counts, _ = np.histogram(train_repr, bins=self.b, range=(0., 1.))
+        self.train_dist_[0] = np.cumsum(counts) / (y == self.classes_[0]).sum()
+
+        train_repr = pred[y == self.classes_[1]][..., 1]
+        counts, _ = np.histogram(train_repr, bins=self.b, range=(0., 1.))
+        self.train_dist_[1] = np.cumsum(counts) / (y == self.classes_[1]).sum()
+
+    def _compute_performance(self, X, y, pos_class, folds, local, verbose):
+        pass

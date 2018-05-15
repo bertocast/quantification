@@ -4,8 +4,9 @@ from abc import ABCMeta, abstractmethod
 from tempfile import mkstemp
 
 import numpy as np
-from matplotlib import pyplot as plt
+import math
 import six
+import cvxpy
 from sklearn.base import BaseEstimator
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV
@@ -148,7 +149,7 @@ class BaseCC(BaseClassifyAndCountModel):
 
     def fit(self, X, y, cv=50, verbose=False, local=True):
 
-        X, y = check_X_y(X, y)
+        X, y = check_X_y(X, y, accept_sparse=True)
 
         self.classes_ = np.unique(y).tolist()
         n_classes = len(self.classes_)
@@ -238,7 +239,7 @@ class BaseCC(BaseClassifyAndCountModel):
             pos_pdf, _ = np.histogram(pos_preds, bins=self.b, range=(0., 1.))
             neg_pdf, _ = np.histogram(neg_preds, bins=self.b, range=(0., 1.))
             self.train_dist_ = np.vstack(
-                [(pos_pdf / float(sum(y == 1)))[None, :, None], (neg_pdf / float(sum(y == 0)))[None, :, None]])
+                [(neg_pdf / float(sum(y == 0)))[None, :, None], (pos_pdf / float(sum(y == 1)))[None, :, None]])
         else:
             for n_cls, cls in enumerate(self.classes_):
                 mask = (y == cls)
@@ -359,31 +360,27 @@ class BaseCC(BaseClassifyAndCountModel):
         if n_classes == 2:
             pdf, _ = np.histogram(self.estimators_[1].predict_proba(X)[:, 1], self.b, range=(0, 1))
             test_dist = pdf / float(X.shape[0])
+            test_dist = np.expand_dims(test_dist, -1)
+            self.train_dist_ = self.train_dist_.squeeze()
+
         else:
             test_dist = np.zeros((self.b, len(self.estimators_)))
             for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
                 pdf, _ = np.histogram(clf.predict_proba(X)[:, 1], self.b, range=(0, 1))
                 test_dist[:, n_clf] = pdf / float(X.shape[0])
 
-        if n_classes == 2:
-            p_combs = np.linspace(0, 1, 101)[:, None]
+            self.train_dist_ = self.train_dist_.reshape(n_classes, -1)
+            test_dist = test_dist.reshape(-1, 1)
 
-        else:
-            num_combs = 101
-            ps = np.linspace(0, 1, num_combs)
-            p_combs = np.array(np.meshgrid(*([ps] * (n_classes - 1)))).T.reshape(-1, (n_classes - 1))
-            p_combs = p_combs[p_combs.sum(1) <= 1.]
 
-        p_combs = np.hstack([p_combs, 1 - p_combs.sum(axis=1, keepdims=True)])
+        p = cvxpy.Variable(n_classes)
+        s = cvxpy.mul_elemwise(test_dist, (self.train_dist_.T * p))
+        objective = cvxpy.Minimize(1 - cvxpy.sum_entries(cvxpy.sqrt(s)))
+        contraints = [cvxpy.sum_entries(p) == 1, p >= 0]
 
-        di = (p_combs[:, :, None, None] * self.train_dist_[None, :]).sum(axis=1)
-        di = np.sqrt(di)
-        ti = np.sqrt(test_dist)
-        diff = np.power(ti - di, 2)
-        hds = np.sqrt(diff.sum(1).sum(1))
-        p = p_combs[hds.argmin()]
-
-        return p
+        prob = cvxpy.Problem(objective, contraints)
+        result = prob.solve()
+        return np.array(p.value).squeeze()
 
 
 class CC(BaseCC):
