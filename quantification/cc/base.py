@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import quadprog
 from abc import ABCMeta, abstractmethod
 from tempfile import mkstemp
 
@@ -15,6 +16,7 @@ from copy import deepcopy
 from sklearn.utils import check_X_y
 
 from quantification.metrics import distributed, model_score
+from quantification.utils.base import is_pd, nearest_pd
 
 
 class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BaseEstimator)):
@@ -450,4 +452,63 @@ class PAC(BaseCC):
         return self._predict_pac(X)
 
     def _compute_distribution(self, X, y):
+        pass
+
+
+class FriedmanAC(BaseCC):
+
+    def predict(self, X, method='fac'):
+
+        n_classes = len(self.classes_)
+
+        Up = np.zeros((len(X), n_classes))
+        if n_classes == 2:
+            Up = self.estimators_[1].predict_proba(X)
+            Up = Up / Up.sum(axis=1, keepdims=True)
+            Up = (Up > self.train_prevs).astype(np.int)
+        else:
+            for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
+                Up[:, n_clf] = clf.predict_proba(X)[:, 1]
+
+            Up = Up / Up.sum(axis=1, keepdims=True)
+            Up = (Up > self.train_prevs).astype(np.int)
+
+        U = Up.mean(axis=0)
+
+        G = self.V.T.dot(self.V)
+        if not is_pd(G):
+            G = nearest_pd(G)
+        a = U.dot(self.V)
+
+        C = np.vstack([- np.ones((1, n_classes)), np.eye(n_classes)]).T
+        b = np.array([-1] + [0] * n_classes, dtype=np.float)
+        sol = quadprog.solve_qp(G=G,
+                                a=a, C=C, b=b)
+
+        p = sol[0]
+
+        return p
+
+    def _compute_distribution(self, X, y):
+        n_classes = len(self.classes_)
+        Vp = np.zeros((len(X), n_classes))
+        self.train_prevs = np.unique(y, return_counts=True)[1] / len(X)
+
+        if n_classes == 2:
+            Vp = self.estimators_[1].predict_proba(X)
+            Vp = Vp / Vp.sum(axis=1, keepdims=True)
+            Vp = (Vp > self.train_prevs).astype(np.int)
+        else:
+            for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
+                Vp[:, n_clf] = clf.predict_proba(X)[:, 1]
+
+            Vp = Vp / Vp.sum(axis=1, keepdims=True)
+            Vp = (Vp > self.train_prevs).astype(np.int)
+
+        self.V = np.zeros((n_classes, n_classes))
+
+        for cls in self.classes_:
+            self.V[:, cls] = Vp[y == cls].mean(axis=0)
+
+    def _compute_performance(self, X, y, pos_class, folds, local, verbose):
         pass

@@ -6,7 +6,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 
 from quantification.cc import BaseCC
-from quantification.dm.base import EDx, kEDx, EDy
+from quantification.cc.base import FriedmanAC
+from quantification.dm.base import EDx, kEDx, EDy, FriedmanBM, FriedmanMM
 
 
 def main():
@@ -22,7 +23,6 @@ def main():
     # Number of bins to perform HDy will be set to 8.
     qnf = BaseCC(estimator_class=LogisticRegression(), b=8)
 
-
     # Fit the quantifier
     qnf.fit(X_train, y_train, cv=3)
 
@@ -36,8 +36,8 @@ def main():
     prev_pac = qnf.predict(X_test, method='pac')
     prev_hdy= qnf.predict(X_test, method='hdy')
 
-    formatter = "{:<4}{:>15.2f}{:>15.2f}{:>15.2f}"
-    print("{:<4}{:>15}{:>15}{:>15}".format('', 'setosa', 'veriscolor', 'virginica'))
+    formatter = "{:<15}{:>15.2f}{:>15.2f}{:>15.2f}"
+    print("{:<15}{:>15}{:>15}{:>15}".format('', 'setosa', 'veriscolor', 'virginica'))
     print(formatter.format("True", *prev_true))
     print(formatter.format("CC", *prev_cc))
     print(formatter.format("AC", *prev_ac))
@@ -60,6 +60,17 @@ def main():
     kedx.fit(X_train, y_train)
     prev_kedx = kedx.predict(X_test)
     print(formatter.format("kEDx", *prev_kedx))
+
+    fr = FriedmanMM()
+    fr.fit(X_train, y_train)
+    prev_fr = fr.predict(X_test)
+    print(formatter.format("Friedman-MM", *prev_fr))
+
+    fr = FriedmanAC()
+    fr.fit(X_train, y_train)
+    prev_fr = fr.predict(X_test)
+    print(formatter.format("Friedman-AC", *prev_fr))
+
 
 
 

@@ -5,7 +5,6 @@ from .ensemble import MulticlassEnsembleHDy, MulticlassEnsembleEM
 __all__ = ["HDy",
            "EM",
            "CDEAC",
-           "CDEIter"
            "BinaryEnsembleHDy",
            "BinaryEnsembleEM",
            "MulticlassEnsembleHDy",

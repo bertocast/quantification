@@ -1,12 +1,16 @@
 import quadprog
 import warnings
+from abc import ABCMeta
 
 import numpy as np
+import six
 from shapely.geometry import Polygon
+from sklearn.base import BaseEstimator
 from sklearn.cluster import KMeans
 from sklearn.model_selection import GridSearchCV, cross_val_predict
 from scipy.stats import rankdata, norm
 
+from examples.gss import gss
 from quantification.cc.base import BaseCC, \
     BaseClassifyAndCountModel
 from quantification.metrics import model_score
@@ -507,8 +511,8 @@ class EDy(BaseCC):
             G = nearest_pd(G)
 
         a = 2 * t
-        C = np.vstack([- np.ones((1, n_classes - 1)), np.eye(n_classes - 1)]).T
-        b = np.array([-1] + [0] * (n_classes - 1), dtype=np.float)
+        C = np.vstack([np.ones((1, n_classes - 1)), np.eye(n_classes - 1)]).T
+        b = np.array([1] + [0] * (n_classes - 1), dtype=np.float)
         sol = quadprog.solve_qp(G=G,
                                 a=a, C=C, b=b)
 
@@ -793,7 +797,6 @@ class MMy(BaseCC):
 
             l1[i] = np.abs(Du - test_dist).sum()
 
-
         import matplotlib.pyplot as plt
 
         p = ps[areas.argmin()]
@@ -816,7 +819,6 @@ class MMy(BaseCC):
         plt.plot([0, 1], [0, 1], color='k')
         plt.title("Prevalence: {}".format(p_w))
 
-        plt.show()
         return np.array([1 - p, p])
 
     def _compute_distribution(self, X, y):
@@ -836,3 +838,192 @@ class MMy(BaseCC):
 
     def _compute_performance(self, X, y, pos_class, folds, local, verbose):
         pass
+
+
+class FriedmanBM(BaseCC):
+
+    def predict(self, X, method='friedman-bm'):
+        Af_ = self.estimators_[1].predict_proba(X)[:, 1]
+        Af = np.mean(Af_ > self.train_prevs[1])
+
+        p = (Af - self.An) / (self.Ap - self.An)
+        return np.array([1 - p, p])
+
+    def _compute_performance(self, X, y, pos_class, folds, local, verbose):
+        pass
+
+    def _compute_distribution(self, X, y):
+        self.train_prevs = np.unique(y, return_counts=True)[1] / len(X)
+        Ap_ = self.estimators_[1].predict_proba(X[y == self.classes_[1]])[:, 1]
+        self.Ap = np.mean(Ap_ > self.train_prevs[1])
+        An_ = self.estimators_[1].predict_proba(X[y == self.classes_[0]])[:, 1]
+        self.An = np.mean(An_ > self.train_prevs[1])
+        pass
+
+
+class FriedmanMM(BaseCC):
+
+    def predict(self, X, method='friedman-mm'):
+        n_classes = len(self.classes_)
+
+        Up = np.zeros((len(X), n_classes))
+        if n_classes == 2:
+            Up = (self.estimators_[1].predict_proba(X) >= self.train_prevs)
+        else:
+            for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
+                Up[:, n_clf] = (clf.predict_proba(X)[:, 1] >= self.train_prevs[n_clf])
+
+        U = Up.mean(axis=0)
+
+        G = self.V.T.dot(self.V)
+        if not is_pd(G):
+            G = nearest_pd(G)
+        a = U.dot(self.V)
+
+        C = np.vstack([np.ones((1, n_classes)), np.eye(n_classes)]).T
+        b = np.array([1] + [0] * n_classes, dtype=np.float)
+        sol = quadprog.solve_qp(G=G,
+                                a=a, C=C, b=b)
+
+        p = sol[0]
+
+        return p
+
+    def _compute_distribution(self, X, y):
+        n_classes = len(self.classes_)
+        Vp = np.zeros((len(X), n_classes))
+        self.train_prevs = np.unique(y, return_counts=True)[1] / len(X)
+
+        if n_classes == 2:
+            Vp = (self.estimators_[1].predict_proba(X) >= self.train_prevs)
+        else:
+            for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
+                Vp[:, n_clf] = (clf.predict_proba(X)[:, 1] >= self.train_prevs[n_clf]).astype(np.int)
+
+        self.V = np.zeros((n_classes, n_classes))
+
+        for cls in self.classes_:
+            self.V[:, cls] = Vp[y == cls].mean(axis=0)
+
+    def _compute_performance(self, X, y, pos_class, folds, local, verbose):
+        pass
+
+
+class FriedmanDB(BaseCC):
+
+    def predict(self, X, method='friedman-db'):
+        Af = np.mean(self.estimators_[1].predict_proba(X)[:, 1])
+        p = (Af - self.train_prevs[1]) / self.Vt + self.train_prevs[1]
+        return np.array([1 - p, p])
+
+    def _compute_distribution(self, X, y):
+        self.train_prevs = np.unique(y, return_counts=True)[1] / len(X)
+        At = np.mean((self.estimators_[1].predict_proba(X)[:, 1] - self.train_prevs[1]) ** 2)
+        self.Vt = At / (self.train_prevs[1] * self.train_prevs[0])
+
+    def _compute_performance(self, X, y, pos_class, folds, local, verbose):
+        pass
+
+
+class LSDD(six.with_metaclass(ABCMeta, BaseEstimator)):
+
+    def __init__(self, sigma=0.01, lda=0.001, tol=1e-3, sampling=True):
+        self.sigma = sigma
+        self.lda = lda
+        self.tol = tol
+        self.sampling = sampling
+
+    def fit(self, X, y):
+
+        if len(np.unique(y)) != 2:
+            raise AttributeError("This is a binary method, more than two clases are not yet supported")
+
+        self.X_train = X
+        self.y_train = y
+
+    def predict(self, X):
+
+        f = lambda p: self.lsdd(X, p)[0]
+        a, b = gss(f, tol=self.tol)
+        p = (a + b) / 2
+        return np.array([1 - p, p])
+
+    def lsdd(self, X, prev, folds=5):
+        """
+        least-squares density difference estimation
+        Written by M.C. du Plessis
+
+        Least-squares density difference estimation.
+
+        Estimates p1(x) - p2(x) from samples {x1_i}_{i=1}^{n1} and {x2_j}_{j=1}^{n2}
+        drawn i.i.d. from p1(x) and p2(x), respectively.
+
+        """
+
+        # get the sizes
+        (m, d_test) = X.shape
+        (n, d_train) = self.X_train.shape
+
+        # check input argument
+        T = np.vstack((X, self.X_train))
+
+        # set the kernel bases
+        X = np.vstack((X, self.X_train))
+        if m + n >= 300 and self.sampling:  # This sampling cause the method to make a lot of mistakes
+            tst_idxs = np.random.choice(len(X), int(m / (m + n) * 300), replace=False)
+            pos_idxs = np.random.choice(np.sum(self.y_train == 1), int(np.sum(self.y_train == 1) / (m + n) * 300),
+                                        replace=False)
+            neg_idxs = np.random.choice(np.sum(self.y_train == 0), int(np.sum(self.y_train == 0) / (m + n) * 300),
+                                        replace=False)
+            C = np.vstack([X[tst_idxs],
+                           self.X_train[self.y_train == 1][pos_idxs],
+                           self.X_train[self.y_train == 0][neg_idxs]])
+            b = len(C)
+            C = C[np.random.permutation(b)]
+        else:
+            C = X
+            b = m + n
+
+        # calculate the squared distances
+        test_c_dist = self.distance_squared(X, C)
+        train_c_dist = self.distance_squared(self.X_train, C)
+        t_c_dist = self.distance_squared(T, C)
+        c_c_dist = self.distance_squared(C, C)
+
+        # setup the cross validation
+        cv_fold = np.arange(folds)  # normal range behaves strange with == sign
+        cv_split_test = np.floor(np.arange(m) * folds / m)
+        cv_split_train = np.floor(np.arange(n) * folds / n)
+        cv_index_test = cv_split_test[np.random.permutation(m)]
+        cv_index_train = cv_split_train[np.random.permutation(n)]
+        n_test_cv = np.array([np.sum(cv_index_test == i) for i in cv_fold])
+        n_train_pos_cv = np.array([np.sum(np.logical_and(cv_index_train == i, self.y_train == 1)) for i in cv_fold])
+        n_train_neg_cv = np.array([np.sum(np.logical_and(cv_index_train == i, self.y_train == 0)) for i in cv_fold])
+
+        # calculate the new solution
+
+        sigma = self.sigma
+        lda = self.lda
+
+        H = (np.sqrt(np.pi) * sigma) ** d_train * np.exp(-c_c_dist / (4 * sigma ** 2))
+        h = np.mean(np.exp(-test_c_dist / (2 * sigma ** 2)), axis=1) \
+            - prev * np.mean(np.exp(-train_c_dist[:, self.y_train == 1] / (2 * sigma ** 2)), axis=1) \
+            - (1 - prev) * np.mean(np.exp(-train_c_dist[:, self.y_train == 0] / (2 * sigma ** 2)), axis=1)
+
+        alpha = np.linalg.solve(H + lda * np.eye(b), h)
+        L2dist = 2 * np.dot(alpha, h) - np.dot(alpha, np.dot(H, alpha))
+
+        # calculate the values a
+        ddh = np.dot(alpha, np.exp(-t_c_dist / (2 * sigma ** 2)))
+
+        return L2dist, ddh
+
+    def distance_squared(self, X, C):
+        """
+        Calculates the squared distance between X and C.
+        """
+        Xsum = np.sum(X ** 2, axis=1)
+        Csum = np.sum(C ** 2, axis=1)
+        XC_dist2 = Xsum[np.newaxis, :] + Csum[:, np.newaxis] - 2 * np.dot(C, X.transpose())
+
+        return XC_dist2
