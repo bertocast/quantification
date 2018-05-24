@@ -10,7 +10,7 @@ from sklearn.cluster import KMeans
 from sklearn.model_selection import GridSearchCV, cross_val_predict
 from scipy.stats import rankdata, norm
 
-from examples.gss import gss
+from quantification.utils.base import gss
 from quantification.cc.base import BaseCC, \
     BaseClassifyAndCountModel
 from quantification.metrics import model_score
