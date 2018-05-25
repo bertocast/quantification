@@ -249,16 +249,12 @@ class CDEAC(BaseClassifyAndCountModel):
         return np.array(prev.values())
 
 
-class EDx(BaseCC):
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None):
-        super(EDx, self).__init__(estimator_class=estimator_class,
-                                  estimator_params=estimator_params,
-                                  estimator_grid=estimator_grid,
-                                  grid_params=grid_params)
+class EDx(six.with_metaclass(ABCMeta, BaseEstimator)):
+    def __init__(self):
+        pass
 
-    def fit(self, X, y, local=True, cv=50, plot=False, verbose=False):
-        super(EDx, self).fit(X, y)
-
+    def fit(self, X, y):
+        self.classes_ = np.unique(y)
         n_classes = len(self.classes_)
         self.K = np.zeros((n_classes, n_classes))
         self.X_train = X
@@ -410,12 +406,9 @@ class EDy(BaseCC):
 
 
 class kEDx(EDx):
-    def __init__(self, k, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None):
+    def __init__(self, k):
         self.k = k
-        super(kEDx, self).__init__(estimator_class=estimator_class,
-                                   estimator_params=estimator_params,
-                                   estimator_grid=estimator_grid,
-                                   grid_params=grid_params)
+        super(kEDx, self).__init__()
 
     def fit(self, X, y, local=True, cv=50, plot=False, verbose=False):
         classes = np.unique(y)
