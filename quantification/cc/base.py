@@ -151,6 +151,8 @@ class BaseCC(BaseClassifyAndCountModel):
 
     def fit(self, X, y, cv=50, verbose=False, local=True):
 
+        cv = np.min([cv, np.min(np.unique(y, return_counts=True)[1])])
+
         X, y = check_X_y(X, y, accept_sparse=True)
 
         self.classes_ = np.unique(y).tolist()
