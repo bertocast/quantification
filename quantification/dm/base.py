@@ -298,8 +298,8 @@ class EDx(six.with_metaclass(ABCMeta, BaseEstimator)):
             G = nearest_pd(G)
 
         a = 2 * t
-        C = np.vstack([- np.ones((1, n_classes - 1)), np.eye(n_classes - 1)]).T
-        b = np.array([-1] + [0] * (n_classes - 1), dtype=np.float)
+        C = -np.vstack([np.ones((1, n_classes - 1)), -np.eye(n_classes - 1)]).T
+        b = -np.array([1] + [0] * (n_classes - 1), dtype=np.float)
         sol = quadprog.solve_qp(G=G,
                                 a=a, C=C, b=b)
 
@@ -371,8 +371,8 @@ class EDy(BaseCC):
             G = nearest_pd(G)
 
         a = 2 * t
-        C = np.vstack([np.ones((1, n_classes - 1)), np.eye(n_classes - 1)]).T
-        b = np.array([1] + [0] * (n_classes - 1), dtype=np.float)
+        C = -np.vstack([np.ones((1, n_classes - 1)), -np.eye(n_classes - 1)]).T
+        b = -np.array([1] + [0] * (n_classes - 1), dtype=np.float)
         sol = quadprog.solve_qp(G=G,
                                 a=a, C=C, b=b)
 
