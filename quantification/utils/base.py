@@ -1,3 +1,4 @@
+import cvxpy
 from numpy import linalg as la
 import numpy as np
 import math
@@ -56,10 +57,6 @@ def is_pd(B):
         return False
 
 
-
-
-
-
 invphi = (math.sqrt(
     5) - 1) / 2  # 1/phi
 invphi2 = (3 - math.sqrt(
@@ -107,3 +104,14 @@ def gss(f, tol=1e-5):
         return (a, d)
     else:
         return (c, b)
+
+
+def solve_hd(train_dist, test_dist, n_classes, solver="ECOS"):
+    p = cvxpy.Variable(n_classes)
+    s = cvxpy.mul_elemwise(test_dist, (train_dist.T * p))
+    objective = cvxpy.Minimize(1 - cvxpy.sum_entries(cvxpy.sqrt(s)))
+    contraints = [cvxpy.sum_entries(p) == 1, p >= 0]
+
+    prob = cvxpy.Problem(objective, contraints)
+    prob.solve(solver=solver)
+    return np.array(p.value).squeeze()

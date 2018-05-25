@@ -16,7 +16,7 @@ from copy import deepcopy
 from sklearn.utils import check_X_y
 
 from quantification.metrics import distributed, model_score
-from quantification.utils.base import is_pd, nearest_pd
+from quantification.utils.base import is_pd, nearest_pd, solve_hd
 
 
 class BaseClassifyAndCountModel(six.with_metaclass(ABCMeta, BaseEstimator)):
@@ -374,18 +374,9 @@ class BaseCC(BaseClassifyAndCountModel):
             self.train_dist_ = self.train_dist_.reshape(n_classes, -1)
             test_dist = test_dist.reshape(-1, 1)
 
-        return self._solve_hd(test_dist, n_classes)
+        return solve_hd(self.train_dist_, test_dist, n_classes)
 
-    def _solve_hd(self, test_dist, n_classes, solver="ECOS"):
 
-        p = cvxpy.Variable(n_classes)
-        s = cvxpy.mul_elemwise(test_dist, (self.train_dist_.T * p))
-        objective = cvxpy.Minimize(1 - cvxpy.sum_entries(cvxpy.sqrt(s)))
-        contraints = [cvxpy.sum_entries(p) == 1, p >= 0]
-
-        prob = cvxpy.Problem(objective, contraints)
-        result = prob.solve(solver=solver)
-        return np.array(p.value).squeeze()
 
 
 class CC(BaseCC):

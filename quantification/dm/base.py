@@ -10,7 +10,7 @@ from sklearn.cluster import KMeans
 from sklearn.model_selection import GridSearchCV, cross_val_predict
 from scipy.stats import rankdata, norm
 
-from quantification.utils.base import gss
+from quantification.utils.base import gss, solve_hd
 from quantification.cc.base import BaseCC, \
     BaseClassifyAndCountModel
 from quantification.metrics import model_score
@@ -33,11 +33,15 @@ class HDy(BaseCC):
         return self._predict_hdy(X)
 
 
-class HDX(BaseCC):
+class HDX(six.with_metaclass(ABCMeta, BaseEstimator)):
 
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=8,
-                 strategy='macro', multiclass='ova'):
-        super(HDX, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b, strategy, multiclass)
+    def __init__(self, b=8):
+        self.b = b
+
+    def fit(self, X, y):
+        self.classes_ = np.unique(y)
+
+        self._compute_distribution(X, y)
 
     def predict(self, X, method='cc'):
         if not self.b:
@@ -57,7 +61,7 @@ class HDX(BaseCC):
             pdf = pdf / len(X)
             test_dist = pdf.reshape(-1, 1)
 
-        return self._solve_hd(test_dist, n_classes, solver="ECOS")
+        return solve_hd(self.train_dist_, test_dist, n_classes, solver="ECOS")
 
     def _compute_distribution(self, X, y):
         ranges = [(a.min(), a.max()) for a in X.T]
