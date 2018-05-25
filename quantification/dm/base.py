@@ -17,198 +17,6 @@ from quantification.metrics import model_score
 from quantification.utils.base import is_pd, nearest_pd
 
 
-class BinaryEM(BaseClassifyAndCountModel):
-    """
-        Binary EM method.
-
-        Parameters
-        -----------
-        tol : float, optional, default=1e-9
-            Minimum error before stopping the learning process.
-
-        estimator_class : object, optional
-            An instance of a classifier class. It has to have fit and predict methods. It is highly advised to use one of
-            the implementations in sklearn library. If it is leave as None, Logistic Regression will be used.
-
-        estimator_params : dictionary, optional
-            Additional params to initialize the classifier.
-
-        estimator_grid : dictionary, optional
-            During training phase, grid search is performed. This parameter should provided the parameters of the classifier
-            that will be tested (e.g. estimator_grid={C: [0.1, 1, 10]} for Logistic Regression).
-
-        Attributes
-        ----------
-        estimator_ : object
-            The underlying classifier
-
-        prob_tr_ = float
-            Prevalence of the positive class in the training set.
-
-        """
-
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, tol=1e-9):
-        super(BinaryEM, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b=None)
-        self.tol = tol
-
-    def fit(self, X, y):
-        self.estimator_ = self._make_estimator()
-        self.estimator_.fit(X, y)
-        if isinstance(self.estimator_, GridSearchCV):
-            self.estimator_ = self.estimator_.best_estimator_
-        self.prob_tr_ = (np.bincount(y, minlength=2) / float(len(y)))[1]
-        return self
-
-    def predict(self, X):
-
-        m = X.shape[0]
-        p_cond_tr = self.estimator_.predict_proba(X)[:, 1]
-        p_s = self.prob_tr_
-
-        while True:
-            p_s_last_ = p_s
-            num = p_s / self.prob_tr_ * p_cond_tr
-            denom = num + (1 - p_s) / (1 - self.prob_tr_) * (1 - p_cond_tr)
-            p_cond_s = num / denom
-
-            p_s = np.sum(p_cond_s) / m
-
-            if np.abs(p_s - p_s_last_) < self.tol:
-                break
-
-        return np.array([1 - p_s, p_s])
-
-
-class BinaryCDEIter(BaseClassifyAndCountModel):
-    """
-            Binary CDE Iterate method.
-
-            Parameters
-            -----------
-            num_iter : float, optional, default=3
-                Number of iterations.
-
-            estimator_class : object, optional
-                An instance of a classifier class. It has to have fit and predict methods. It is highly advised to use one of
-                the implementations in sklearn library. If it is leave as None, Logistic Regression will be used.
-
-            estimator_params : dictionary, optional
-                Additional params to initialize the classifier.
-
-            estimator_grid : dictionary, optional
-                During training phase, grid search is performed. This parameter should provided the parameters of the classifier
-                that will be tested (e.g. estimator_grid={C: [0.1, 1, 10]} for Logistic Regression).
-
-            Attributes
-            ----------
-            estimator_ : object
-                The underlying classifier
-
-            pos_neg_orig : float
-                Original ratio between positive and negatives examples.
-
-            X_train : array, shape=(num_samples, num_features)
-                Training features dataset.
-
-            y_train : array, shape=(num_samples,)
-                Class of each example in the training dataset.
-
-            """
-
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, num_iter=3):
-        super(BinaryCDEIter, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b=None)
-        self.num_iter = num_iter
-
-    def fit(self, X, y):
-
-        self.classes_ = np.unique(y)
-        self.estimator_params['class_weight'] = dict(zip(self.classes_, [1, 1]))
-        self.estimator_ = self._make_estimator()
-        if isinstance(self.estimator_, GridSearchCV):
-            if not hasattr(self.estimator_.estimator, 'class_weight'):
-                raise ValueError("Classifier must have class_weight attribute in order to perform cost "
-                                 "sensitive classification")
-        else:
-            if not hasattr(self.estimator_, 'class_weight'):
-                raise ValueError("Classifier must have class_weight attribute in order to perform cost "
-                                 "sensitive classification")
-
-        self.estimator_ = self.estimator_.fit(X, y)
-        training_prevalences = np.bincount(y, minlength=2)
-        self.pos_neg_orig = training_prevalences[1] / float(training_prevalences[0])
-        self.X_train = X
-        self.y_train = y
-        return self
-
-    def predict(self, X, verbose=False):
-
-        n_iter = 0
-        while n_iter < self.num_iter:
-            if verbose:
-                print("Iteration", n_iter)
-            pred = self.estimator_.predict(X)
-            test_prevalences = np.bincount(pred, minlength=2)
-            dmr = self.pos_neg_orig / (test_prevalences[1] / float(test_prevalences[0]))
-            if np.isinf(dmr):
-                self.estimator_params['class_weight'] = 'balanced'
-            else:
-                self.estimator_params['class_weight'] = dict(zip(self.classes_, [dmr, 1.0]))
-            if isinstance(self.estimator_, GridSearchCV):
-                self.estimator_.estimator.set_params(**self.estimator_params)
-            else:
-                self.estimator_.set_params(**self.estimator_params)
-            self.estimator_ = self.estimator_.fit(self.X_train, self.y_train)
-            n_iter += 1
-
-        final_preds = pred
-        prevalences = np.bincount(final_preds, minlength=2) / float(len(final_preds))
-        return prevalences
-
-
-class BinaryCDEAC(BaseClassifyAndCountModel):
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, num_iter=3):
-        super(BinaryCDEAC, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b=None)
-        self.num_iter = num_iter
-
-    def fit(self, X, y, verbose=False):
-        self.classes_ = np.unique(y)
-        self.estimator_params['class_weight'] = dict(zip(self.classes_, [1, 1]))
-        self.estimator_ = self._make_estimator()
-        if not hasattr(self.estimator_, 'class_weight'):
-            raise ValueError("Classifier must have class_weight attribute in order to perform cost "
-                             "sensitive classification")
-        self.estimator_ = self.estimator_.fit(X, y)
-        training_prevalences = np.bincount(y, minlength=2)
-        self.pos_neg_orig = training_prevalences[1] / float(training_prevalences[0])
-        self.X_train = X
-        self.y_train = y
-        cm = model_score.cv_confusion_matrix(self.estimator_, X, y, 10, verbose)
-        cm = np.mean(cm, axis=0)
-        self.tpr_ = cm[1, 1] / float(cm[1, 1] + cm[1, 0])
-        self.fpr_ = cm[0, 1] / float(cm[0, 1] + cm[0, 0])
-
-        return self
-
-    def predict(self, X):
-
-        n_iter = 0
-        while n_iter < self.num_iter:
-            pred = self.estimator_.predict(X)
-            test_prevalences = np.bincount(pred, minlength=2)
-            corrected = (test_prevalences[1] - self.fpr_) / (self.tpr_ - self.fpr_)
-            test_prevalences = np.array([1 - corrected, corrected])
-            dmr = self.pos_neg_orig / (test_prevalences[1] / float(test_prevalences[0]))
-            if np.isinf(dmr):
-                self.estimator_params['class_weight'] = 'balanced'
-            else:
-                self.estimator_params['class_weight'] = dict(zip(self.classes_, [dmr, 1.0]))
-            self.estimator = self._make_estimator()
-            self.estimator_ = self.estimator_.fit(self.X_train, self.y_train)
-            n_iter += 1
-
-        final_preds = pred
-        prevalences = np.bincount(final_preds, minlength=2) / float(len(final_preds))
-        return prevalences
 
 
 class HDy(BaseCC):
@@ -223,6 +31,58 @@ class HDy(BaseCC):
     def predict(self, X, method="hdy"):
         assert method == "hdy"
         return self._predict_hdy(X)
+
+
+class HDX(BaseCC):
+
+    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, b=8,
+                 strategy='macro', multiclass='ova'):
+        super(HDX, self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b, strategy, multiclass)
+
+    def predict(self, X, method='cc'):
+        if not self.b:
+            raise ValueError("If HDy predictions are in order, the quantifier must be trained with the parameter `b`")
+        n_classes = len(self.classes_)
+
+        if n_classes == 2:
+            pdf = np.zeros((self.b, X.shape[1]))
+            for att in range(X.shape[1]):
+                pdf[:, att] = np.histogram(X[:, att], bins=self.b, range=self.att_ranges[att])[0]
+            pdf = pdf / len(X)
+            test_dist = pdf.reshape(-1, 1)
+        else:
+            pdf = np.zeros((self.b, X.shape[1]))
+            for att in range(X.shape[1]):
+                pdf[:, att] = np.histogram(X, bins=self.b, range=self.att_ranges[att])[0]
+            pdf = pdf / len(X)
+            test_dist = pdf.reshape(-1, 1)
+
+        return self._solve_hd(test_dist, n_classes, solver="ECOS")
+
+    def _compute_distribution(self, X, y):
+        ranges = [(a.min(), a.max()) for a in X.T]
+        if len(self.classes_) == 2:
+            neg_pdf = np.zeros((self.b, X.shape[1]))
+            pos_pdf = np.zeros((self.b, X.shape[1]))
+            for att in range(X.shape[1]):
+                neg_pdf[:, att] = np.histogram(X[y == 0, att], bins=self.b, range=ranges[att])[0]
+                pos_pdf[:, att] = np.histogram(X[y == 1, att], bins=self.b, range=ranges[att])[0]
+            neg_pdf = neg_pdf / np.sum(y == 0)
+            neg_pdf = neg_pdf.reshape(1, -1)
+            pos_pdf = pos_pdf / np.sum(y == 1)
+            pos_pdf = pos_pdf.reshape(1, -1)
+            self.train_dist_ = np.vstack((neg_pdf, pos_pdf))
+        else:
+            n_classes = len(self.classes_)
+            self.train_dist_ = np.zeros((n_classes, self.b, X.shape[1]))
+            for n_cls in range(n_classes):
+                for att in range(X.shape[1]):
+                    self.train_dist_[n_cls, :, att] = np.histogram(X[y == self.classes_[n_cls], att], bins=self.b,
+                                                                   range=ranges[att])[0]
+
+            self.train_dist_ = self.train_dist_ / len(X)
+            self.train_dist_ = self.train_dist_.reshape(n_classes, -1)
+        self.att_ranges = ranges
 
 
 class EM(BaseClassifyAndCountModel):

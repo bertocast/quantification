@@ -7,7 +7,7 @@ from sklearn.svm import SVC
 
 from quantification.cc import BaseCC
 from quantification.cc.base import FriedmanAC
-from quantification.dm.base import EDx, kEDx, EDy, FriedmanBM, FriedmanMM
+from quantification.dm.base import EDx, kEDx, EDy, FriedmanBM, FriedmanMM, HDX
 
 
 def main():
@@ -44,6 +44,11 @@ def main():
     print(formatter.format("PCC", *prev_pcc))
     print(formatter.format("PAC", *prev_pac))
     print(formatter.format("HDy", *prev_hdy))
+
+    hdx = HDX(b=8)
+    hdx.fit(X_train, y_train)
+    prev_hdx = hdx.predict(X_test)
+    print(formatter.format("HDx", *prev_hdx))
 
     edx = EDx()
     edx.fit(X_train, y_train)

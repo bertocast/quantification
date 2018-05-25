@@ -363,7 +363,7 @@ class BaseCC(BaseClassifyAndCountModel):
             pdf, _ = np.histogram(self.estimators_[1].predict_proba(X)[:, 1], self.b, range=(0, 1))
             test_dist = pdf / float(X.shape[0])
             test_dist = np.expand_dims(test_dist, -1)
-            self.train_dist_ = self.train_dist_.squeeze()
+            self.train_dist_ = np.squeeze(self.train_dist_)
 
         else:
             test_dist = np.zeros((self.b, len(self.estimators_)))
@@ -374,6 +374,9 @@ class BaseCC(BaseClassifyAndCountModel):
             self.train_dist_ = self.train_dist_.reshape(n_classes, -1)
             test_dist = test_dist.reshape(-1, 1)
 
+        return self._solve_hd(test_dist, n_classes)
+
+    def _solve_hd(self, test_dist, n_classes, solver="ECOS"):
 
         p = cvxpy.Variable(n_classes)
         s = cvxpy.mul_elemwise(test_dist, (self.train_dist_.T * p))
@@ -381,7 +384,7 @@ class BaseCC(BaseClassifyAndCountModel):
         contraints = [cvxpy.sum_entries(p) == 1, p >= 0]
 
         prob = cvxpy.Problem(objective, contraints)
-        result = prob.solve()
+        result = prob.solve(solver=solver)
         return np.array(p.value).squeeze()
 
 
