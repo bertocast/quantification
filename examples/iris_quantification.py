@@ -16,8 +16,8 @@ def main():
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.3, random_state=1234)
 
-    #X=X[25:-25]
-    #y=y[25:-25]
+    # X=X[25:-25]
+    # y=y[25:-25]
 
     # Create de quantifier. We will use a simple logistic regression as the underlying classifier.
     # Number of bins to perform HDy will be set to 8.
@@ -34,7 +34,7 @@ def main():
     prev_ac = qnf.predict(X_test, method='ac')
     prev_pcc = qnf.predict(X_test, method='pcc')
     prev_pac = qnf.predict(X_test, method='pac')
-    prev_hdy= qnf.predict(X_test, method='hdy')
+    prev_hdy = qnf.predict(X_test, method='hdy')
 
     formatter = "{:<15}{:>15.2f}{:>15.2f}{:>15.2f}"
     print("{:<15}{:>15}{:>15}{:>15}".format('', 'setosa', 'veriscolor', 'virginica'))
@@ -60,7 +60,6 @@ def main():
     prev_edy = edy.predict(X_test)
     print(formatter.format("EDy", *prev_edy))
 
-
     kedx = kEDx(k=3)
     kedx.fit(X_train, y_train)
     prev_kedx = kedx.predict(X_test)
@@ -75,8 +74,6 @@ def main():
     fr.fit(X_train, y_train)
     prev_fr = fr.predict(X_test)
     print(formatter.format("Friedman-AC", *prev_fr))
-
-
 
 
 if __name__ == '__main__':
