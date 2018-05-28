@@ -34,6 +34,8 @@ class HDy(BaseCC):
         assert method == "hdy"
         return self._predict_hdy(X)
 
+    def _compute_performance(self, X, y, pos_class, folds, local, verbose):
+        pass
 
 class HDX(six.with_metaclass(ABCMeta, BaseEstimator)):
 
