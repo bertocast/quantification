@@ -4,9 +4,11 @@ from abc import ABCMeta
 
 import numpy as np
 import six
+from scipy.spatial.distance import cdist
 from shapely.geometry import Polygon
 from sklearn.base import BaseEstimator
 from sklearn.cluster import KMeans
+from sklearn.metrics import euclidean_distances
 from sklearn.model_selection import GridSearchCV, cross_val_predict
 from scipy.stats import rankdata, norm
 
@@ -293,15 +295,14 @@ class EDx(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         t = - Kt[:-1] + K[:-1, -1] + Kt[-1] - K[-1, -1]
 
-        G = 2 * B
+        G = B
         if not is_pd(G):
             G = nearest_pd(G)
 
-        a = 2 * t
+        a = t
         C = -np.vstack([np.ones((1, n_classes - 1)), -np.eye(n_classes - 1)]).T
         b = -np.array([1] + [0] * (n_classes - 1), dtype=np.float)
-        sol = quadprog.solve_qp(G=G,
-                                a=a, C=C, b=b)
+        sol = quadprog.solve_qp(G=G, a=a, C=C, b=b)
 
         p = sol[0]
         p = np.append(p, 1 - p.sum())
@@ -311,7 +312,7 @@ class EDx(six.with_metaclass(ABCMeta, BaseEstimator)):
         return p
 
     def distance(self, p, q):
-        return np.square(p[:, None] ** 2 - q ** 2).sum()
+        return euclidean_distances(p, q).sum()
 
     def _compute_distribution(self, X, y):
         pass
