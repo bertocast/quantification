@@ -10,6 +10,7 @@ import six
 import cvxpy
 from sklearn.base import BaseEstimator
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import GridSearchCV
 from copy import deepcopy
 
@@ -201,6 +202,8 @@ class BaseCC(BaseClassifyAndCountModel):
 
         if local:
             cm = model_score.cv_confusion_matrix(self.estimators_[pos_class], X, y, folds, verbose)
+        elif folds == 1 or not folds:
+            cm = confusion_matrix(y, self.estimators_[pos_class].predict(X), labels=self.estimators_[pos_class].classes_)
         else:
             cm = distributed.cv_confusion_matrix(self.estimators_[pos_class], X, y, self.X_y_path_, pos_class=pos_class,
                                                  folds=folds,
