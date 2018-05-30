@@ -201,9 +201,11 @@ class BaseCC(BaseClassifyAndCountModel):
     def _compute_performance(self, X, y, pos_class, folds, local, verbose):
 
         if local:
-            cm = model_score.cv_confusion_matrix(self.estimators_[pos_class], X, y, folds, verbose)
-        elif folds == 1 or not folds:
-            cm = confusion_matrix(y, self.estimators_[pos_class].predict(X), labels=self.estimators_[pos_class].classes_)
+            if folds == 1 or not folds:
+                cm = confusion_matrix(y, self.estimators_[pos_class].predict(X),
+                                     labels=self.estimators_[pos_class].classes_)
+            else:
+                cm = model_score.cv_confusion_matrix(self.estimators_[pos_class], X, y, folds, verbose)
         else:
             cm = distributed.cv_confusion_matrix(self.estimators_[pos_class], X, y, self.X_y_path_, pos_class=pos_class,
                                                  folds=folds,
