@@ -202,8 +202,8 @@ class BaseCC(BaseClassifyAndCountModel):
 
         if local:
             if folds == 1 or not folds:
-                cm = confusion_matrix(y, self.estimators_[pos_class].predict(X),
-                                     labels=self.estimators_[pos_class].classes_)
+                cm = np.array([confusion_matrix(y, self.estimators_[pos_class].predict(X),
+                                     labels=self.estimators_[pos_class].classes_)])
             else:
                 cm = model_score.cv_confusion_matrix(self.estimators_[pos_class], X, y, folds, verbose)
         else:
