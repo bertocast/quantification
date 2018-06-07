@@ -11,12 +11,13 @@ import cvxpy
 from sklearn.base import BaseEstimator
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, cross_val_score
 from copy import deepcopy
 
 from sklearn.utils import check_X_y
 
 from quantification.metrics import distributed, model_score
+from quantification.metrics.model_score import fpr, tpr
 from quantification.utils.base import is_pd, nearest_pd, solve_hd
 
 
@@ -200,27 +201,14 @@ class BaseCC(BaseClassifyAndCountModel):
 
     def _compute_performance(self, X, y, pos_class, folds, local, verbose):
 
-        if local:
-            if folds == 1 or not folds:
-                cm = np.array([confusion_matrix(y, self.estimators_[pos_class].predict(X),
-                                     labels=self.estimators_[pos_class].classes_)])
-            else:
-                cm = model_score.cv_confusion_matrix(self.estimators_[pos_class], X, y, folds, verbose)
+        if folds is None or folds == 1:
+            self.tpr_[pos_class] = tpr(self.estimators_[pos_class], X, y)
+            self.fpr_[pos_class] = fpr(self.estimators_[pos_class], X, y)
         else:
-            cm = distributed.cv_confusion_matrix(self.estimators_[pos_class], X, y, self.X_y_path_, pos_class=pos_class,
-                                                 folds=folds,
-                                                 verbose=verbose)
-
-        if self.strategy == 'micro':
-            self.confusion_matrix_[pos_class] = np.mean(cm, axis=0)
-            self.tpr_[pos_class] = self.confusion_matrix_[pos_class][1, 1] / float(
-                self.confusion_matrix_[pos_class][1, 1] + self.confusion_matrix_[pos_class][1, 0])
-            self.fpr_[pos_class] = self.confusion_matrix_[pos_class][0, 1] / float(
-                self.confusion_matrix_[pos_class][0, 1] + self.confusion_matrix_[pos_class][0, 0])
-        elif self.strategy == 'macro':
-            self.confusion_matrix_[pos_class] = cm
-            self.tpr_[pos_class] = np.mean([cm_[1, 1] / float(cm_[1, 1] + cm_[1, 0]) for cm_ in cm])
-            self.fpr_[pos_class] = np.mean([cm_[0, 1] / float(cm_[0, 1] + cm_[0, 0]) for cm_ in cm])
+            fprs = cross_val_score(self.estimators_[pos_class], X, y, cv=folds, scoring=fpr)
+            tprs = cross_val_score(self.estimators_[pos_class], X, y, cv=folds, scoring=tpr)
+            self.tpr_[pos_class] = tprs.mean()
+            self.fpr_[pos_class] = fprs.mean()
 
         try:
             predictions = self.estimators_[pos_class].predict_proba(X)
