@@ -61,7 +61,7 @@ class HDX(six.with_metaclass(ABCMeta, BaseEstimator)):
         else:
             pdf = np.zeros((self.b, X.shape[1]))
             for att in range(X.shape[1]):
-                pdf[:, att] = np.histogram(X, bins=self.b, range=self.att_ranges[att])[0]
+                pdf[:, att] = np.histogram(X[:, att], bins=self.b, range=self.att_ranges[att])[0]
             pdf = pdf / len(X)
             test_dist = pdf.reshape(-1, 1)
 
@@ -456,7 +456,7 @@ class CvMy(BaseCC):
         self.X_train = X
         self.y_train = y
 
-    def predict(self, X, method="cvmx"):
+    def predict(self, X, method="cvmy"):
         n_classes = len(self.classes_)
 
         train_repr = self.estimators_[1].predict_proba(self.X_train)[..., 1][:, np.newaxis]

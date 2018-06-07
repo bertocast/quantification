@@ -26,7 +26,7 @@ def main():
     qnf = BaseCC(estimator_class=LogisticRegression(random_state=42), b=8)
 
     # Fit the quantifier
-    qnf.fit(X_train, y_train)
+    qnf.fit(X_train, y_train, cv=1)
 
     # n_neg = (y_train == 0).sum()
     #
