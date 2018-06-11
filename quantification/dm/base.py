@@ -19,8 +19,6 @@ from quantification.metrics import model_score
 from quantification.utils.base import is_pd, nearest_pd
 
 
-
-
 class HDy(BaseCC):
     """
              Binary HDy method.
@@ -36,6 +34,7 @@ class HDy(BaseCC):
 
     def _compute_performance(self, X, y, pos_class, folds, local, verbose):
         pass
+
 
 class HDX(six.with_metaclass(ABCMeta, BaseEstimator)):
 
@@ -391,8 +390,9 @@ class EDy(BaseCC):
         n_classes = len(self.classes_)
         self.train_dist_ = dict.fromkeys(self.classes_)
         if len(self.classes_) == 2:
-            pos_preds = self.estimators_[1].predict_proba(X[y == 1])[:, 1]
-            neg_preds = self.estimators_[1].predict_proba(X[y == 0])[:, 1]
+            preds = cross_val_predict(self.estimators_[1], X, y, method="predict_proba")[:, 1]
+            pos_preds = preds[y == 1]
+            neg_preds = preds[y == 0]
             self.train_dist_[0] = neg_preds
             self.train_dist_[1] = pos_preds
         else:
@@ -401,7 +401,8 @@ class EDy(BaseCC):
                 self.train_dist_[n_cls] = np.zeros((sum(y == cls), n_classes))
 
                 for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
-                    preds = clf.predict_proba(X[y == cls])[:, 1]
+                    preds = cross_val_predict(clf, X, y, method="predict_proba")[:, 1]
+                    preds = preds[y == cls]
                     self.train_dist_[n_cls][:, n_clf] = preds
 
     def _compute_performance(self, X, y, pos_class, folds, local, verbose):
@@ -459,7 +460,7 @@ class CvMy(BaseCC):
     def predict(self, X, method="cvmy"):
         n_classes = len(self.classes_)
 
-        train_repr = self.estimators_[1].predict_proba(self.X_train)[..., 1][:, np.newaxis]
+        train_repr = cross_val_predict(self.estimators_[1], self.X_train, self.y_train, method="predict_proba")[..., 1][:, np.newaxis]
         test_repr = self.estimators_[1].predict_proba(X)[..., 1][:, np.newaxis]
 
         Hn = rankdata(np.concatenate(np.concatenate([train_repr, test_repr])))

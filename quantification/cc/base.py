@@ -11,7 +11,7 @@ import cvxpy
 from sklearn.base import BaseEstimator
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix
-from sklearn.model_selection import GridSearchCV, cross_val_score
+from sklearn.model_selection import GridSearchCV, cross_val_score, cross_val_predict
 from copy import deepcopy
 
 from sklearn.utils import check_X_y
@@ -231,8 +231,9 @@ class BaseCC(BaseClassifyAndCountModel):
 
         if len(self.classes_) == 2:
             # If it is a binary problem, add the representation of the negative samples
-            pos_preds = self.estimators_[1].predict_proba(X[y == 1])[:, 1]
-            neg_preds = self.estimators_[1].predict_proba(X[y == 0])[:, 1]
+            preds = cross_val_predict(self.estimators_[1], X, y, method="predict_proba")[:, 1]
+            pos_preds = preds[y == 1]
+            neg_preds = preds[y == 0]
             pos_pdf, _ = np.histogram(pos_preds, bins=self.b, range=(0., 1.))
             neg_pdf, _ = np.histogram(neg_preds, bins=self.b, range=(0., 1.))
             self.train_dist_ = np.vstack(
@@ -244,7 +245,8 @@ class BaseCC(BaseClassifyAndCountModel):
                 y_bin[~mask] = 0
 
                 for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
-                    preds = clf.predict_proba(X[y == cls])[:, 1]
+                    preds = cross_val_predict(clf, X, y, method="predict_proba")[:, 1]
+                    preds = preds[y==cls]
                     pdf, _ = np.histogram(preds, bins=self.b, range=(0., 1.))
                     self.train_dist_[n_cls, :, n_clf] = pdf / float(sum(y_bin))
 
@@ -355,7 +357,8 @@ class BaseCC(BaseClassifyAndCountModel):
         n_classes = len(self.classes_)
 
         if n_classes == 2:
-            pdf, _ = np.histogram(self.estimators_[1].predict_proba(X)[:, 1], self.b, range=(0, 1))
+            preds = self.estimators_[1].predict_proba(X)[:, 1]
+            pdf, _ = np.histogram(preds, self.b, range=(0, 1))
             test_dist = pdf / float(X.shape[0])
             test_dist = np.expand_dims(test_dist, -1)
             self.train_dist_ = np.squeeze(self.train_dist_)
@@ -363,14 +366,14 @@ class BaseCC(BaseClassifyAndCountModel):
         else:
             test_dist = np.zeros((self.b, len(self.estimators_)))
             for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
-                pdf, _ = np.histogram(clf.predict_proba(X)[:, 1], self.b, range=(0, 1))
+                preds = clf.predict_proba(X)[:, 1]
+                pdf, _ = np.histogram(preds, self.b, range=(0, 1))
                 test_dist[:, n_clf] = pdf / float(X.shape[0])
 
             self.train_dist_ = self.train_dist_.reshape(n_classes, -1)
             test_dist = test_dist.reshape(-1, 1)
 
         return solve_hd(self.train_dist_, test_dist, n_classes)
-
 
 
 
