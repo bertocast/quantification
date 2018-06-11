@@ -41,10 +41,11 @@ class OrderedQuantificationTreeFH(BaseClassifyAndCountModel):
 
             """
 
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, usingPAC=False):
+    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, method=None, usingPAC=False):
         super(OrderedQuantificationTreeFH,self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b=None)
         # parametros especificos aqui
-        self.usingPAC_ = usingPAC
+        self.usingPAC = usingPAC
+        self.method = method
         self.oqn_estimators_ = None
         self.tree = None
 
@@ -172,7 +173,7 @@ class OrderedQuantificationTreeFH(BaseClassifyAndCountModel):
         return self
 
 
-    def fit(self, X, y, verbose=False):
+    def fit(self, X, y, cv=50, verbose=False):
         """
             Crea todos los estimadores PCC/PAC de unas clases frente a otras y los guarda en un array numpy
             self.oqn_estimartors_ con este formato:
@@ -196,12 +197,12 @@ class OrderedQuantificationTreeFH(BaseClassifyAndCountModel):
             y_bin = self.__binarize_labels(y, classes_left)  #classes_left vs classes_right
 
             #se invoca un clasificador de quantificacion binario PCC/PAC
-            if self.usingPAC_:
-                clf = PAC(self.estimator_class, self.estimator_params)  #estimator_class=LogisticRegression()
+            if self.usingPAC:
+                clf = PAC(self.estimator_class, self.estimator_params, self.estimator_grid, self.grid_params)
             else:
-                clf = PCC(self.estimator_class, self.estimator_params)  #estimator_class=LogisticRegression()
+                clf = PCC(self.estimator_class, self.estimator_params, self.estimator_grid, self.grid_params)
 
-            clf.fit(X, y_bin)
+            clf.fit(X, y_bin, cv, verbose)
 
             # se guardan los modelos y las clases con las que se obtienen vs las otras (el 0 es para luego->KLD)
             l_estimators.append([deepcopy(clf), classes_left, classes_right, 0])
@@ -212,8 +213,9 @@ class OrderedQuantificationTreeFH(BaseClassifyAndCountModel):
                 p_true = num_true / float(samples)  # la(s) clase(s) left vale +1, el resto -1
                 p_prev = clf.predict(X) #esto es reescritura
                 print("prevalencia =", p_prev, "prob_true =", p_true, "num_true =", num_true )
-                if self.usingPAC_==True:
-                    print("prevalenciapcc =", (clf._predict_pcc(X))[1], "prob_true =", p_true, "num_true =", num_true)
+                if self.usingPAC==True:
+                    print("prevalencia_pcc (para comprobar la correcion) =", (clf._predict_pcc(X))[1], "prob_true =", p_true, "num_true =", num_true)
+
 
         #convierto la lista de estimadores en un numpy array
         self.oqn_estimators_ = np.array(l_estimators)
@@ -222,7 +224,7 @@ class OrderedQuantificationTreeFH(BaseClassifyAndCountModel):
 
 
 
-    def predict(self, X, method='sebas'):
+    def predict(self, X, method_=None):
         """ Predict using one of the available methods
             Retorna la prevalencia de cada clase, basado las probabilidades calculadas a partir de los modelos
             Rerorna la prevalencia de cada clase contando las clases que tienen mas probabilidad, es decir,
@@ -233,7 +235,7 @@ class OrderedQuantificationTreeFH(BaseClassifyAndCountModel):
             X : numpy array, shape = (n_samples, n_features)
                 Samples.
 
-            method : string, optional, default 'sebas'
+            method_ : string, optional, default 'None'
                 Method to use in the prediction. It can be one of:
                     - 'sebas' : Sebastiani Method Tree Based for Ordinal Quantification
                     - 'sebas_hojas' : Sebastiani Method Tree Based for Ordinal Quantification contando hojas
@@ -248,22 +250,29 @@ class OrderedQuantificationTreeFH(BaseClassifyAndCountModel):
             pred : numpy array, shape = (n_classes)
                 Prevalences of each of the classes. Note that  sum(pred[i]) = 1
         """
-        if method == 'sebas':
+
+        if method_ == None:
+            if self.method == None:
+                raise ValueError("Invalid method %s.", method_)
+            else:
+                 method_ = self.method
+
+        if method_ == 'sebas':
             return self._predict_sebas(X)
-        elif method == 'sebas_freq':
+        elif method_ == 'sebas_freq':
             return self._predict_sebas_freq(X)
-        elif method == 'sebas_hojas':
+        elif method_ == 'sebas_hojas':
             return self._predict_sebas_hojas(X)
-        elif method == 'pcc_ord':
+        elif method_ == 'pcc_ord':
             return self._predict_pcc_ord(X)
-        elif method == 'pcc_ord_freq':
+        elif method_ == 'pcc_ord_freq':
             return self._predict_pcc_ord_freq(X)
-        elif method == 'pcc_ord_nosamples':
+        elif method_ == 'pcc_ord_nosamples':
             return self._predict_pcc_ord_nosamples(X)
-        elif method == 'pac_ord_nosamples':
+        elif method_ == 'pac_ord_nosamples':
             return self._predict_pac_ord_nosamples(X)
         else:
-            raise ValueError("Invalid method %s.", method)
+            raise ValueError("Invalid method %s.", method_)
 
 
 
@@ -638,6 +647,7 @@ class OrderedQuantificationTreeFH(BaseClassifyAndCountModel):
             # ojo: predict si que devuelve cosas distintas en PCC y en PAC
             #p = clf._predict_pac(X)  # version vieja de Alberto (al se un estimador binario da la prevalencia true)
             p= (clf._predict_pac(X))[1] # la version nueva de Alberto no tiene quant. binarios y predict retorna [p_false p_true]
+            #print(i,p)
 
             predict_bin[i] = p  #solo meto las prob true de la parte izda del modelo binario
 
@@ -788,10 +798,11 @@ class OrderedQuantificationTreeOVO(BaseClassifyAndCountModel):
 
             """
 
-    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, usingPAC=False):
+    def __init__(self, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None, method=None, usingPAC=False):
         super(OrderedQuantificationTreeOVO,self).__init__(estimator_class, estimator_params, estimator_grid, grid_params, b=None)
         # parametros especificos aqui
-        self.usingPAC_ = usingPAC
+        self.usingPAC = usingPAC
+        self.method = method
         self.oqn_estimators_ = None
         self.tree = None
 
@@ -817,7 +828,7 @@ class OrderedQuantificationTreeOVO(BaseClassifyAndCountModel):
         return X_bin, y_bin
 
 
-    def fit(self, X, y, verbose=False):
+    def fit(self, X, y, cv=50, verbose=False):
         """
             Crea todos los estimadores binarios PCC/PAC de una clases frente a otra y los guarda en un array numpy
             self.oqn_estimartors_ con este formato:
@@ -841,12 +852,15 @@ class OrderedQuantificationTreeOVO(BaseClassifyAndCountModel):
                 X_bin, y_bin = self.__binarize_datasets(X, y, class_left, class_right)
 
                 #se invoca un clasificador de quantificacion binario PCC/PAC
-                if self.usingPAC_:
-                    clf = PAC(self.estimator_class, self.estimator_params)
+                if self.usingPAC:
+                    clf = PAC(self.estimator_class, self.estimator_params, self.estimator_grid, self.grid_params)
                 else:
-                    clf = PCC(self.estimator_class, self.estimator_params)
+                    clf = PCC(self.estimator_class, self.estimator_params, self.estimator_grid, self.grid_params)
 
-                clf.fit(X_bin, y_bin)
+                clf.fit(X_bin, y_bin, cv, verbose)
+
+                #print("El grid usado:")  #BORRRARRRRRRRR
+                #print(clf.estimator_grid)
 
                 # se guardan los modelos y las clases con las que se obtienen vs las otras (el 0 es para luego->KLD)
                 l_estimators.append([deepcopy(clf), class_left, class_right, 0])
@@ -868,9 +882,9 @@ class OrderedQuantificationTreeOVO(BaseClassifyAndCountModel):
 # Predicciones con distintos metodos usando los modelos One versus One
 # ****************************************************************************************************
 
-    def predict(self, X, method='prob'):
+    def predict(self, X, method_=None):
         """
-            :param method : string, optional, default 'prob'
+            :param method_ : string, optional, default 'None'
                     - 'prob' :  retorna la prevalencia de cada clase,
                                 basado las probabilidades calculadas a partir de los modelos
                     - 'freq' :  retorna la prevalencia de cada clase contando las clases que tienen mas probabilidad,
@@ -880,16 +894,23 @@ class OrderedQuantificationTreeOVO(BaseClassifyAndCountModel):
                     - 'hojas_prob' : se llega hasta el nodo anterior a las hojas. Este nodo separa dos clases:
                                      para cada ejemplo, se asigna la probabiliad de las dos clases implicadas
         """
-        if method == 'prob':
+
+        if method_ == None:
+            if self.method == None:
+                raise ValueError("Invalid method %s.", method_)
+            else:
+                 method_ = self.method
+
+        if method_ == 'prob':
             return self._predict_ovo(X)
-        elif method == 'freq':
+        elif method_ == 'freq':
             return self._predict_ovo_freq(X)
-        elif method == 'hojas':
+        elif method_ == 'hojas':
             return self._predict_ovo_hojas(X)
-        elif method == 'hojas_prob':
+        elif method_ == 'hojas_prob':
             return self._predict_ovo_hojas_prob(X)
         else:
-            raise ValueError("Invalid method %s.", method)
+            raise ValueError("Invalid method %s.", method_)
 
 
 
@@ -1036,11 +1057,69 @@ class OrderedQuantificationTreeOVO(BaseClassifyAndCountModel):
         return cont_classes / float(np.sum(cont_classes))  # frecuencias relativas
 
 
-    def __obtain_preleaves_ovo(self, X, probs_samples, pos_class_left, pos_class_right, level):
-        #Recibe los ejemplos y cuenta las ramas (clases) en las que cae cada ejemplo
+    def __traverse_preleaves_ovo(self, X, mask_samples, probs_samples, pos_class_left, pos_class_right, level):
+        # Recibe los ejemplos y baja hasta el nodo anterior a las ramas
+        # voy enmascarando los ejemplos validos en cada rama por la que voy
+        n_classes = len(self.classes_)
+        n_samples= X.shape[0]
+        n_estim = (n_classes * n_classes - 1) / 2
+        class_left = self.classes_[pos_class_left]
+        class_right = self.classes_[pos_class_right]
 
-        #copiar del mac!!!!
-         pass
+        #obtengo el estimador de las dos clases consideradas
+        i=0
+        while i<n_estim and not (class_left==self.oqn_estimators_[i][1] and  class_right==self.oqn_estimators_[i][2]):
+            i+=1
+        estimador=self.oqn_estimators_[i][0]
+
+        # ojo: pred son pares de la forma [prob_fallar prob_acertar]  -> prob_left=prob_acertar
+        #predictions = estimador._predictions(X)  # predicciones para cada ejemplo --> VIEJUNO
+        predictions = estimador.estimators_[1].predict_proba(X)
+        predictions_left = predictions[:, 1]
+        predictions_right = predictions[:, 0]
+
+        # Aplico la mascara para quedarme solo con los ejemplos de esta rama
+        predictions_left[~mask_samples] = -1
+        predictions_right[~mask_samples] = -1
+        samples_left = np.flatnonzero(predictions_left >= 0.5)
+        samples_right = np.flatnonzero(predictions_right > 0.5)
+
+        #X_left = X[samples_left]
+        #X_right = X[samples_right]
+
+
+        mask_samples_left = deepcopy(mask_samples)
+        mask_samples_right = deepcopy(mask_samples)
+        mask_samples_left[samples_right] = False
+        mask_samples_right[samples_left] = False
+
+        # caso base  (nodo antes de las hojas: discrimina entre dos clases)
+        # pongo la probabilidad de las dos clases implicadas y las otras a cero
+        if (abs(pos_class_left - pos_class_right) == 1):
+            if len(samples_left)>0:
+                probs_samples[samples_left,pos_class_left]= predictions_left[samples_left]
+                probs_samples[samples_left, pos_class_right]= predictions_right[samples_left]
+            if len(samples_right)>0:
+                probs_samples[samples_right,pos_class_left]= predictions_left[samples_right]
+                probs_samples[samples_right, pos_class_right]= predictions_right[samples_right]
+
+        else:
+            self.__traverse_preleaves_ovo(X, mask_samples_left, probs_samples, pos_class_left, pos_class_right-1, level+1)
+            self.__traverse_preleaves_ovo(X, mask_samples_right, probs_samples, pos_class_left+1, pos_class_right ,level+1)
+
+
+
+
+    def _predict_ovo_hojas_prob(self, X):
+        """
+        Partiendo de la raiz del arbol, bajo por las ramas del mismo EJEMPLO a EJEMPLO hasta junsto antes de las hojas
+        Para cada ejemplo, se asignan las probabilidades de las dos clases que discrimina el nodo (el resto cero????)
+        """
+        n_classes = len(self.classes_)
+        n_samples = X.shape[0]
+        probs_samples = np.zeros((n_samples, n_classes))
+        self.__traverse_preleaves_ovo(X, np.ones(n_samples, dtype=np.bool), probs_samples, 0, n_classes-1, level=0)
+        return np.mean(probs_samples, axis=0)
 
 
     def _predictions_ovo(self, X):
