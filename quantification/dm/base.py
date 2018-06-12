@@ -508,8 +508,6 @@ class CvMy(BaseCC):
         p = sol[0]
         p = np.append(p, 1 - p.sum())
 
-        self.final_ed = 2 * p.dot(Kt) - p.T.dot(K).dot(p) - self.distance(X, X) / (m * m)
-
         return p
 
     def distance(self, p, q):
