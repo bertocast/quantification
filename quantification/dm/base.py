@@ -460,10 +460,9 @@ class CvMy(BaseCC):
     def predict(self, X, method="cvmy"):
         n_classes = len(self.classes_)
 
-        train_repr = cross_val_predict(self.estimators_[1], self.X_train, self.y_train, method="predict_proba")[..., 1][:, np.newaxis]
         test_repr = self.estimators_[1].predict_proba(X)[..., 1][:, np.newaxis]
 
-        Hn = rankdata(np.concatenate(np.concatenate([train_repr, test_repr])))
+        Hn = rankdata(np.concatenate(np.concatenate([self.train_repr, test_repr])))
         Htr = Hn[:len(self.X_train)]
         Htst = Hn[len(self.X_train):]
 
@@ -517,7 +516,8 @@ class CvMy(BaseCC):
         return np.abs(p[:, None] - q).sum()
 
     def _compute_distribution(self, X, y):
-        pass
+        self.train_repr = cross_val_predict(self.estimators_[1], self.X_train, self.y_train, method="predict_proba")[..., 1][:, np.newaxis]
+
 
     def _compute_performance(self, X, y, pos_class, folds, local, verbose):
         pass
