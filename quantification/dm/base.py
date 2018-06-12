@@ -516,7 +516,7 @@ class CvMy(BaseCC):
         return np.abs(p[:, None] - q).sum()
 
     def _compute_distribution(self, X, y):
-        self.train_repr = cross_val_predict(self.estimators_[1], self.X_train, self.y_train, method="predict_proba")[..., 1][:, np.newaxis]
+        self.train_repr = cross_val_predict(self.estimators_[1], X, y, method="predict_proba")[..., 1][:, np.newaxis]
 
 
     def _compute_performance(self, X, y, pos_class, folds, local, verbose):
