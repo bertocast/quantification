@@ -229,7 +229,7 @@ class BaseCC(BaseClassifyAndCountModel):
         n_clfs = n_classes  # OvA
         self.train_dist_ = np.zeros((n_classes, self.b, n_clfs))
 
-        if len(self.classes_) == 2:
+        if n_classes == 2:
             # If it is a binary problem, add the representation of the negative samples
             preds = cross_val_predict(self.estimators_[1], X, y, method="predict_proba")[:, 1]
             pos_preds = preds[y == 1]
@@ -238,6 +238,7 @@ class BaseCC(BaseClassifyAndCountModel):
             neg_pdf, _ = np.histogram(neg_preds, bins=self.b, range=(0., 1.))
             self.train_dist_ = np.vstack(
                 [(neg_pdf / float(sum(y == 0)))[None, :, None], (pos_pdf / float(sum(y == 1)))[None, :, None]])
+            self.train_dist_ = np.squeeze(self.train_dist_)
         else:
             for n_cls, cls in enumerate(self.classes_):
                 for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
@@ -248,6 +249,7 @@ class BaseCC(BaseClassifyAndCountModel):
                     preds = preds[y==cls]
                     pdf, _ = np.histogram(preds, bins=self.b, range=(0., 1.))
                     self.train_dist_[n_cls, :, n_clf] = pdf / float(sum(y_bin))
+            self.train_dist_ = self.train_dist_.reshape(n_classes, -1)
 
     def predict(self, X, method='cc'):
         if method == 'cc':
@@ -360,7 +362,7 @@ class BaseCC(BaseClassifyAndCountModel):
             pdf, _ = np.histogram(preds, self.b, range=(0, 1))
             test_dist = pdf / float(X.shape[0])
             test_dist = np.expand_dims(test_dist, -1)
-            self.train_dist_ = np.squeeze(self.train_dist_)
+
 
         else:
             test_dist = np.zeros((self.b, len(self.estimators_)))
@@ -368,8 +370,6 @@ class BaseCC(BaseClassifyAndCountModel):
                 preds = clf.predict_proba(X)[:, 1]
                 pdf, _ = np.histogram(preds, self.b, range=(0, 1))
                 test_dist[:, n_clf] = pdf / float(X.shape[0])
-
-            self.train_dist_ = self.train_dist_.reshape(n_classes, -1)
             test_dist = test_dist.reshape(-1, 1)
 
         return solve_hd(self.train_dist_, test_dist, n_classes)

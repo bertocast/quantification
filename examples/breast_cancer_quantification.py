@@ -107,7 +107,7 @@ def main():
     prev_lsdd = lsdd.predict(X_test)[1]
     print(formatter.format("LSDD", prev_lsdd))
 
-    phdy = pHDy(n_percentiles=10)
+    phdy = pHDy(n_percentiles=8)
     phdy.fit(X_train, y_train)
     prev_phdy = phdy.predict(X_test)[1]
     print(formatter.format("pHDy", prev_phdy))

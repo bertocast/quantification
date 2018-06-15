@@ -308,8 +308,6 @@ class EDx(six.with_metaclass(ABCMeta, BaseEstimator)):
         p = sol[0]
         p = np.append(p, 1 - p.sum())
 
-        self.final_ed = 2 * p.dot(Kt) - p.T.dot(K).dot(p) - self.distance(X, X) / (m * m)
-
         return p
 
     def distance(self, p, q):
@@ -612,8 +610,6 @@ class CvMX(BaseCC):
 
         p = sol[0]
         p = np.append(p, 1 - p.sum())
-
-        self.final_ed = 2 * p.dot(Kt) - p.T.dot(K).dot(p) - self.distance(X, X) / (m * m)
 
         return p
 
@@ -969,6 +965,10 @@ class pHDy(BaseCC):
 
 class rHDy(HDy):
 
+    def _compute_distribution(self, X, y):
+        super(rHDy, self)._compute_distribution(X, y)
+        self.train_dist_ = self.train_dist_.T
+
     def _predict_hdy(self, X):
 
         if not self.b:
@@ -979,7 +979,6 @@ class rHDy(HDy):
             preds = self.estimators_[1].predict_proba(X)[:, 1]
             pdf, _ = np.histogram(preds, self.b, range=(0, 1))
             test_dist = pdf / float(X.shape[0])
-            self.train_dist_ = np.squeeze(self.train_dist_).T
 
         else:
             test_dist = np.zeros((self.b, len(self.estimators_)))
@@ -988,7 +987,6 @@ class rHDy(HDy):
                 pdf, _ = np.histogram(preds, self.b, range=(0, 1))
                 test_dist[:, n_clf] = pdf / float(X.shape[0])
 
-            self.train_dist_ = self.train_dist_.reshape(n_classes, -1).T
             test_dist = test_dist.reshape(-1, 1).squeeze()
 
         G = self.train_dist_.T.dot(self.train_dist_)
