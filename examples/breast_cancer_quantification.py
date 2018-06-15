@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 
 from quantification.cc import BaseCC
-from quantification.dm.base import EDx, EDy, CvMy, CvMX, MMy, FriedmanBM, FriedmanMM, FriedmanDB, LSDD, HDX, pHDy
+from quantification.dm.base import EDx, EDy, CvMy, CvMX, MMy, FriedmanBM, FriedmanMM, FriedmanDB, LSDD, HDX, pHDy, rHDy
 
 
 def main():
@@ -112,6 +112,10 @@ def main():
     prev_phdy = phdy.predict(X_test)[1]
     print(formatter.format("pHDy", prev_phdy))
 
+    rhdy = rHDy(b=8)
+    rhdy.fit(X_train, y_train)
+    prev_rhdy = rhdy.predict(X_test)[1]
+    print(formatter.format("rHDy", prev_rhdy))
 
 if __name__ == '__main__':
     main()

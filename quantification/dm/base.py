@@ -964,3 +964,43 @@ class pHDy(BaseCC):
 
     def _compute_performance(self, X, y, pos_class, folds, local, verbose):
         pass
+
+
+
+class rHDy(HDy):
+
+    def _predict_hdy(self, X):
+
+        if not self.b:
+            raise ValueError("If HDy predictions are in order, the quantifier must be trained with the parameter `b`")
+        n_classes = len(self.classes_)
+
+        if n_classes == 2:
+            preds = self.estimators_[1].predict_proba(X)[:, 1]
+            pdf, _ = np.histogram(preds, self.b, range=(0, 1))
+            test_dist = pdf / float(X.shape[0])
+            self.train_dist_ = np.squeeze(self.train_dist_).T
+
+        else:
+            test_dist = np.zeros((self.b, len(self.estimators_)))
+            for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
+                preds = clf.predict_proba(X)[:, 1]
+                pdf, _ = np.histogram(preds, self.b, range=(0, 1))
+                test_dist[:, n_clf] = pdf / float(X.shape[0])
+
+            self.train_dist_ = self.train_dist_.reshape(n_classes, -1).T
+            test_dist = test_dist.reshape(-1, 1).squeeze()
+
+        G = self.train_dist_.T.dot(self.train_dist_)
+        if not is_pd(G):
+            G = nearest_pd(G)
+        a = self.train_dist_.T.dot(test_dist)
+
+        C = np.vstack([np.ones((1, n_classes)), np.eye(n_classes)]).T
+        b = np.array([1] + [0] * n_classes, dtype=np.float)
+        sol = quadprog.solve_qp(G=G,
+                                a=a, C=C, b=b, meq=1)
+
+        p = sol[0]
+
+        return p
