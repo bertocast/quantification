@@ -7,7 +7,7 @@ from sklearn.svm import SVC
 
 from quantification.cc import BaseCC
 from quantification.cc.base import FriedmanAC
-from quantification.dm.base import EDx, kEDx, EDy, FriedmanBM, FriedmanMM, HDX
+from quantification.dm.base import EDx, kEDx, EDy, FriedmanBM, FriedmanMM, HDX, pHDy
 
 
 def main():
@@ -74,6 +74,11 @@ def main():
     fr.fit(X_train, y_train)
     prev_fr = fr.predict(X_test)
     print(formatter.format("Friedman-AC", *prev_fr))
+
+    phdy = pHDy()
+    phdy.fit(X_train, y_train)
+    prev_phdy = phdy.predict(X_test)
+    print(formatter.format("pHDy", *prev_phdy))
 
 
 if __name__ == '__main__':

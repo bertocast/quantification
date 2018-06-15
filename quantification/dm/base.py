@@ -328,7 +328,7 @@ class EDy(BaseCC):
         self.y_train = y
         super(EDy, self).fit(X, y)
 
-    def predict(self, X, method="edx"):
+    def predict(self, X, method="edy"):
         n_classes = len(self.classes_)
 
         K = np.zeros((n_classes, n_classes))
@@ -401,7 +401,10 @@ class EDy(BaseCC):
                 self.train_dist_[n_cls] = np.zeros((sum(y == cls), n_classes))
 
                 for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
-                    preds = cross_val_predict(clf, X, y, method="predict_proba")[:, 1]
+                    mask = (y == clf_cls)
+                    y_bin = np.ones(y.shape, dtype=np.int)
+                    y_bin[~mask] = 0
+                    preds = cross_val_predict(clf, X, y_bin, method="predict_proba")[:, 1]
                     preds = preds[y == cls]
                     self.train_dist_[n_cls][:, n_clf] = preds
 
@@ -886,3 +889,78 @@ class LSDD(six.with_metaclass(ABCMeta, BaseEstimator)):
         XC_dist2 = Xsum[np.newaxis, :] + Csum[:, np.newaxis] - 2 * np.dot(C, X.transpose())
 
         return XC_dist2
+
+
+class pHDy(BaseCC):
+
+    def __init__(self, n_percentiles=10, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None):
+        super(pHDy, self).__init__(estimator_class=estimator_class,
+                                   estimator_params=estimator_params,
+                                   estimator_grid=estimator_grid,
+                                   grid_params=grid_params)
+
+        self.n_percentiles = n_percentiles
+
+
+    def predict(self, X, method='phdy'):
+        n_classes = len(self.classes_)
+
+        if n_classes == 2:
+            preds = self.estimators_[1].predict_proba(X)[:, 1]
+            U = np.array([np.mean(chunk) for chunk in np.array_split(preds, self.n_percentiles)])
+        else:
+            U = np.zeros((self.n_percentiles, len(self.estimators_)))
+            for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
+                preds = clf.predict_proba(X)[:, 1]
+                preds.sort()
+                U[:, n_clf] = [np.mean(chunk) for chunk in np.array_split(preds, self.n_percentiles)]
+            U = U.reshape(-1, 1).squeeze()
+
+        G = self.V.T.dot(self.V)
+        if not is_pd(G):
+            G = nearest_pd(G)
+        a = self.V.T.dot(U)
+
+        C = np.vstack([np.ones((1, n_classes)), np.eye(n_classes)]).T
+        b = np.array([1] + [0] * n_classes, dtype=np.float)
+        sol = quadprog.solve_qp(G=G,
+                                a=a, C=C, b=b, meq=1)
+
+        p = sol[0]
+
+        return p
+
+    def _compute_distribution(self, X, y):
+
+        n_classes = len(self.classes_)
+
+        if n_classes == 2:
+            self.V = np.zeros((self.n_percentiles, n_classes))
+            preds = cross_val_predict(self.estimators_[1], X, y, method="predict_proba")[:, 1]
+            neg_preds = preds[y == 0]
+            neg_preds.sort()
+            pos_preds = preds[y == 1]
+            pos_preds.sort()
+            self.V[:, 0] = [np.mean(chunk) for chunk in np.array_split(neg_preds, self.n_percentiles)]
+            self.V[:, 1] = [np.mean(chunk) for chunk in np.array_split(pos_preds, self.n_percentiles)]
+
+        else:
+            self.V = np.zeros((n_classes, self.n_percentiles, n_classes))
+            for n_cls, cls in enumerate(self.classes_):
+                mask = (y == cls)
+                y_bin = np.ones(y.shape, dtype=np.int)
+                y_bin[~mask] = 0
+
+                for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
+                    mask = (y == clf_cls)
+                    y_bin = np.ones(y.shape, dtype=np.int)
+                    y_bin[~mask] = 0
+                    preds = cross_val_predict(clf, X, y_bin, method="predict_proba")[:, 1]
+                    preds = preds[y == cls]
+                    preds.sort()
+                    self.V[n_cls, :, n_clf] = [np.mean(chunk) for chunk in np.array_split(preds, self.n_percentiles)]
+
+            self.V = self.V.reshape(n_classes, -1).T
+
+    def _compute_performance(self, X, y, pos_class, folds, local, verbose):
+        pass

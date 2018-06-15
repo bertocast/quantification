@@ -240,12 +240,11 @@ class BaseCC(BaseClassifyAndCountModel):
                 [(neg_pdf / float(sum(y == 0)))[None, :, None], (pos_pdf / float(sum(y == 1)))[None, :, None]])
         else:
             for n_cls, cls in enumerate(self.classes_):
-                mask = (y == cls)
-                y_bin = np.ones(y.shape, dtype=np.int)
-                y_bin[~mask] = 0
-
                 for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
-                    preds = cross_val_predict(clf, X, y, method="predict_proba")[:, 1]
+                    mask = (y == clf_cls)
+                    y_bin = np.ones(y.shape, dtype=np.int)
+                    y_bin[~mask] = 0
+                    preds = cross_val_predict(clf, X, y_bin, method="predict_proba")[:, 1]
                     preds = preds[y==cls]
                     pdf, _ = np.histogram(preds, bins=self.b, range=(0., 1.))
                     self.train_dist_[n_cls, :, n_clf] = pdf / float(sum(y_bin))
