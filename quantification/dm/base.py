@@ -12,7 +12,7 @@ from sklearn.metrics import euclidean_distances
 from sklearn.model_selection import GridSearchCV, cross_val_predict
 from scipy.stats import rankdata, norm
 
-from quantification.utils.base import gss, solve_hd
+from quantification.utils.base import gss, solve_hd, phdy_f
 from quantification.cc.base import BaseCC, \
     BaseClassifyAndCountModel
 from quantification.metrics import model_score
@@ -655,42 +655,34 @@ class MMy(BaseCC):
 
             l1[i] = np.abs(Du - test_dist).sum()
 
-        import matplotlib.pyplot as plt
 
         p = ps[areas.argmin()]
 
         Du_opt = (1 - p) * self.train_dist_[0] + p * self.train_dist_[1]
         Du_opt = np.insert(Du_opt, 0, 0)
         Du_opt = Du_opt / Du_opt.max()
-        plt.figure()
-        plt.plot(Du_opt, test_dist)
-        plt.plot([0, 1], [0, 1], color='k')
-        plt.title("Optimum prevalence: {}".format(p))
+
 
         p_w = 0.1
 
         Du_w = (1 - p_w) * self.train_dist_[0] + p_w * self.train_dist_[1]
         Du_w = np.insert(Du_w, 0, 0)
         Du_w = Du_w / Du_w.max()
-        plt.figure()
-        plt.plot(Du_w, test_dist)
-        plt.plot([0, 1], [0, 1], color='k')
-        plt.title("Prevalence: {}".format(p_w))
 
         return np.array([1 - p, p])
 
     def _compute_distribution(self, X, y):
 
-        pred = cross_val_predict(self.estimators_[1], X, y, cv=10, method='predict_proba')
-        # pred = self.estimators_[1].predict_proba(X)
+        pred = cross_val_predict(self.estimators_[1], X, y, cv=10, method='predict_proba')[..., 1]
+        # pred = self.estimators_[1].predict_proba(X)[..., 1]
 
         self.train_dist_ = {0: None, 1: None}
 
-        train_repr = pred[y == self.classes_[0]][..., 1]
+        train_repr = pred[y == self.classes_[0]]
         counts, _ = np.histogram(train_repr, bins=self.b, range=(0., 1.))
         self.train_dist_[0] = np.cumsum(counts) / (y == self.classes_[0]).sum()
 
-        train_repr = pred[y == self.classes_[1]][..., 1]
+        train_repr = pred[y == self.classes_[1]]
         counts, _ = np.histogram(train_repr, bins=self.b, range=(0., 1.))
         self.train_dist_[1] = np.cumsum(counts) / (y == self.classes_[1]).sum()
 
@@ -903,60 +895,43 @@ class pHDy(BaseCC):
 
         if n_classes == 2:
             preds = self.estimators_[1].predict_proba(X)[:, 1]
-            U = np.array([np.mean(chunk) for chunk in np.array_split(preds, self.n_percentiles)])
+            preds.sort()
+            test_quantils = phdy_f(preds, np.ones_like(preds), self.n_percentiles)
+
+            distances = np.zeros(11)
+            prevs = np.linspace(0, 1, 11)
+            for i in range(11):
+                p = prevs[i]
+                weights = self.weights.copy()
+                weights[self.ord_y == 0] = weights[self.ord_y == 0] * (1 - p)
+                weights[self.ord_y == 1] = weights[self.ord_y == 1] * p
+                quantils = phdy_f(self.ord_preds, weights, self.n_percentiles)
+
+                distances[i] = np.sum(np.square(quantils - test_quantils))
+            p_opt = prevs[distances.argmin()]
         else:
-            U = np.zeros((self.n_percentiles, len(self.estimators_)))
-            for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
-                preds = clf.predict_proba(X)[:, 1]
-                preds.sort()
-                U[:, n_clf] = [np.mean(chunk) for chunk in np.array_split(preds, self.n_percentiles)]
-            U = U.reshape(-1, 1).squeeze()
-
-        G = self.V.T.dot(self.V)
-        if not is_pd(G):
-            G = nearest_pd(G)
-        a = self.V.T.dot(U)
-
-        C = np.vstack([np.ones((1, n_classes)), np.eye(n_classes)]).T
-        b = np.array([1] + [0] * n_classes, dtype=np.float)
-        sol = quadprog.solve_qp(G=G,
-                                a=a, C=C, b=b, meq=1)
-
-        p = sol[0]
-
-        return p
+            p_opt = np.nan
+        return np.array([1 - p_opt, p_opt])
 
     def _compute_distribution(self, X, y):
 
         n_classes = len(self.classes_)
+        n = len(y)
 
         if n_classes == 2:
+            n_pos = np.sum(y == 1)
+            n_neg = np.sum(y == 0)
+
             self.V = np.zeros((self.n_percentiles, n_classes))
             preds = cross_val_predict(self.estimators_[1], X, y, method="predict_proba")[:, 1]
-            neg_preds = preds[y == 0]
-            neg_preds.sort()
-            pos_preds = preds[y == 1]
-            pos_preds.sort()
-            self.V[:, 0] = [np.mean(chunk) for chunk in np.array_split(neg_preds, self.n_percentiles)]
-            self.V[:, 1] = [np.mean(chunk) for chunk in np.array_split(pos_preds, self.n_percentiles)]
+            idxs = np.argsort(preds)
+            self.ord_preds = preds[idxs]
+            self.ord_y = y[idxs]
 
-        else:
-            self.V = np.zeros((n_classes, self.n_percentiles, n_classes))
-            for n_cls, cls in enumerate(self.classes_):
-                mask = (y == cls)
-                y_bin = np.ones(y.shape, dtype=np.int)
-                y_bin[~mask] = 0
+            self.weights = np.zeros_like(self.ord_y, dtype=np.float)
+            self.weights[self.ord_y == 0] = n / n_neg
+            self.weights[self.ord_y == 1] = n / n_pos
 
-                for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
-                    mask = (y == clf_cls)
-                    y_bin = np.ones(y.shape, dtype=np.int)
-                    y_bin[~mask] = 0
-                    preds = cross_val_predict(clf, X, y_bin, method="predict_proba")[:, 1]
-                    preds = preds[y == cls]
-                    preds.sort()
-                    self.V[n_cls, :, n_clf] = [np.mean(chunk) for chunk in np.array_split(preds, self.n_percentiles)]
-
-            self.V = self.V.reshape(n_classes, -1).T
 
     def _compute_performance(self, X, y, pos_class, folds, local, verbose):
         pass

@@ -115,3 +115,32 @@ def solve_hd(train_dist, test_dist, n_classes, solver="ECOS"):
     prob = cvxpy.Problem(objective, contraints)
     prob.solve(solver=solver)
     return np.array(p.value).squeeze()
+
+
+def phdy_f(probs, weights, k):
+
+    n = len(probs)
+    quantils = np.zeros(k)
+
+    idx_q = 0
+    cumsum = 0
+
+    for iw in range(n):
+        cumsum += weights[iw]
+        if cumsum >= n / k:
+            diff = cumsum - n / k
+            quantils[idx_q] += probs[iw] * (weights[iw] - diff)
+            cumsum = diff
+            idx_q += 1
+            if idx_q == k - 1:
+                quantils[idx_q] += probs[iw] * diff + np.sum(probs[iw+1:] * weights[iw+1:])
+                break
+            quantils[idx_q] += probs[iw] * diff
+        else:
+            quantils[idx_q] += probs[iw] * weights[iw]
+
+    quantils = quantils / (n / k)
+
+    return quantils
+
+
