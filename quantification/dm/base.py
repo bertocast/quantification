@@ -4,18 +4,16 @@ from abc import ABCMeta
 
 import numpy as np
 import six
-from scipy.spatial.distance import cdist
+from scipy.stats import rankdata
 from shapely.geometry import Polygon
 from sklearn.base import BaseEstimator
 from sklearn.cluster import KMeans
 from sklearn.metrics import euclidean_distances
-from sklearn.model_selection import GridSearchCV, cross_val_predict
-from scipy.stats import rankdata, norm
+from sklearn.model_selection import cross_val_predict
 
-from quantification.utils.base import gss, solve_hd, phdy_f
 from quantification.cc.base import BaseCC, \
     BaseClassifyAndCountModel
-from quantification.metrics import model_score
+from quantification.utils.base import gss, solve_hd, phdy_f, solve_mmy
 from quantification.utils.base import is_pd, nearest_pd
 
 
@@ -517,7 +515,6 @@ class CvMy(BaseCC):
     def _compute_distribution(self, X, y):
         self.train_repr = cross_val_predict(self.estimators_[1], X, y, method="predict_proba")[..., 1][:, np.newaxis]
 
-
     def _compute_performance(self, X, y, pos_class, folds, local, verbose):
         pass
 
@@ -623,15 +620,15 @@ class CvMX(BaseCC):
         pass
 
 
-class MMy(BaseCC):
+class MMArea(BaseCC):
 
     def fit(self, X, y, cv=50, verbose=False, local=True):
         if len(np.unique(y)) != 2:
             raise AttributeError("This is a binary method, more than two clases are not yet supported")
 
-        super(MMy, self).fit(X, y)
+        super(MMArea, self).fit(X, y)
 
-    def predict(self, X, method='cc'):
+    def predict(self, X, method='mmy'):
 
         test_repr = self.estimators_[1].predict_proba(X)[:, 1]
         counts, _ = np.histogram(test_repr, bins=self.b, range=(0., 1.))
@@ -655,21 +652,11 @@ class MMy(BaseCC):
 
             l1[i] = np.abs(Du - test_dist).sum()
 
-
         p = ps[areas.argmin()]
 
-        Du_opt = (1 - p) * self.train_dist_[0] + p * self.train_dist_[1]
-        Du_opt = np.insert(Du_opt, 0, 0)
-        Du_opt = Du_opt / Du_opt.max()
-
-
-        p_w = 0.1
-
-        Du_w = (1 - p_w) * self.train_dist_[0] + p_w * self.train_dist_[1]
-        Du_w = np.insert(Du_w, 0, 0)
-        Du_w = Du_w / Du_w.max()
 
         return np.array([1 - p, p])
+
 
     def _compute_distribution(self, X, y):
 
@@ -688,6 +675,30 @@ class MMy(BaseCC):
 
     def _compute_performance(self, X, y, pos_class, folds, local, verbose):
         pass
+
+class MML1(BaseCC):
+
+    def predict(self, X, method='mmy'):
+        if not self.b:
+            raise ValueError("If HDy predictions are in order, the quantifier must be trained with the parameter `b`")
+        n_classes = len(self.classes_)
+
+        if n_classes == 2:
+            preds = self.estimators_[1].predict_proba(X)[:, 1]
+            pdf, _ = np.histogram(preds, self.b, range=(0, 1))
+            test_dist = pdf / float(X.shape[0])
+            test_dist = np.expand_dims(test_dist, -1)
+
+
+        else:
+            test_dist = np.zeros((self.b, len(self.estimators_)))
+            for n_clf, (clf_cls, clf) in enumerate(self.estimators_.items()):
+                preds = clf.predict_proba(X)[:, 1]
+                pdf, _ = np.histogram(preds, self.b, range=(0, 1))
+                test_dist[:, n_clf] = pdf / float(X.shape[0])
+            test_dist = test_dist.reshape(-1, 1)
+
+        return solve_mmy(self.train_dist_.T, test_dist, n_classes)
 
 
 class FriedmanBM(BaseCC):
@@ -881,14 +892,14 @@ class LSDD(six.with_metaclass(ABCMeta, BaseEstimator)):
 
 class pHDy(BaseCC):
 
-    def __init__(self, n_percentiles=10, estimator_class=None, estimator_params=None, estimator_grid=None, grid_params=None):
+    def __init__(self, n_percentiles=10, estimator_class=None, estimator_params=None, estimator_grid=None,
+                 grid_params=None):
         super(pHDy, self).__init__(estimator_class=estimator_class,
                                    estimator_params=estimator_params,
                                    estimator_grid=estimator_grid,
                                    grid_params=grid_params)
 
         self.n_percentiles = n_percentiles
-
 
     def predict(self, X, method='phdy'):
         n_classes = len(self.classes_)
@@ -932,10 +943,8 @@ class pHDy(BaseCC):
             self.weights[self.ord_y == 0] = n / n_neg
             self.weights[self.ord_y == 1] = n / n_pos
 
-
     def _compute_performance(self, X, y, pos_class, folds, local, verbose):
         pass
-
 
 
 class rHDy(HDy):

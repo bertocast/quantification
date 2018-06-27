@@ -2,6 +2,7 @@ import cvxpy
 from numpy import linalg as la
 import numpy as np
 import math
+from scipy.optimize import linprog
 
 
 def nearest_pd(A):
@@ -115,6 +116,28 @@ def solve_hd(train_dist, test_dist, n_classes, solver="ECOS"):
     prob = cvxpy.Problem(objective, contraints)
     prob.solve(solver=solver)
     return np.array(p.value).squeeze()
+
+def solve_mmy(train_dist, test_dist, n_classes):
+    c = np.hstack((np.ones(len(train_dist)),
+                   np.zeros(n_classes)))
+
+    A_ub = np.vstack((np.hstack((-np.eye(len(train_dist)), train_dist)),
+                     np.hstack((-np.eye(len(train_dist)), -train_dist))
+                      ))
+
+    b_ub = np.vstack((test_dist, -test_dist))
+
+    A_eq = np.hstack((np.zeros(len(train_dist)),
+                   np.ones(n_classes)))
+    A_eq = np.expand_dims(A_eq, axis=0)
+
+    b_eq = 1
+
+    x = linprog(c, A_ub=A_ub, b_ub=b_ub, A_eq=A_eq, b_eq=b_eq)['x']
+
+    p = x[-n_classes:]
+
+    return p
 
 
 def phdy_f(probs, weights, k):

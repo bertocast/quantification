@@ -7,7 +7,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 
 from quantification.cc import BaseCC
-from quantification.dm.base import EDx, EDy, CvMy, CvMX, MMy, FriedmanBM, FriedmanMM, FriedmanDB, LSDD, HDX, pHDy, rHDy
+from quantification.dm.base import EDx, EDy, CvMy, CvMX, FriedmanBM, FriedmanMM, FriedmanDB, LSDD, HDX, pHDy, rHDy, \
+    MMArea, MML1
 
 
 def main():
@@ -82,10 +83,15 @@ def main():
     prev_cvmx = cvmx.predict(X_test)[1]
     print(formatter.format("CvMX", prev_cvmx))
 
-    mmy = MMy(b=8)
+    mmy = MMArea(b=8)
     mmy.fit(X_train, y_train)
     prev_mmy = mmy.predict(X_test)[1]
-    print(formatter.format("MMy", prev_mmy))
+    print(formatter.format("MMArea", prev_mmy))
+
+    mmy = MML1(b=8)
+    mmy.fit(X_train, y_train)
+    prev_mmy = mmy.predict(X_test)[1]
+    print(formatter.format("MML1", prev_mmy))
 
     fr = FriedmanMM()
     fr.fit(X_train, y_train)
