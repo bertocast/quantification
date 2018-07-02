@@ -408,10 +408,10 @@ class EDy(BaseCC):
         pass
 
 
-class kEDx(EDx):
-    def __init__(self, k):
+class kWrapper():
+    def __init__(self, k, method):
         self.k = k
-        super(kEDx, self).__init__()
+        self.method = method
 
     def fit(self, X, y, local=True, cv=50, plot=False, verbose=False):
         classes = np.unique(y)
@@ -428,12 +428,12 @@ class kEDx(EDx):
             [class_map.update({str(nc): cls}) for nc in new_classes]
 
         self.class_map = class_map
-        super(kEDx, self).fit(X, y_n)
+        self.method.fit(X, y_n)
 
     def predict(self, X, method="kedx"):
         assert method == "kedx"
 
-        probs = super(kEDx, self).predict(X)
+        probs = self.method.predict(X)
 
         prevalence = np.zeros(self.orig_n_classes)
 
