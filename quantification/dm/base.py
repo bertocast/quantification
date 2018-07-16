@@ -921,7 +921,7 @@ class pHDy(BaseCC):
                 distances[i] = np.sum(np.square(quantils - test_quantils))
             p_opt = prevs[distances.argmin()]
         else:
-            p_opt = np.nan
+            raise AttributeError("More than 2 classes")
         return np.array([1 - p_opt, p_opt])
 
     def _compute_distribution(self, X, y):
