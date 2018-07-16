@@ -91,7 +91,7 @@ def square_error(p_true, p_pred):
     return np.power(p_pred - p_true, 2)
 
 
-def relative_absolute_error(p_true, p_pred):
+def relative_absolute_error(p_true, p_pred, eps=1e-12):
     """The relation between the absolute error and the true prevalence.
 
         Parameters
@@ -104,7 +104,7 @@ def relative_absolute_error(p_true, p_pred):
         """
     p_true, p_pred = check_array_and_consistent_length(p_true, p_pred)
     if np.any(p_true == 0):
-        raise NotImplementedError
+        return np.mean((np.abs(p_pred - p_true ) + eps) / (p_true + eps))
     return np.mean(np.abs(p_pred - p_true) / p_true)
 
 
